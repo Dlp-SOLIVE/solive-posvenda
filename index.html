@@ -64,7 +64,7 @@ h1,h2,h3{font-family:'Roboto',sans-serif}
 
 /* ── HERO ── */
 .hero{background:var(--white);padding:3rem 3rem 2.5rem;margin-bottom:0;position:relative;overflow:hidden;border-bottom:1px solid var(--ink-08);border-left:4px solid var(--mint)}
-.hero::before{content:'';position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg width='120' height='60' viewBox='0 0 120 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 30 Q15 10 30 30 Q45 50 60 30 Q75 10 90 30 Q105 50 120 30' fill='none' stroke='%23E62336' stroke-width='1.5' stroke-opacity='0.05'/%3E%3Cpath d='M0 42 Q15 22 30 42 Q45 62 60 42 Q75 22 90 42 Q105 62 120 42' fill='none' stroke='%23E62336' stroke-width='1' stroke-opacity='0.04'/%3E%3C/svg%3E");background-size:120px 60px}
+.hero::before{content:none}
 .hero-eyebrow{font-family:'Roboto',sans-serif;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--mint);margin-bottom:0.75rem;position:relative;font-weight:700}
 .hero h1{font-size:40px;font-weight:700;color:var(--navy);line-height:1.1;margin-bottom:0.75rem;position:relative;max-width:560px}
 .hero p{color:var(--ink-60);font-size:14px;max-width:480px;line-height:1.7;position:relative}
@@ -139,7 +139,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 
 /* ── MANAGER HEADER ── */
 .mgr-header{background:var(--white);padding:2.25rem 3rem 1.75rem;position:relative;overflow:hidden;border-bottom:1px solid var(--ink-08);border-left:4px solid var(--mint)}
-.mgr-header::before{content:'';position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg width='120' height='60' viewBox='0 0 120 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 30 Q15 10 30 30 Q45 50 60 30 Q75 10 90 30 Q105 50 120 30' fill='none' stroke='%23E62336' stroke-width='1.5' stroke-opacity='0.05'/%3E%3C/svg%3E");background-size:120px 60px}
+.mgr-header::before{content:none}
 .mgr-header h1{font-size:32px;font-weight:700;color:var(--navy);position:relative;margin-bottom:4px}
 .mgr-header p{color:var(--ink-60);font-size:13px;position:relative}
 .mgr-header-row{display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:12px}
@@ -169,14 +169,20 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 .search-box i{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--ink-60);font-size:15px}
 
 /* ── ISSUE CARDS ── */
-.issue-card{background:var(--white);border:1px solid var(--ink-20);border-radius:var(--rlg);margin-bottom:10px;overflow:hidden;transition:border-color 0.2s}
-.issue-card:hover{border-color:var(--mint)}
+.issue-card{background:var(--white);border:1px solid var(--ink-20);border-left:4px solid var(--gray);border-radius:var(--rlg);margin-bottom:12px;overflow:hidden;transition:box-shadow 0.2s,border-color 0.2s;box-shadow:0 1px 3px rgba(20,58,103,0.04)}
+.issue-card:hover{box-shadow:0 4px 14px rgba(20,58,103,0.10)}
+.issue-card.st-nova{border-left-color:var(--danger)}
+.issue-card.st-em_analise{border-left-color:var(--warn)}
+.issue-card.st-agendada{border-left-color:var(--info)}
+.issue-card.st-resolvida{border-left-color:var(--success)}
+.issue-card.st-rejeitada{border-left-color:var(--gray)}
 .issue-card-top{padding:1.1rem 1.4rem;cursor:pointer}
-.issue-top-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px;flex-wrap:wrap}
-.issue-title{font-weight:500;font-size:15px;flex:1;min-width:180px;font-family:'Roboto',sans-serif}
-.issue-meta{font-size:12px;color:var(--ink-60);display:flex;gap:14px;flex-wrap:wrap;margin-bottom:6px}
-.issue-meta span{display:flex;align-items:center;gap:4px}
-.issue-desc{font-size:13px;color:var(--ink-60);line-height:1.55}
+.issue-top-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.issue-title{font-weight:700;font-size:15px;flex:1;min-width:180px;font-family:'Roboto',sans-serif;color:var(--navy)}
+.issue-meta{font-size:12px;color:var(--ink-60);display:flex;gap:8px 16px;flex-wrap:wrap;margin-bottom:8px;row-gap:4px}
+.issue-meta span{display:flex;align-items:center;gap:5px}
+.issue-meta .meta-proj{font-weight:700;color:var(--mint)}
+.issue-desc{font-size:13px;color:var(--ink);line-height:1.6;background:var(--cream);padding:10px 12px;border-radius:var(--r)}
 .issue-photos-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
 .issue-photo{width:72px;height:72px;border-radius:6px;object-fit:cover;border:1px solid var(--ink-20);cursor:pointer;transition:opacity 0.2s}
 .issue-photo:hover{opacity:0.85}
@@ -1429,7 +1435,7 @@ function renderIssueCard(issue) {
     </div>` : '';
 
   return `
-  <div class="issue-card" id="ic-${issue.id}">
+  <div class="issue-card st-${issue.status}" id="ic-${issue.id}">
   <div class="issue-card-top" onclick="toggleCard('${issue.id}')">
     <div class="issue-top-row">
       <div class="issue-title">${issue.category}${issue.location ? ' — ' + issue.location : ''}</div>
@@ -1438,7 +1444,7 @@ function renderIssueCard(issue) {
       </div>
     </div>
     <div class="issue-meta">
-      <span><i class="ti ti-map-pin" style="font-size:13px"></i> ${projectName(issue.project_id)}</span>
+      <span class="meta-proj"><i class="ti ti-map-pin" style="font-size:13px"></i> ${projectName(issue.project_id)}</span>
       <span><i class="ti ti-building" style="font-size:13px"></i> ${issue.unit}</span>
       <span><i class="ti ti-user" style="font-size:13px"></i> ${issue.client_name}</span>
       ${issue.client_email ? `<span><i class="ti ti-mail" style="font-size:13px"></i> ${issue.client_email}</span>` : ''}
