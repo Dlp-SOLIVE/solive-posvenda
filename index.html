@@ -1,0 +1,1805 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Solive — Assistência Pós-Venda</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --mint:#0065C2;
+  --mint-dark:#004F99;
+  --mint-lt:#E3F0FB;
+  --brown:#5C3D1E;
+  --brown-lt:#F5EFE6;
+  --ink:#1A1A18;
+  --ink-60:rgba(26,26,24,0.6);
+  --ink-20:rgba(26,26,24,0.12);
+  --ink-08:rgba(26,26,24,0.05);
+  --white:#FFFFFF;
+  --cream:#F8F8F5;
+  --danger:#B5292A;
+  --danger-lt:#FBEAEA;
+  --warn:#A05C10;
+  --warn-lt:#FDF0E0;
+  --success:#1A6B45;
+  --success-lt:#E4F4EC;
+  --info:#1A4070;
+  --info-lt:#E6EEF8;
+  --r:6px;
+  --rlg:12px;
+}
+
+/* ── WAVE SVG pattern (brochure motif) ── */
+.wave-bg{background-image:url("data:image/svg+xml,%3Csvg width='120' height='60' viewBox='0 0 120 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 30 Q15 10 30 30 Q45 50 60 30 Q75 10 90 30 Q105 50 120 30' fill='none' stroke='%2340C98E' stroke-width='1.2' stroke-opacity='0.18'/%3E%3Cpath d='M0 42 Q15 22 30 42 Q45 62 60 42 Q75 22 90 42 Q105 62 120 42' fill='none' stroke='%2340C98E' stroke-width='1.2' stroke-opacity='0.11'/%3E%3Cpath d='M0 18 Q15 -2 30 18 Q45 38 60 18 Q75 -2 90 18 Q105 38 120 18' fill='none' stroke='%2340C98E' stroke-width='1.2' stroke-opacity='0.11'/%3E%3C/svg%3E");background-size:120px 60px}
+
+body{font-family:'Roboto',sans-serif;background:var(--cream);color:var(--ink);min-height:100vh;font-size:15px;line-height:1.65}
+h1,h2,h3{font-family:'Roboto',sans-serif}
+
+/* ── NAV ── */
+.nav{background:var(--ink);display:flex;align-items:center;height:64px;padding:0 2rem;position:sticky;top:0;z-index:200;border-bottom:2px solid var(--mint)}
+.nav-logo{display:flex;flex-direction:column;margin-right:auto;gap:0}
+.nav-logo .logotype{font-family:'Roboto',sans-serif;font-size:17px;font-weight:700;color:var(--white);letter-spacing:0.02em;line-height:1}
+.nav-logo .subtype{font-family:'Roboto',sans-serif;font-size:9px;font-weight:400;letter-spacing:0.25em;text-transform:uppercase;color:var(--mint);margin-top:3px}
+.nav-tab{background:none;border:none;color:rgba(255,255,255,0.5);font-family:'Roboto',sans-serif;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;padding:0 1.25rem;height:64px;cursor:pointer;transition:color 0.2s;white-space:nowrap;border-bottom:2px solid transparent;margin-bottom:-2px}
+.nav-tab:hover{color:rgba(255,255,255,0.85)}
+.nav-tab.active{color:var(--mint);border-bottom-color:var(--mint)}
+.nav-user{font-size:12px;color:rgba(255,255,255,0.45);margin-left:1.5rem;display:flex;align-items:center;gap:10px}
+.nav-user span{font-size:11px}
+.nav-user button{background:none;border:1px solid rgba(255,255,255,0.18);color:rgba(255,255,255,0.55);padding:4px 12px;border-radius:20px;cursor:pointer;font-size:10px;letter-spacing:0.06em;text-transform:uppercase;font-family:'Roboto',sans-serif;transition:all 0.2s}
+.nav-user button:hover{border-color:var(--mint);color:var(--mint)}
+
+/* ── PAGES ── */
+.page{display:none;max-width:1040px;margin:0 auto;padding:0}
+.page.active{display:block}
+
+/* ── HERO ── */
+.hero{background:var(--ink);padding:3.5rem 3rem 3rem;margin-bottom:0;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg width='120' height='60' viewBox='0 0 120 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 30 Q15 10 30 30 Q45 50 60 30 Q75 10 90 30 Q105 50 120 30' fill='none' stroke='%2340C98E' stroke-width='1.5' stroke-opacity='0.12'/%3E%3Cpath d='M0 42 Q15 22 30 42 Q45 62 60 42 Q75 22 90 42 Q105 62 120 42' fill='none' stroke='%2340C98E' stroke-width='1' stroke-opacity='0.08'/%3E%3C/svg%3E");background-size:120px 60px}
+.hero-eyebrow{font-family:'Roboto',sans-serif;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--mint);margin-bottom:0.75rem;position:relative}
+.hero h1{font-size:42px;font-weight:700;color:var(--white);line-height:1.1;margin-bottom:0.75rem;position:relative;max-width:560px}
+.hero p{color:rgba(255,255,255,0.5);font-size:14px;max-width:480px;line-height:1.7;position:relative}
+.hero-accent{position:absolute;right:2.5rem;top:50%;transform:translateY(-50%);opacity:0.06;pointer-events:none}
+
+/* ── SUCCESS BANNER ── */
+.success-banner{background:var(--success-lt);border-left:3px solid var(--mint);padding:1.25rem 1.5rem;display:none;align-items:center;gap:14px;border-radius:0}
+.success-banner.show{display:flex}
+
+/* ── SECTION WRAPPER ── */
+.section{padding:2rem 3rem;background:var(--white);border-bottom:0.5px solid var(--ink-20)}
+.section:last-of-type{border-bottom:none}
+.section-title{font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--mint);font-family:'Roboto',sans-serif;font-weight:500;margin-bottom:1.25rem}
+.section h2{font-size:22px;font-weight:700;margin-bottom:1.5rem;color:var(--ink)}
+
+/* ── FORM ── */
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem}
+.fg-full{grid-column:1/-1}
+label.lbl{display:block;font-size:10px;text-transform:uppercase;letter-spacing:0.14em;color:var(--ink-60);margin-bottom:6px;font-weight:500}
+input:not([type=checkbox]):not([type=radio]),select,textarea{width:100%;padding:11px 14px;border:1px solid var(--ink-20);border-radius:var(--r);font-family:'Roboto',sans-serif;font-size:14px;background:var(--white);color:var(--ink);transition:border-color 0.2s;outline:none;-webkit-appearance:none}
+input:focus,select:focus,textarea:focus{border-color:var(--mint);box-shadow:0 0 0 3px rgba(64,201,142,0.1)}
+textarea{resize:vertical;min-height:100px}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%231A1A18' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center;padding-right:36px}
+
+/* ── PRIORITY ── */
+.priority-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.prio-opt{display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;padding:9px 16px;border:1px solid var(--ink-20);border-radius:var(--r);transition:all 0.2s;background:var(--white)}
+.prio-opt:has(input:checked){border-color:transparent}
+.prio-opt.high:has(input:checked){background:var(--danger-lt);border-color:rgba(181,41,42,0.25)}
+.prio-opt.med:has(input:checked){background:var(--warn-lt);border-color:rgba(160,92,16,0.25)}
+.prio-opt.low:has(input:checked){background:var(--success-lt);border-color:rgba(26,107,69,0.25)}
+.prio-opt input{display:none}
+.dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.dot-h{background:#C0392B}.dot-m{background:#E67E22}.dot-l{background:#27AE60}
+
+/* ── UPLOAD ── */
+.upload-zone{border:1.5px dashed var(--ink-20);border-radius:var(--r);padding:2rem;text-align:center;cursor:pointer;transition:all 0.2s;background:var(--cream)}
+.upload-zone:hover{border-color:var(--mint);background:var(--mint-lt)}
+.upload-zone i{font-size:28px;color:var(--ink-60);display:block;margin-bottom:8px}
+.upload-zone p{font-size:13px;color:var(--ink-60)}
+.photo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:8px;margin-top:12px}
+.photo-thumb{position:relative;aspect-ratio:1;border-radius:var(--r);overflow:hidden;background:var(--ink-08)}
+.photo-thumb img{width:100%;height:100%;object-fit:cover}
+.photo-thumb .rm-btn{position:absolute;top:4px;right:4px;background:rgba(26,26,24,0.72);color:#fff;border:none;border-radius:50%;width:20px;height:20px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.upload-progress{height:2px;background:var(--mint-lt);border-radius:2px;margin-top:10px;overflow:hidden;display:none}
+.upload-progress-bar{height:100%;background:var(--mint);width:0;transition:width 0.3s}
+
+/* ── SUBMIT ROW ── */
+.submit-row{padding:1.5rem 3rem;background:var(--ink);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.submit-row p{color:rgba(255,255,255,0.4);font-size:12px}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:11px 22px;border-radius:var(--r);font-family:'Roboto',sans-serif;font-size:13px;cursor:pointer;transition:all 0.18s;border:1px solid transparent;font-weight:500;white-space:nowrap;letter-spacing:0.02em}
+.btn-primary{background:var(--ink);color:#fff;border-color:var(--ink)}
+.btn-primary:hover{background:#333}
+.btn-mint{background:var(--mint);color:var(--ink);border-color:var(--mint)}
+.btn-mint:hover{background:var(--mint-dark);color:#fff}
+.btn-secondary{background:transparent;color:var(--ink);border-color:var(--ink-20)}
+.btn-secondary:hover{background:var(--ink-08)}
+.btn-danger{background:transparent;color:var(--danger);border-color:rgba(181,41,42,0.2)}
+.btn-danger:hover{background:var(--danger-lt)}
+.btn-sm{padding:6px 14px;font-size:11px;letter-spacing:0.04em}
+.btn:disabled{opacity:0.4;cursor:not-allowed}
+
+/* ── BADGES ── */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:4px;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.07em}
+.badge-nova{background:var(--danger-lt);color:var(--danger)}
+.badge-analise{background:var(--warn-lt);color:var(--warn)}
+.badge-agendada{background:var(--info-lt);color:var(--info)}
+.badge-resolvida{background:var(--success-lt);color:var(--success)}
+.badge-rejeitada{background:var(--ink-08);color:var(--ink-60)}
+
+/* ── MANAGER HEADER ── */
+.mgr-header{background:var(--ink);padding:2.5rem 3rem 2rem;position:relative;overflow:hidden}
+.mgr-header::before{content:'';position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg width='120' height='60' viewBox='0 0 120 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 30 Q15 10 30 30 Q45 50 60 30 Q75 10 90 30 Q105 50 120 30' fill='none' stroke='%2340C98E' stroke-width='1.5' stroke-opacity='0.1'/%3E%3C/svg%3E");background-size:120px 60px}
+.mgr-header h1{font-size:36px;font-weight:700;color:var(--white);position:relative;margin-bottom:4px}
+.mgr-header p{color:rgba(255,255,255,0.45);font-size:13px;position:relative}
+.mgr-header-row{display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:12px}
+
+/* ── STATS ── */
+.stats-strip{background:var(--white);border-bottom:0.5px solid var(--ink-20);padding:0 3rem}
+.stats-grid{display:grid;grid-template-columns:repeat(5,1fr)}
+.stat{padding:1.25rem 0;border-right:0.5px solid var(--ink-20)}
+.stat:last-child{border-right:none}
+.stat .lbl{font-size:10px;text-transform:uppercase;letter-spacing:0.12em;color:var(--ink-60);margin-bottom:4px;font-family:'Roboto',sans-serif}
+.stat .val{font-size:28px;font-family:'Roboto',sans-serif;font-weight:700;line-height:1}
+.stat .sub{font-size:10px;color:var(--ink-60);margin-top:2px}
+
+/* ── MANAGER BODY ── */
+.mgr-body{padding:1.75rem 3rem;background:var(--cream)}
+
+/* ── FILTERS / CHIPS ── */
+.filter-bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1rem;align-items:center}
+.filter-label{font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--ink-60);margin-right:6px;font-weight:500}
+.chip{padding:5px 14px;border-radius:4px;border:1px solid var(--ink-20);background:var(--white);font-size:11px;cursor:pointer;transition:all 0.18s;font-family:'Roboto',sans-serif;display:inline-flex;align-items:center;gap:5px;letter-spacing:0.03em}
+.chip.active{background:var(--mint);color:var(--ink);border-color:var(--mint);font-weight:500}
+.chip:hover:not(.active){background:var(--ink-08);border-color:var(--ink-20)}
+
+/* ── SEARCH ── */
+.search-box{position:relative;margin-bottom:1.25rem}
+.search-box input{padding-left:38px;background:var(--white)}
+.search-box i{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--ink-60);font-size:15px}
+
+/* ── ISSUE CARDS ── */
+.issue-card{background:var(--white);border:1px solid var(--ink-20);border-radius:var(--rlg);margin-bottom:10px;overflow:hidden;transition:border-color 0.2s}
+.issue-card:hover{border-color:var(--mint)}
+.issue-card-top{padding:1.1rem 1.4rem;cursor:pointer}
+.issue-top-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px;flex-wrap:wrap}
+.issue-title{font-weight:500;font-size:15px;flex:1;min-width:180px;font-family:'Roboto',sans-serif}
+.issue-meta{font-size:12px;color:var(--ink-60);display:flex;gap:14px;flex-wrap:wrap;margin-bottom:6px}
+.issue-meta span{display:flex;align-items:center;gap:4px}
+.issue-desc{font-size:13px;color:var(--ink-60);line-height:1.55}
+.issue-photos-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.issue-photo{width:72px;height:72px;border-radius:6px;object-fit:cover;border:1px solid var(--ink-20);cursor:pointer;transition:opacity 0.2s}
+.issue-photo:hover{opacity:0.85}
+.issue-detail{border-top:1px solid var(--ink-20);padding:1.1rem 1.4rem;background:var(--cream)}
+.note-box{background:var(--white);border-left:3px solid var(--mint);padding:10px 14px;font-size:13px;color:var(--ink-60);margin-top:10px;border-radius:0 var(--r) var(--r) 0}
+.note-box strong{color:var(--ink);display:block;font-size:10px;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:3px}
+.issue-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center}
+
+/* ── RESOLVE BOX ── */
+.resolve-box{background:var(--white);border:1px solid rgba(26,107,69,0.25);border-top:3px solid var(--mint);padding:1.25rem 1.4rem;margin-top:10px;border-radius:var(--r)}
+.resolve-box h3{font-size:13px;font-weight:500;color:var(--success);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.08em}
+.resolved-info{background:var(--success-lt);border-left:3px solid var(--mint);padding:12px 14px;margin-top:10px;border-radius:0 var(--r) var(--r) 0}
+
+/* ── MODAL ── */
+.modal-wrap{display:none;position:fixed;inset:0;background:rgba(26,26,24,0.6);z-index:400;align-items:center;justify-content:center;padding:1rem}
+.modal-wrap.open{display:flex}
+.modal{background:var(--white);border-radius:var(--rlg);padding:2rem;max-width:480px;width:100%;max-height:90vh;overflow-y:auto;border-top:3px solid var(--mint)}
+.modal h2{font-size:22px;font-weight:700;margin-bottom:1.25rem}
+.modal-btns{display:flex;gap:8px;justify-content:flex-end;margin-top:1.5rem}
+
+/* ── LOGIN ── */
+#login-page{display:flex;align-items:center;justify-content:center;min-height:calc(100vh - 64px);background:var(--cream)}
+.login-box{background:var(--white);border:1px solid var(--ink-20);border-radius:var(--rlg);border-top:3px solid var(--mint);padding:2.5rem;max-width:400px;width:90%;text-align:center}
+.login-logo{width:72px;height:72px;background:var(--ink);border-radius:var(--r);display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem;flex-direction:column;gap:2px}
+.login-logo span{font-family:'Roboto',sans-serif;font-size:20px;color:var(--white);font-weight:700;line-height:1}
+.login-logo small{font-size:8px;letter-spacing:0.2em;text-transform:uppercase;color:var(--mint);font-family:'Roboto',sans-serif}
+.login-box h2{font-size:26px;font-weight:700;margin-bottom:0.5rem}
+.login-box .sub{font-size:13px;color:var(--ink-60);margin-bottom:2rem;line-height:1.5}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--ink);color:#fff;padding:12px 18px;border-radius:var(--r);font-size:13px;z-index:999;opacity:0;transform:translateY(6px);transition:all 0.25s;pointer-events:none;display:flex;align-items:center;gap:8px;max-width:340px;border-left:3px solid var(--mint)}
+.toast.show{opacity:1;transform:translateY(0)}
+.toast.success{border-left-color:var(--mint)}
+.toast.error{border-left-color:var(--danger)}
+
+/* ── LIGHTBOX ── */
+.lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:500;align-items:center;justify-content:center}
+.lightbox.open{display:flex}
+.lightbox img{max-width:92vw;max-height:90vh;border-radius:var(--r);object-fit:contain}
+.lightbox-close{position:absolute;top:16px;right:20px;background:none;border:none;color:rgba(255,255,255,0.7);font-size:26px;cursor:pointer}
+
+/* ── MISC ── */
+.empty{text-align:center;padding:4rem 2rem;color:var(--ink-60)}
+.empty i{font-size:38px;display:block;margin-bottom:12px;opacity:0.3}
+.empty p{font-size:14px}
+hr.div{border:none;border-top:0.5px solid var(--ink-20);margin:1.25rem 0}
+.timer-badge{display:inline-flex;align-items:center;gap:5px;background:var(--info-lt);color:var(--info);padding:4px 10px;border-radius:4px;font-size:11px}
+.config-note{background:var(--warn-lt);border-left:3px solid #E67E22;padding:1rem 1.25rem;font-size:13px;color:var(--warn);display:flex;gap:10px;align-items:flex-start}
+
+@media(max-width:700px){
+  .fg{grid-template-columns:1fr}
+  .stats-grid{grid-template-columns:1fr 1fr}
+  .nav-tab{font-size:10px;padding:0 0.75rem}
+  .hero,.section,.submit-row,.mgr-header,.mgr-body,.stats-strip{padding-left:1.25rem;padding-right:1.25rem}
+  .hero h1{font-size:30px}
+  .mgr-header h1{font-size:26px}
+}
+
+/* ── RGPD ── */
+.gdpr-box{background:var(--cream);border:1px solid var(--ink-20);border-left:3px solid var(--mint);border-radius:var(--r);padding:1rem 1.25rem;margin-top:1.25rem}
+.gdpr-box p{font-size:12px;color:var(--ink-60);line-height:1.7;margin-bottom:10px}
+.gdpr-box a{color:var(--mint);text-decoration:underline;cursor:pointer}
+.consent-row{display:flex;align-items:flex-start;gap:10px;margin-top:10px}
+.consent-row input[type=checkbox]{width:16px;height:16px;margin-top:2px;flex-shrink:0;accent-color:var(--mint);cursor:pointer}
+.consent-row label{font-size:13px;color:var(--ink);cursor:pointer;line-height:1.5}
+.consent-row a{color:var(--mint);text-decoration:underline}
+.privacy-modal{max-width:680px}
+.privacy-section{margin-bottom:1.5rem}
+.privacy-section h3{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.06em;font-family:'Roboto',sans-serif}
+.privacy-section p,.privacy-section li{font-size:13px;color:var(--ink-60);line-height:1.65;margin-bottom:4px}
+.privacy-section ul{padding-left:1.25rem}
+
+/* ── TIMELINE ── */
+.timeline-box{margin-top:12px;padding-top:12px;border-top:1px dashed var(--ink-20)}
+.timeline-box h4{font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:var(--ink-60);margin-bottom:10px;font-weight:600}
+.tl-event{display:flex;gap:10px;padding:8px 0;border-bottom:0.5px solid var(--ink-08)}
+.tl-event:last-child{border-bottom:none}
+.tl-dot{width:9px;height:9px;border-radius:50%;background:var(--mint);flex-shrink:0;margin-top:5px}
+.tl-content{flex:1}
+.tl-date{font-size:11px;color:var(--ink-60);margin-bottom:2px}
+.tl-text{font-size:13px;color:var(--ink)}
+.tl-add-row{display:flex;flex-direction:column;gap:8px;margin-top:10px;background:var(--white);padding:12px;border-radius:var(--r);border:1px solid var(--ink-20)}
+.tl-add-row textarea{min-height:60px}
+.tl-notify{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink)}
+.tl-notify input{width:16px;height:16px;accent-color:var(--mint);cursor:pointer}
+
+/* ── PUBLIC TRACKING VIEW ── */
+#view-track{max-width:680px;margin:0 auto;padding:2rem 1.5rem}
+.track-header{background:var(--ink);border-radius:var(--rlg);padding:2rem;margin-bottom:1.5rem;position:relative;overflow:hidden}
+.track-header h1{color:var(--white);font-size:24px;font-weight:700;margin-bottom:6px}
+.track-header p{color:rgba(255,255,255,0.55);font-size:13px}
+.track-status-badge{margin-top:12px}
+.track-card{background:var(--white);border:1px solid var(--ink-20);border-radius:var(--rlg);padding:1.5rem;margin-bottom:1rem}
+.track-card h3{font-size:12px;text-transform:uppercase;letter-spacing:0.08em;color:var(--ink-60);margin-bottom:10px}
+.track-detail-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:0.5px solid var(--ink-08);font-size:14px}
+.track-detail-row:last-child{border-bottom:none}
+.track-detail-row .lbl-t{color:var(--ink-60)}
+
+/* ── ANALYTICS ── */
+.an-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.an-card{background:var(--white);border:1px solid var(--ink-20);border-radius:var(--rlg);padding:1.25rem 1.5rem}
+.an-card h3{font-size:13px;text-transform:uppercase;letter-spacing:0.06em;color:var(--ink-60);margin-bottom:1rem;font-weight:600}
+.an-card canvas{max-height:280px}
+.top-cat-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:0.5px solid var(--ink-08);font-size:14px}
+.top-cat-row:last-child{border-bottom:none}
+.top-cat-bar{height:6px;background:var(--mint);border-radius:3px;margin-top:4px}
+@media(max-width:700px){.an-grid{grid-template-columns:1fr}}
+
+/* ── PROJECT CARDS ── */
+.proj-card{background:var(--white);border:1px solid var(--ink-20);border-radius:var(--rlg);padding:1.25rem 1.5rem;margin-bottom:10px}
+.proj-card-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.proj-card-head h3{font-size:17px;font-weight:700}
+.proj-card-stats{font-size:13px;color:var(--ink-60);display:flex;gap:16px;flex-wrap:wrap}
+</style>
+</head>
+<body>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <button class="lightbox-close" onclick="closeLightbox()"><i class="ti ti-x"></i></button>
+  <img id="lightbox-img" src="" alt="">
+</div>
+
+<!-- NOTE MODAL -->
+<div class="modal-wrap" id="note-modal">
+  <div class="modal">
+    <h2>Nota interna</h2>
+    <label class="lbl">Observação</label>
+    <textarea id="note-text" rows="5" placeholder="Contacto com empreiteiro, data acordada, material necessário..."></textarea>
+    <div class="modal-btns">
+      <button class="btn btn-secondary" onclick="closeModal('note-modal')">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveNote()">Guardar nota</button>
+    </div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-logo">
+    <span class="logotype">SOLIVE</span>
+    <span class="subtype">Assistência Pós-Venda</span>
+  </div>
+  <button class="nav-tab active" id="tab-client" onclick="showView('client')">Reportar ocorrência</button>
+  <button class="nav-tab" id="tab-manager" onclick="tryManagerView()">Painel de gestão</button>
+  <button class="nav-tab" id="tab-analise" onclick="tryAnalyticsView()" style="display:none">Análise</button>
+  <button class="nav-tab" id="tab-projectos" onclick="tryProjectsView()" style="display:none">Projectos</button>
+  <div class="nav-user" id="nav-user" style="display:none">
+    <span id="nav-username"></span>
+    <button onclick="logout()">Sair</button>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════ PUBLIC TRACKING VIEW ═══════════════════════════════════════ -->
+<div class="page" id="view-track">
+  <div class="track-header">
+    <h1>Acompanhamento da ocorrência</h1>
+    <p>Parque Atlântico — Condomínio</p>
+    <div class="track-status-badge" id="track-status"></div>
+  </div>
+  <div id="track-content"></div>
+  <div style="text-align:center;margin-top:1.5rem">
+    <button class="btn btn-secondary btn-sm" onclick="goToClientForm()"><i class="ti ti-plus"></i> Reportar nova ocorrência</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ CLIENT VIEW ═══════════════════════════════════════ -->
+<div class="page active" id="view-client">
+  <div class="hero">
+    <div class="hero-eyebrow">Serviço pós-venda</div>
+    <h1>Reporte uma<br>ocorrência</h1>
+    <p>Descreva a patologia identificada na sua fração ou numa área comum. A nossa equipa analisará e dará seguimento brevemente.</p>
+    <svg class="hero-accent" width="220" height="220" viewBox="0 0 120 120"><path d="M0 60 Q15 40 30 60 Q45 80 60 60 Q75 40 90 60 Q105 80 120 60" fill="none" stroke="#40C98E" stroke-width="2"/><path d="M0 75 Q15 55 30 75 Q45 95 60 75 Q75 55 90 75 Q105 95 120 75" fill="none" stroke="#40C98E" stroke-width="2"/><path d="M0 45 Q15 25 30 45 Q45 65 60 45 Q75 25 90 45 Q105 65 120 45" fill="none" stroke="#40C98E" stroke-width="2"/><path d="M0 90 Q15 70 30 90 Q45 110 60 90 Q75 70 90 90 Q105 110 120 90" fill="none" stroke="#40C98E" stroke-width="1.5"/><path d="M0 30 Q15 10 30 30 Q45 50 60 30 Q75 10 90 30 Q105 50 120 30" fill="none" stroke="#40C98E" stroke-width="1.5"/></svg>
+  </div>
+
+  <div class="success-banner" id="client-success">
+    <i class="ti ti-circle-check" style="font-size:22px;color:var(--success);flex-shrink:0"></i>
+    <div style="color:var(--success)"><strong>Ocorrência submetida com sucesso.</strong><br><span style="font-size:13px">A nossa equipa irá contactá-lo brevemente.</span></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Identificação</div>
+    <h2>Os seus dados</h2>
+    <div class="fg">
+      <div class="fg-full">
+        <label class="lbl">Empreendimento *</label>
+        <select id="c-project" onchange="onProjectChange()">
+          <option value="">Selecionar empreendimento...</option>
+        </select>
+      </div>
+      <div>
+        <label class="lbl">Nome completo *</label>
+        <input id="c-name" type="text" placeholder="Ex: João Silva">
+      </div>
+      <div>
+        <label class="lbl">Email de contacto *</label>
+        <input id="c-email" type="email" placeholder="joao@email.com">
+      </div>
+      <div>
+        <label class="lbl">Telefone</label>
+        <input id="c-phone" type="tel" placeholder="+351 9xx xxx xxx">
+      </div>
+      <div>
+        <label class="lbl">Fração / Unidade *</label>
+        <select id="c-unit">
+          <option value="">Selecione primeiro o empreendimento</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Detalhe</div>
+    <h2>Descrição da ocorrência</h2>
+    <div class="fg">
+      <div>
+        <label class="lbl">Categoria da patologia *</label>
+        <select id="c-cat">
+          <option value="">Selecionar...</option>
+          <option>Infiltrações / Humidade</option>
+          <option>Fissuras / Fendas</option>
+          <option>Revestimentos — Pintura</option>
+          <option>Revestimentos — Cerâmica / Pedra</option>
+          <option>Revestimentos — Madeiras / Soalho</option>
+          <option>Caixilharia / Vidros</option>
+          <option>Instalações elétricas</option>
+          <option>Instalações de água / Saneamento</option>
+          <option>AVAC / Ventilação / Climatização</option>
+          <option>Isolamento térmico / Acústico</option>
+          <option>Equipamentos (elevador, portão, intercomunicador)</option>
+          <option>Estrutura / Betão / Argamassa</option>
+          <option>Impermeabilização</option>
+          <option>Outro</option>
+        </select>
+      </div>
+      <div>
+        <label class="lbl">Localização na fração</label>
+        <select id="c-loc">
+          <option value="">Selecionar...</option>
+          <option>Sala de estar / Jantar</option>
+          <option>Cozinha</option>
+          <option>Quarto 1 (Suite)</option>
+          <option>Quarto 2</option>
+          <option>Quarto 3</option>
+          <option>Casa de banho 1</option>
+          <option>Casa de banho 2</option>
+          <option>Varanda / Terraço privativo</option>
+          <option>Hall de entrada</option>
+          <option>Corredor</option>
+          <option>Zona técnica / Lavandaria</option>
+          <option>Toda a fração</option>
+          <option>Área comum</option>
+          <option>Outro / Não aplicável</option>
+        </select>
+      </div>
+      <div class="fg-full">
+        <label class="lbl">Descrição detalhada *</label>
+        <textarea id="c-desc" placeholder="Descreva a patologia com o máximo de detalhe possível: quando foi detetada, dimensão aproximada, se agravou, se existe risco de danos em bens pessoais..."></textarea>
+      </div>
+      <div class="fg-full">
+        <label class="lbl">Urgência percebida</label>
+        <div class="priority-row">
+          <label class="prio-opt high">
+            <input type="radio" name="prio" value="alta">
+            <span class="dot dot-h"></span> Alta — risco imediato ou danos em progressão
+          </label>
+          <label class="prio-opt med">
+            <input type="radio" name="prio" value="media" checked>
+            <span class="dot dot-m"></span> Média — sem urgência imediata
+          </label>
+          <label class="prio-opt low">
+            <input type="radio" name="prio" value="baixa">
+            <span class="dot dot-l"></span> Baixa — estética / acabamento
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Documentação</div>
+    <h2>Fotografias</h2>
+    <div class="upload-zone" id="c-upload-zone">
+      <input type="file" id="c-photo-input" accept="image/*" multiple style="display:none" onchange="handleClientPhotos(event)">
+      <i class="ti ti-camera-plus"></i>
+      <p>Clique para adicionar fotografias<br><span style="font-size:11px;opacity:0.65">JPG · PNG · HEIC — até 10 fotos por ocorrência</span></p>
+    </div>
+    <div class="photo-grid" id="c-photo-preview"></div>
+    <div class="upload-progress" id="c-progress"><div class="upload-progress-bar" id="c-progress-bar"></div></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Privacidade</div>
+    <div class="gdpr-box">
+      <p><strong>Informação sobre tratamento de dados pessoais</strong></p>
+      <p>Os seus dados pessoais (nome, email, telefone e identificação da fração) são recolhidos e tratados pela <strong>Solive, S.A.</strong>, exclusivamente para gestão e resolução de ocorrências pós-venda do Condomínio Parque Atlântico, ao abrigo do contrato de compra e venda celebrado. Os dados são conservados durante 5 anos após resolução da ocorrência. Tem direito de acesso, rectificação e eliminação contactando <a href="mailto:geral@solive.pt">geral@solive.pt</a>. Para mais informações consulte a nossa <a onclick="document.getElementById('privacy-modal').classList.add('open')">Política de Privacidade</a>.</p>
+      <div class="consent-row">
+        <input type="checkbox" id="gdpr-consent">
+        <label for="gdpr-consent">Li e aceito o tratamento dos meus dados pessoais para efeitos de gestão pós-venda, conforme descrito acima e na <a onclick="document.getElementById('privacy-modal').classList.add('open')">Política de Privacidade</a>. *</label>
+      </div>
+    </div>
+  </div>
+
+  <div class="submit-row">
+    <p>* Campos obrigatórios</p>
+    <button class="btn btn-mint" id="submit-btn" onclick="submitIssue()">
+      <i class="ti ti-send"></i> Submeter ocorrência
+    </button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ LOGIN ═══════════════════════════════════════ -->
+<div style="display:none" id="view-login">
+  <div id="login-page">
+    <div class="login-box">
+      <div class="login-logo"><span>PA</span><small>Condomínio</small></div>
+      <h2>Painel de Gestão</h2>
+      <p class="sub">Acesso restrito à equipa pós-venda<br>Parque Atlântico</p>
+      <div style="text-align:left;margin-bottom:1rem">
+        <label class="lbl">Email</label>
+        <input type="email" id="login-email" placeholder="email@groupe-legendre.com" onkeydown="if(event.key==='Enter')doLogin()">
+      </div>
+      <div style="text-align:left;margin-bottom:1.5rem">
+        <label class="lbl">Password</label>
+        <input type="password" id="login-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+      </div>
+      <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="doLogin()" id="login-btn">
+        <i class="ti ti-login"></i> Entrar
+      </button>
+      <p style="margin-top:1rem;font-size:12px;color:var(--ink-70)">Conta de gestor? Contacte o administrador.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ MANAGER VIEW ═══════════════════════════════════════ -->
+<div class="page" id="view-manager">
+  <div class="config-note" id="config-banner" style="display:none">
+    <i class="ti ti-alert-triangle" style="flex-shrink:0;margin-top:2px"></i>
+    <div><strong>Configuração necessária:</strong> Substitua as chaves do Supabase e EmailJS no <code>index.html</code>. Ver instruções no README.</div>
+  </div>
+
+  <div class="mgr-header">
+    <div class="mgr-header-row">
+      <div>
+        <div style="font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--mint);margin-bottom:8px;position:relative">Gestão interna</div>
+        <h1>Ocorrências pós-venda</h1>
+        <p>Parque Atlântico · Condomínio · Carcavelos–Parede</p>
+      </div>
+      <div style="position:relative">
+        <button class="btn btn-mint btn-sm" onclick="exportCSV()"><i class="ti ti-download"></i> Exportar Excel</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="stats-strip">
+    <div class="stats-grid" id="stats-grid">
+      <div class="stat"><div class="lbl">Total</div><div class="val" id="s-total">—</div><div class="sub">ocorrências</div></div>
+      <div class="stat"><div class="lbl">Novas</div><div class="val" id="s-nova" style="color:var(--danger)">—</div><div class="sub">por tratar</div></div>
+      <div class="stat"><div class="lbl">Em análise</div><div class="val" id="s-analise" style="color:var(--warn)">—</div><div class="sub">em curso</div></div>
+      <div class="stat"><div class="lbl">Agendadas</div><div class="val" id="s-agendada" style="color:var(--info)">—</div><div class="sub">marcadas</div></div>
+      <div class="stat"><div class="lbl">Resolvidas</div><div class="val" id="s-resolvida" style="color:var(--success)">—</div><div class="sub">fechadas</div></div>
+    </div>
+  </div>
+
+  <div class="mgr-body">
+    <div class="filter-bar">
+      <span class="filter-label">Empreendimento</span>
+      <select id="project-filter" onchange="filters.project=this.value;renderIssues()" style="width:auto;padding:6px 10px;font-size:12px">
+        <option value="all">Todos os empreendimentos</option>
+      </select>
+    </div>
+    <div class="filter-bar" id="status-chips">
+      <span class="filter-label">Estado</span>
+      <button class="chip active" data-v="all" onclick="setChip('status',this)">Todas</button>
+      <button class="chip" data-v="nova" onclick="setChip('status',this)">Novas</button>
+      <button class="chip" data-v="em_analise" onclick="setChip('status',this)">Em análise</button>
+      <button class="chip" data-v="agendada" onclick="setChip('status',this)">Agendadas</button>
+      <button class="chip" data-v="resolvida" onclick="setChip('status',this)">Resolvidas</button>
+      <button class="chip" data-v="rejeitada" onclick="setChip('status',this)">Rejeitadas</button>
+    </div>
+    <div class="filter-bar" id="prio-chips">
+      <span class="filter-label">Prioridade</span>
+      <button class="chip active" data-v="all" onclick="setChip('priority',this)">Todas</button>
+      <button class="chip" data-v="alta" onclick="setChip('priority',this)"><span class="dot dot-h"></span>Alta</button>
+      <button class="chip" data-v="media" onclick="setChip('priority',this)"><span class="dot dot-m"></span>Média</button>
+      <button class="chip" data-v="baixa" onclick="setChip('priority',this)"><span class="dot dot-l"></span>Baixa</button>
+    </div>
+    <div class="search-box">
+      <i class="ti ti-search"></i>
+      <input type="text" id="m-search" placeholder="Pesquisar por fração, nome, categoria..." oninput="renderIssues()">
+    </div>
+
+    <div id="issue-list"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ ANALYTICS VIEW ═══════════════════════════════════════ -->
+<div class="page" id="view-analise">
+  <div class="mgr-header">
+    <div class="mgr-header-row">
+      <div>
+        <div style="font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--mint);margin-bottom:8px;position:relative">Visão transversal</div>
+        <h1>Análise de ocorrências</h1>
+        <p>Todos os empreendimentos Solive</p>
+      </div>
+      <div style="position:relative">
+        <button class="btn btn-mint btn-sm" onclick="exportAnalytics()"><i class="ti ti-download"></i> Exportar Excel</button>
+      </div>
+    </div>
+  </div>
+  <div class="mgr-body">
+    <div class="an-grid">
+      <div class="an-card"><h3>Ocorrências por categoria (todos os projectos)</h3><canvas id="chart-cat"></canvas></div>
+      <div class="an-card"><h3>Ocorrências por empreendimento</h3><canvas id="chart-proj"></canvas></div>
+      <div class="an-card"><h3>Ocorrências por estado</h3><canvas id="chart-status"></canvas></div>
+      <div class="an-card"><h3>Top categorias recorrentes</h3><div id="top-cats"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ PROJECTS VIEW ═══════════════════════════════════════ -->
+<div class="page" id="view-projectos">
+  <div class="mgr-header">
+    <div class="mgr-header-row">
+      <div>
+        <div style="font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--mint);margin-bottom:8px;position:relative">Configuração</div>
+        <h1>Empreendimentos</h1>
+        <p>Criar e gerir projectos</p>
+      </div>
+      <div style="position:relative">
+        <button class="btn btn-mint btn-sm" onclick="openProjectEditor()"><i class="ti ti-plus"></i> Novo empreendimento</button>
+      </div>
+    </div>
+  </div>
+  <div class="mgr-body">
+    <div id="projects-list"></div>
+  </div>
+</div>
+
+<!-- PROJECT EDITOR MODAL -->
+<div class="modal-wrap" id="project-modal">
+  <div class="modal" style="max-width:640px">
+    <h2 id="project-modal-title">Novo empreendimento</h2>
+    <input type="hidden" id="pe-id">
+    <label class="lbl">Nome do empreendimento *</label>
+    <input type="text" id="pe-name" placeholder="Ex: L'Urbain" style="margin-bottom:1rem">
+
+    <label class="lbl">Frações</label>
+    <p style="font-size:12px;color:var(--ink-60);margin-bottom:6px">Uma por linha, no formato: <strong>Código; Tipologia; Piso</strong> &nbsp;(ex: <code>A7; T3; 2º Piso</code>)</p>
+    <textarea id="pe-units" rows="8" placeholder="A1; T3; R/C&#10;A2; T2; R/C&#10;A3; T1; 1º Piso" style="margin-bottom:1rem;font-family:monospace;font-size:13px"></textarea>
+
+    <label class="lbl">Zonas comuns</label>
+    <p style="font-size:12px;color:var(--ink-60);margin-bottom:6px">Uma por linha (ex: <code>Hall de entrada</code>)</p>
+    <textarea id="pe-commons" rows="5" placeholder="Hall de entrada&#10;Garagem&#10;Cobertura / Terraço" style="margin-bottom:1rem;font-size:13px"></textarea>
+
+    <div class="modal-btns">
+      <button class="btn btn-secondary" onclick="closeModal('project-modal')">Cancelar</button>
+      <button class="btn btn-mint" onclick="saveProject()"><i class="ti ti-check"></i> Guardar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════
+//  CONFIG — Preencher com as tuas chaves
+// ══════════════════════════════════════════════════════
+const SUPABASE_URL      = 'https://xtpeiizzpojukpdufkvz.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh0cGVpaXp6cG9qdWtwZHVma3Z6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkxMDQ5MzUsImV4cCI6MjA5NDY4MDkzNX0.7zCMsAnXK1FWVJmXVEWnNeXNoGp6xhE4YNuwQhE3sto';
+
+// EmailJS — https://emailjs.com (conta gratuita)
+// Após criar conta: Settings → API Keys → copiar Public Key
+// Em Email Services: ligar a conta Gmail → copiar Service ID
+// Em Email Templates: criar 2 templates (ver README) → copiar Template IDs
+const EMAILJS_PUBLIC_KEY    = '1J_vAQ1k7FzWiKJWO';
+const EMAILJS_SERVICE_ID    = 'service_mvsu3re';
+const EMAILJS_TPL_NEW_ISSUE = 'template_ib6psl9';  // email à Ana: nova ocorrência
+const EMAILJS_TPL_RESOLVED  = 'template_nlw44gf';   // email ao condomínio: resolvida
+
+const EMAIL_ANA   = 'ana.pereira@groupe-legendre.com';                  // recebe: nova ocorrência
+const EMAIL_CONDO = 'condoparqueatlantico@gmail.com';   // recebe: ocorrência resolvida
+
+// ── Init Supabase ──
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// ── State ──
+let issues = [];
+let projects = [];
+let clientPhotos = []; // base64 for preview; actual uploads go to Supabase Storage
+let clientPhotoFiles = [];
+let filters = { status: 'all', priority: 'all', project: 'all' };
+let activeNoteId = null;
+let currentUser = null;
+let usingLocalFallback = false;
+
+// ══════════════════════════════════════════════════════
+//  TOGGLE CARD
+// ══════════════════════════════════════════════════════
+function toggleCard(id) {
+  const detail = document.getElementById('detail-' + id);
+  if (detail) detail.style.display = detail.style.display === 'block' ? 'none' : 'block';
+}
+
+// ══════════════════════════════════════════════════════
+//  TIMELINE / EVENTS
+// ══════════════════════════════════════════════════════
+function renderTimeline(issue) {
+  const events = issue.events || [];
+  if (!events.length) {
+    return '<p style="font-size:12px;color:var(--ink-60);font-style:italic">Sem eventos registados.</p>';
+  }
+  return events.map(ev => `
+    <div class="tl-event">
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-date">${fmtDate(ev.date)}</div>
+        <div class="tl-text">${ev.text}</div>
+      </div>
+    </div>`).join('');
+}
+
+async function addEvent(id) {
+  const textEl = document.getElementById('tl-text-' + id);
+  const notifyEl = document.getElementById('tl-notify-' + id);
+  const text = textEl.value.trim();
+  const notify = notifyEl.checked;
+  if (!text) { toast('Escreva o evento a registar.', 'error'); return; }
+
+  const issue = issues.find(x => x.id == id);
+  if (!issue) return;
+
+  const events = issue.events || [];
+  events.push({ date: new Date().toISOString(), text });
+
+  if (usingLocalFallback) {
+    const local = JSON.parse(localStorage.getItem('pa_issues') || '[]');
+    const i = local.find(x => x.id == id);
+    if (i) { i.events = events; localStorage.setItem('pa_issues', JSON.stringify(local)); }
+  } else {
+    await sb.from('issues').update({ events }).eq('id', id);
+  }
+
+  // Notify client
+  if (notify && issue.client_email) {
+    const trackUrl = window.location.origin + window.location.pathname + '?track=' + id;
+    try {
+      await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TPL_RESOLVED, {
+        to_email:    issue.client_email,
+        client:      issue.client_name,
+        subject_line:'Atualização sobre a sua ocorrência',
+        message_body:'Há uma nova atualização sobre a ocorrência que reportou:\n\n"' + text + '"\n\nConsulte o histórico completo da sua ocorrência no link abaixo.',
+        unit:        issue.unit,
+        category:    issue.category,
+        extra_info:  'Acompanhe a sua ocorrência aqui: ' + trackUrl
+      });
+      toast('Evento adicionado. Cliente notificado.', 'success');
+    } catch(e) {
+      console.warn('EmailJS error (event):', e);
+      toast('Evento adicionado. (Falha ao notificar)', 'error');
+    }
+  } else {
+    toast('Evento adicionado.', 'success');
+  }
+
+  textEl.value = '';
+  await loadIssues();
+  // keep card open
+  setTimeout(() => { const d = document.getElementById('detail-' + id); if (d) d.style.display = 'block'; }, 100);
+}
+
+// ══════════════════════════════════════════════════════
+//  BOOT
+// ══════════════════════════════════════════════════════
+async function boot() {
+  // Check if Supabase is configured
+  if (SUPABASE_URL === 'YOUR_SUPABASE_URL') {
+    usingLocalFallback = true;
+    document.getElementById('config-banner').style.display = 'flex';
+    loadLocalIssues();
+  }
+
+  // Init EmailJS
+  if (EMAILJS_PUBLIC_KEY !== 'YOUR_EMAILJS_PUBLIC_KEY') {
+    emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+  }
+
+  // Setup upload zone click
+  document.getElementById('c-upload-zone').addEventListener('click', () => {
+    document.getElementById('c-photo-input').click();
+  });
+
+  // Check existing session
+  if (!usingLocalFallback) {
+    const { data: { session } } = await sb.auth.getSession();
+    if (session) {
+      currentUser = session.user;
+      updateNavUser();
+    }
+  }
+
+  // Load projects and populate the client form selector
+  await loadProjects();
+  populateProjectSelector();
+
+  // Check for ?track= param → public tracking view
+  const params = new URLSearchParams(window.location.search);
+  const trackId = params.get('track');
+  if (trackId) {
+    showTracking(trackId);
+  }
+}
+
+// ══════════════════════════════════════════════════════
+//  PUBLIC TRACKING
+// ══════════════════════════════════════════════════════
+async function showTracking(id) {
+  await loadProjects();
+  // hide nav tabs + other views
+  document.querySelectorAll('.page, #view-login').forEach(el => el.classList.remove('active'));
+  document.getElementById('view-track').classList.add('active');
+  document.querySelectorAll('.nav-tab').forEach(el => el.style.display = 'none');
+
+  let issue = null;
+  if (usingLocalFallback) {
+    const local = JSON.parse(localStorage.getItem('pa_issues') || '[]');
+    issue = local.find(x => x.id == id);
+  } else {
+    const { data } = await sb.from('issues').select('*').eq('id', id).single();
+    issue = data;
+  }
+
+  const content = document.getElementById('track-content');
+  const statusEl = document.getElementById('track-status');
+
+  if (!issue) {
+    statusEl.innerHTML = '';
+    content.innerHTML = '<div class="track-card"><p style="text-align:center;color:var(--ink-60)">Ocorrência não encontrada. Verifique o link.</p></div>';
+    return;
+  }
+
+  statusEl.innerHTML = statusBadge(issue.status);
+
+  const events = issue.events || [];
+  const timelineHtml = events.length
+    ? events.map(ev => `
+        <div class="tl-event">
+          <div class="tl-dot"></div>
+          <div class="tl-content">
+            <div class="tl-date">${fmtDate(ev.date)}</div>
+            <div class="tl-text">${ev.text}</div>
+          </div>
+        </div>`).join('')
+    : '<p style="font-size:13px;color:var(--ink-60);font-style:italic">Ainda não existem atualizações registadas.</p>';
+
+  const resolvedHtml = issue.status === 'resolvida' ? `
+    <div class="track-card" style="border-left:3px solid var(--mint)">
+      <h3><i class="ti ti-circle-check" style="vertical-align:-2px"></i> Ocorrência resolvida</h3>
+      <div class="track-detail-row"><span class="lbl-t">Data de resolução</span><span>${fmtDate(issue.resolved_at)}</span></div>
+      ${issue.resolve_notes ? `<div style="margin-top:8px;font-size:14px">${issue.resolve_notes}</div>` : ''}
+    </div>` : '';
+
+  content.innerHTML = `
+    <div class="track-card">
+      <h3>Detalhes da ocorrência</h3>
+      <div class="track-detail-row"><span class="lbl-t">Empreendimento</span><span>${projectName(issue.project_id)}</span></div>
+      <div class="track-detail-row"><span class="lbl-t">Fração</span><span>${issue.unit}</span></div>
+      <div class="track-detail-row"><span class="lbl-t">Categoria</span><span>${issue.category}</span></div>
+      ${issue.location ? `<div class="track-detail-row"><span class="lbl-t">Localização</span><span>${issue.location}</span></div>` : ''}
+      <div class="track-detail-row"><span class="lbl-t">Data de registo</span><span>${fmtDate(issue.created_at)}</span></div>
+      <div style="margin-top:12px;font-size:14px;color:var(--ink-60)">${issue.description || ''}</div>
+    </div>
+
+    <div class="track-card">
+      <h3>Histórico de acompanhamento</h3>
+      ${timelineHtml}
+    </div>
+
+    ${resolvedHtml}
+  `;
+}
+
+function goToClientForm() {
+  // remove track param and reload clean
+  window.location.href = window.location.origin + window.location.pathname;
+}
+
+// ══════════════════════════════════════════════════════
+//  VIEW HANDLERS (analytics, projects)
+// ══════════════════════════════════════════════════════
+function tryAnalyticsView() {
+  if (usingLocalFallback || currentUser) { showView('analise'); renderAnalytics(); }
+  else showView('login');
+}
+function tryProjectsView() {
+  if (usingLocalFallback || currentUser) { showView('projectos'); renderProjectsList(); }
+  else showView('login');
+}
+
+// ══════════════════════════════════════════════════════
+//  ANALYTICS
+// ══════════════════════════════════════════════════════
+let charts = {};
+async function renderAnalytics() {
+  await loadProjects();
+  if (usingLocalFallback) loadLocalIssues();
+  else {
+    const { data } = await sb.from('issues').select('*');
+    issues = data || [];
+  }
+
+  const palette = ['#0065C2','#40C98E','#E67E22','#9B59B6','#1ABC9C','#E74C3C','#34495E','#F1C40F','#16A085','#7F8C8D','#2980B9','#C0392B','#27AE60','#8E44AD'];
+
+  // By category
+  const byCat = {};
+  issues.forEach(i => { byCat[i.category] = (byCat[i.category]||0)+1; });
+  const catSorted = Object.entries(byCat).sort((a,b)=>b[1]-a[1]);
+  drawChart('chart-cat', 'bar', catSorted.map(x=>x[0]), catSorted.map(x=>x[1]), palette);
+
+  // By project
+  const byProj = {};
+  issues.forEach(i => { const n = projectName(i.project_id); byProj[n]=(byProj[n]||0)+1; });
+  const projEntries = Object.entries(byProj);
+  drawChart('chart-proj', 'doughnut', projEntries.map(x=>x[0]), projEntries.map(x=>x[1]), palette);
+
+  // By status
+  const statusLbl = {nova:'Nova',em_analise:'Em análise',agendada:'Agendada',resolvida:'Resolvida',rejeitada:'Rejeitada'};
+  const byStatus = {};
+  issues.forEach(i => { const s = statusLbl[i.status]||i.status; byStatus[s]=(byStatus[s]||0)+1; });
+  const statusEntries = Object.entries(byStatus);
+  drawChart('chart-status', 'doughnut', statusEntries.map(x=>x[0]), statusEntries.map(x=>x[1]), palette);
+
+  // Top recurring categories
+  const total = issues.length || 1;
+  const topHtml = catSorted.slice(0,8).map(([cat,n]) => `
+    <div class="top-cat-row" style="display:block">
+      <div style="display:flex;justify-content:space-between"><span>${cat}</span><strong>${n}</strong></div>
+      <div class="top-cat-bar" style="width:${(n/catSorted[0][1]*100)}%"></div>
+    </div>`).join('');
+  document.getElementById('top-cats').innerHTML = topHtml || '<p style="color:var(--ink-60)">Sem dados.</p>';
+}
+
+function drawChart(id, type, labels, data, palette) {
+  const ctx = document.getElementById(id);
+  if (!ctx) return;
+  if (charts[id]) charts[id].destroy();
+  charts[id] = new Chart(ctx, {
+    type,
+    data: { labels, datasets: [{ data, backgroundColor: palette, borderWidth: 0 }] },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: type !== 'bar', position: 'bottom', labels:{font:{family:'Roboto'},boxWidth:12} } },
+      scales: type === 'bar' ? { y: { beginAtZero: true, ticks: { precision: 0 } } } : {}
+    }
+  });
+}
+
+function exportAnalytics() {
+  if (!issues.length) { toast('Sem dados para exportar.', 'error'); return; }
+  const byCatProj = {};
+  issues.forEach(i => {
+    const key = projectName(i.project_id) + '|||' + i.category;
+    byCatProj[key] = (byCatProj[key]||0)+1;
+  });
+  const rows = Object.entries(byCatProj).map(([k,n]) => {
+    const [proj,cat] = k.split('|||');
+    return { 'Empreendimento': proj, 'Categoria': cat, 'Nº ocorrências': n };
+  }).sort((a,b)=> a.Empreendimento.localeCompare(b.Empreendimento) || b['Nº ocorrências']-a['Nº ocorrências']);
+  const ws = XLSX.utils.json_to_sheet(rows);
+  ws['!cols'] = [{wch:24},{wch:36},{wch:14}];
+  ws['!autofilter'] = { ref: XLSX.utils.encode_range({s:{r:0,c:0},e:{r:0,c:2}}) };
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Análise');
+  XLSX.writeFile(wb, `solive_analise_${new Date().toISOString().slice(0,10)}.xlsx`);
+  toast('Análise exportada.');
+}
+
+// ══════════════════════════════════════════════════════
+//  PROJECT CRUD
+// ══════════════════════════════════════════════════════
+function renderProjectsList() {
+  loadProjects().then(() => {
+    const container = document.getElementById('projects-list');
+    if (!projects.length) {
+      container.innerHTML = '<div class="empty"><i class="ti ti-building-skyscraper"></i><p>Ainda não existem empreendimentos. Crie o primeiro.</p></div>';
+      return;
+    }
+    container.innerHTML = projects.map(p => {
+      const nIssues = issues.filter(i => String(i.project_id) === String(p.id)).length;
+      return `
+      <div class="proj-card">
+        <div class="proj-card-head">
+          <h3>${p.name}</h3>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-secondary btn-sm" onclick="openProjectEditor('${p.id}')"><i class="ti ti-pencil"></i> Editar</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteProject('${p.id}')"><i class="ti ti-trash"></i></button>
+          </div>
+        </div>
+        <div class="proj-card-stats">
+          <span><i class="ti ti-home" style="font-size:13px;vertical-align:-2px"></i> ${(p.units||[]).length} frações</span>
+          <span><i class="ti ti-stairs" style="font-size:13px;vertical-align:-2px"></i> ${(p.commons||[]).length} zonas comuns</span>
+          <span><i class="ti ti-clipboard-list" style="font-size:13px;vertical-align:-2px"></i> ${nIssues} ocorrências</span>
+        </div>
+      </div>`;
+    }).join('');
+  });
+}
+
+function openProjectEditor(id) {
+  document.getElementById('pe-id').value = id || '';
+  document.getElementById('project-modal-title').textContent = id ? 'Editar empreendimento' : 'Novo empreendimento';
+  if (id) {
+    const p = projects.find(x => String(x.id) === String(id));
+    document.getElementById('pe-name').value = p.name || '';
+    document.getElementById('pe-units').value = (p.units||[]).map(u => `${u.code}; ${u.type||''}; ${u.floor||''}`).join('\n');
+    document.getElementById('pe-commons').value = (p.commons||[]).join('\n');
+  } else {
+    document.getElementById('pe-name').value = '';
+    document.getElementById('pe-units').value = '';
+    document.getElementById('pe-commons').value = '';
+  }
+  document.getElementById('project-modal').classList.add('open');
+}
+
+function parseUnits(text) {
+  return text.split('\n').map(l => l.trim()).filter(Boolean).map(line => {
+    const parts = line.split(';').map(s => s.trim());
+    return { code: parts[0]||'', type: parts[1]||'', floor: parts[2]||'' };
+  }).filter(u => u.code);
+}
+
+async function saveProject() {
+  const id = document.getElementById('pe-id').value;
+  const name = document.getElementById('pe-name').value.trim();
+  const units = parseUnits(document.getElementById('pe-units').value);
+  const commons = document.getElementById('pe-commons').value.split('\n').map(s=>s.trim()).filter(Boolean);
+  if (!name) { toast('Indique o nome do empreendimento.', 'error'); return; }
+
+  const record = { name, units, commons, active: true };
+
+  if (usingLocalFallback) {
+    let local = JSON.parse(localStorage.getItem('pa_projects') || '[]');
+    if (id) { const p = local.find(x=>String(x.id)===String(id)); if(p) Object.assign(p, record); }
+    else { record.id = Date.now(); local.push(record); }
+    localStorage.setItem('pa_projects', JSON.stringify(local));
+  } else {
+    if (id) await sb.from('projects').update(record).eq('id', id);
+    else await sb.from('projects').insert([record]);
+  }
+
+  closeModal('project-modal');
+  await loadProjects();
+  populateProjectSelector();
+  renderProjectsList();
+  toast('Empreendimento guardado.', 'success');
+}
+
+async function deleteProject(id) {
+  const nIssues = issues.filter(i => String(i.project_id) === String(id)).length;
+  if (nIssues > 0) { toast('Não é possível eliminar: o empreendimento tem ocorrências associadas.', 'error'); return; }
+  if (!confirm('Eliminar este empreendimento?')) return;
+  if (usingLocalFallback) {
+    const local = JSON.parse(localStorage.getItem('pa_projects') || '[]').filter(x=>String(x.id)!==String(id));
+    localStorage.setItem('pa_projects', JSON.stringify(local));
+  } else {
+    await sb.from('projects').delete().eq('id', id);
+  }
+  await loadProjects();
+  populateProjectSelector();
+  renderProjectsList();
+  toast('Empreendimento eliminado.');
+}
+
+// ══════════════════════════════════════════════════════
+//  PROJECTS
+// ══════════════════════════════════════════════════════
+async function loadProjects() {
+  if (usingLocalFallback) {
+    projects = JSON.parse(localStorage.getItem('pa_projects') || '[]');
+    return;
+  }
+  const { data, error } = await sb.from('projects').select('*').order('name');
+  if (!error) projects = data || [];
+}
+
+function unitLabel(u) {
+  // builds "A7 — T3 · 2º Piso" from {code,type,floor}
+  let s = u.code;
+  if (u.type) s += ' — ' + u.type;
+  if (u.floor) s += ' · ' + u.floor;
+  return s;
+}
+
+function populateProjectSelector() {
+  const sel = document.getElementById('c-project');
+  if (!sel) return;
+  const active = projects.filter(p => p.active !== false);
+  sel.innerHTML = '<option value="">Selecionar empreendimento...</option>' +
+    active.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+}
+
+function onProjectChange() {
+  const pid = document.getElementById('c-project').value;
+  const unitSel = document.getElementById('c-unit');
+  const project = projects.find(p => String(p.id) === String(pid));
+  if (!project) {
+    unitSel.innerHTML = '<option value="">Selecione primeiro o empreendimento</option>';
+    return;
+  }
+  let html = '<option value="">Selecionar...</option>';
+  const units = project.units || [];
+  if (units.length) {
+    html += '<optgroup label="Frações">';
+    html += units.map(u => `<option>${unitLabel(u)}</option>`).join('');
+    html += '</optgroup>';
+  }
+  const commons = project.commons || [];
+  if (commons.length) {
+    html += '<optgroup label="Áreas Comuns">';
+    html += commons.map(z => `<option>AC — ${z}</option>`).join('');
+    html += '</optgroup>';
+  }
+  unitSel.innerHTML = html;
+}
+
+function projectName(id) {
+  const p = projects.find(x => String(x.id) === String(id));
+  return p ? p.name : '—';
+}
+
+// ══════════════════════════════════════════════════════
+//  NAV
+// ══════════════════════════════════════════════════════
+function showView(v) {
+  document.querySelectorAll('.page, #view-login').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
+  const el = document.getElementById('view-' + v);
+  if (el) { el.classList.add('active'); el.style.display = v === 'login' ? 'block' : ''; }
+  const tab = document.getElementById('tab-' + v);
+  if (tab) tab.classList.add('active');
+  if (v === 'manager') { loadIssues(); }
+}
+
+function showManagerTabs() {
+  ['tab-analise','tab-projectos'].forEach(id => {
+    const t = document.getElementById(id);
+    if (t) t.style.display = '';
+  });
+}
+
+function tryManagerView() {
+  document.getElementById('tab-manager').classList.add('active');
+  document.getElementById('tab-client').classList.remove('active');
+  if (usingLocalFallback || currentUser) {
+    showView('manager');
+  } else {
+    showView('login');
+  }
+}
+
+function updateNavUser() {
+  if (!currentUser && !usingLocalFallback) return;
+  const el = document.getElementById('nav-user');
+  el.style.display = 'flex';
+  document.getElementById('nav-username').textContent = usingLocalFallback ? 'Modo demo' : (currentUser.email || '');
+  showManagerTabs();
+}
+
+// ══════════════════════════════════════════════════════
+//  AUTH
+// ══════════════════════════════════════════════════════
+async function doLogin() {
+  if (usingLocalFallback) { currentUser = { email: 'demo' }; updateNavUser(); showView('manager'); return; }
+  const email = document.getElementById('login-email').value.trim();
+  const pass = document.getElementById('login-pass').value;
+  if (!email || !pass) { toast('Preencha email e password.', 'error'); return; }
+  const btn = document.getElementById('login-btn');
+  btn.disabled = true; btn.innerHTML = '<i class="ti ti-loader"></i> A entrar...';
+  const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
+  btn.disabled = false; btn.innerHTML = '<i class="ti ti-login"></i> Entrar';
+  if (error) { toast('Credenciais inválidas.', 'error'); return; }
+  currentUser = data.user;
+  updateNavUser();
+  showView('manager');
+}
+
+async function logout() {
+  if (!usingLocalFallback) await sb.auth.signOut();
+  currentUser = null;
+  document.getElementById('nav-user').style.display = 'none';
+  ['tab-analise','tab-projectos'].forEach(id => { const t=document.getElementById(id); if(t) t.style.display='none'; });
+  showView('client');
+}
+
+// ══════════════════════════════════════════════════════
+//  CLIENT — PHOTO HANDLING
+// ══════════════════════════════════════════════════════
+function handleClientPhotos(e) {
+  const files = Array.from(e.target.files).slice(0, 10 - clientPhotos.length);
+  files.forEach(f => {
+    clientPhotoFiles.push(f);
+    const reader = new FileReader();
+    reader.onload = ev => {
+      clientPhotos.push(ev.target.result);
+      renderClientPhotoPreview();
+    };
+    reader.readAsDataURL(f);
+  });
+  e.target.value = '';
+}
+
+function renderClientPhotoPreview() {
+  const grid = document.getElementById('c-photo-preview');
+  grid.innerHTML = clientPhotos.map((src, i) => `
+    <div class="photo-thumb">
+      <img src="${src}">
+      <button class="rm-btn" onclick="removeClientPhoto(${i})"><i class="ti ti-x" style="font-size:10px"></i></button>
+    </div>`).join('');
+}
+
+function removeClientPhoto(i) {
+  clientPhotos.splice(i, 1);
+  clientPhotoFiles.splice(i, 1);
+  renderClientPhotoPreview();
+}
+
+// ══════════════════════════════════════════════════════
+//  CLIENT — SUBMIT
+// ══════════════════════════════════════════════════════
+async function submitIssue() {
+  const name = document.getElementById('c-name').value.trim();
+  const email = document.getElementById('c-email').value.trim();
+  const phone = document.getElementById('c-phone').value.trim();
+  const projectId = document.getElementById('c-project').value;
+  const unit = document.getElementById('c-unit').value;
+  const cat = document.getElementById('c-cat').value;
+  const loc = document.getElementById('c-loc').value;
+  const desc = document.getElementById('c-desc').value.trim();
+  const priority = document.querySelector('input[name=prio]:checked')?.value || 'media';
+
+  const consent = document.getElementById('gdpr-consent').checked;
+  if (!projectId || !name || !email || !unit || !cat || !desc) {
+    toast('Preencha os campos obrigatórios (*), incluindo o empreendimento.', 'error'); return;
+  }
+  if (!consent) {
+    toast('Deve aceitar o tratamento de dados pessoais para continuar.', 'error'); return;
+  }
+
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true; btn.innerHTML = '<i class="ti ti-loader"></i> A submeter...';
+
+  const issue = {
+    project_id: projectId ? Number(projectId) : null,
+    client_name: name, client_email: email, client_phone: phone,
+    unit, category: cat, location: loc, description: desc,
+    priority, status: 'nova',
+    created_at: new Date().toISOString(),
+    photo_urls: [], notes: '', resolve_notes: '', resolve_photo_urls: [],
+    resolved_at: null, duration_hours: null, events: []
+  };
+
+  if (usingLocalFallback) {
+    issue.id = Date.now();
+    issue.photo_urls = [...clientPhotos];
+    const local = JSON.parse(localStorage.getItem('pa_issues') || '[]');
+    local.unshift(issue);
+    localStorage.setItem('pa_issues', JSON.stringify(local));
+    onSubmitSuccess();
+  } else {
+    // Upload photos first
+    const photoUrls = [];
+    const prog = document.getElementById('c-progress');
+    const bar = document.getElementById('c-progress-bar');
+    if (clientPhotoFiles.length) {
+      prog.style.display = 'block';
+      for (let i = 0; i < clientPhotoFiles.length; i++) {
+        const f = clientPhotoFiles[i];
+        const path = `issues/${Date.now()}_${i}_${f.name.replace(/\s/g,'_')}`;
+        const { data, error } = await sb.storage.from('photos').upload(path, f, { upsert: true });
+        if (!error) {
+          const { data: url } = sb.storage.from('photos').getPublicUrl(path);
+          photoUrls.push(url.publicUrl);
+        }
+        bar.style.width = ((i + 1) / clientPhotoFiles.length * 100) + '%';
+      }
+    }
+    issue.photo_urls = photoUrls;
+    const { data, error } = await sb.from('issues').insert([issue]).select().single();
+    if (error) { toast('Erro ao submeter. Tente novamente.', 'error'); btn.disabled = false; btn.innerHTML = '<i class="ti ti-send"></i> Submeter ocorrência'; return; }
+    // Email à Ana: nova ocorrência
+    try {
+      await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TPL_NEW_ISSUE, {
+        to_email:   EMAIL_ANA,
+        to_name:    'Ana Pereira',
+        unit:       issue.unit,
+        client:     issue.client_name,
+        client_email: issue.client_email,
+        client_phone: issue.client_phone || '—',
+        category:   issue.category,
+        location:   issue.location || '—',
+        priority:   {alta:'Alta',media:'Média',baixa:'Baixa'}[issue.priority],
+        description: issue.description,
+        photos:     (issue.photo_urls||[]).length + ' foto(s)',
+        date:       new Date().toLocaleDateString('pt-PT')
+      });
+    } catch(e) { console.warn('EmailJS error (new issue):', e); }
+    onSubmitSuccess();
+  }
+  btn.disabled = false; btn.innerHTML = '<i class="ti ti-send"></i> Submeter ocorrência';
+}
+
+function onSubmitSuccess() {
+  const banner = document.getElementById('client-success');
+  banner.style.display = 'flex';
+  setTimeout(() => banner.style.display = 'none', 8000);
+  ['c-name','c-email','c-phone','c-desc'].forEach(id => document.getElementById(id).value = '');
+  ['c-project','c-unit','c-cat','c-loc'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('c-unit').innerHTML = '<option value="">Selecione primeiro o empreendimento</option>';
+  document.querySelector('input[name=prio][value=media]').checked = true;
+  clientPhotos = []; clientPhotoFiles = [];
+  renderClientPhotoPreview();
+  document.getElementById('c-progress').style.display = 'none';
+  document.getElementById('c-progress-bar').style.width = '0';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  toast('Ocorrência submetida com sucesso!', 'success');
+}
+
+// ══════════════════════════════════════════════════════
+//  MANAGER — LOAD ISSUES
+// ══════════════════════════════════════════════════════
+function loadLocalIssues() {
+  issues = JSON.parse(localStorage.getItem('pa_issues') || '[]');
+}
+
+async function loadIssues() {
+  await loadProjects();
+  if (usingLocalFallback) {
+    loadLocalIssues();
+    populateProjectFilter();
+    renderStats();
+    renderIssues();
+    return;
+  }
+  const { data, error } = await sb.from('issues').select('*').order('created_at', { ascending: false });
+  if (error) { toast('Erro ao carregar ocorrências.', 'error'); return; }
+  issues = data || [];
+  populateProjectFilter();
+  renderStats();
+  renderIssues();
+}
+
+function populateProjectFilter() {
+  const sel = document.getElementById('project-filter');
+  if (!sel) return;
+  const current = filters.project;
+  sel.innerHTML = '<option value="all">Todos os empreendimentos</option>' +
+    projects.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+  sel.value = current;
+}
+
+// ══════════════════════════════════════════════════════
+//  MANAGER — RENDER
+// ══════════════════════════════════════════════════════
+function renderStats() {
+  document.getElementById('s-total').textContent = issues.length;
+  document.getElementById('s-nova').textContent = issues.filter(i => i.status === 'nova').length;
+  document.getElementById('s-analise').textContent = issues.filter(i => i.status === 'em_analise').length;
+  document.getElementById('s-agendada').textContent = issues.filter(i => i.status === 'agendada').length;
+  document.getElementById('s-resolvida').textContent = issues.filter(i => i.status === 'resolvida').length;
+}
+
+function setChip(type, el) {
+  const group = type === 'status' ? 'status-chips' : 'prio-chips';
+  document.querySelectorAll(`#${group} .chip`).forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  filters[type] = el.dataset.v;
+  renderIssues();
+}
+
+function renderIssues() {
+  const q = (document.getElementById('m-search')?.value || '').toLowerCase();
+  let list = issues.filter(i => {
+    if (filters.status !== 'all' && i.status !== filters.status) return false;
+    if (filters.priority !== 'all' && i.priority !== filters.priority) return false;
+    if (filters.project !== 'all' && String(i.project_id) !== String(filters.project)) return false;
+    if (q && !`${i.unit}${i.client_name}${i.category}${i.description}${i.location}${projectName(i.project_id)}`.toLowerCase().includes(q)) return false;
+    return true;
+  });
+
+  const container = document.getElementById('issue-list');
+  if (!list.length) {
+    container.innerHTML = `<div class="empty"><i class="ti ti-clipboard-x"></i><p>Nenhuma ocorrência encontrada.</p></div>`;
+    return;
+  }
+  container.innerHTML = list.map(issue => renderIssueCard(issue)).join('');
+}
+
+function statusBadge(s) {
+  const map = { nova: ['badge-nova','Nova'], em_analise: ['badge-analise','Em análise'], agendada: ['badge-agendada','Agendada'], resolvida: ['badge-resolvida','Resolvida'], rejeitada: ['badge-rejeitada','Rejeitada'] };
+  const [cls, lbl] = map[s] || ['badge-rejeitada', s];
+  return `<span class="badge ${cls}">${lbl}</span>`;
+}
+
+function prioBadge(p) {
+  const map = { alta: 'dot-h', media: 'dot-m', baixa: 'dot-l' };
+  const lbl = { alta: 'Alta', media: 'Média', baixa: 'Baixa' };
+  return `<span style="display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--ink-70)"><span class="dot ${map[p]||'dot-l'}"></span>${lbl[p]||p}</span>`;
+}
+
+function fmtDate(iso) {
+  if (!iso) return '—';
+  return new Date(iso).toLocaleDateString('pt-PT', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+}
+
+function fmtDuration(h) {
+  if (!h) return '—';
+  if (h < 24) return `${h}h`;
+  return `${Math.floor(h/24)}d ${h%24}h`;
+}
+
+function renderIssueCard(issue) {
+  const photos = (issue.photo_urls || []).map(url =>
+    `<img class="issue-photo" src="${url}" onclick="openLightbox('${url}')" title="Ver foto">`
+  ).join('');
+
+  const resolvePhotos = (issue.resolve_photo_urls || []).map(url =>
+    `<img class="issue-photo" src="${url}" onclick="openLightbox('${url}')" title="Ver foto resolução">`
+  ).join('');
+
+  const resolvedInfo = issue.status === 'resolvida' ? `
+    <div style="background:var(--success-lt);border:0.5px solid rgba(26,107,69,0.25);border-radius:8px;padding:10px 12px;margin-top:10px">
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:var(--success);margin-bottom:6px;font-weight:500">
+        <i class="ti ti-circle-check" style="font-size:14px;vertical-align:-2px"></i> Resolvida em ${fmtDate(issue.resolved_at)}
+        ${issue.duration_hours ? `<span class="timer-badge" style="margin-left:8px"><i class="ti ti-clock"></i> ${fmtDuration(issue.duration_hours)}</span>` : ''}
+      </div>
+      ${issue.resolve_notes ? `<p style="font-size:13px;color:var(--success)">${issue.resolve_notes}</p>` : ''}
+      ${resolvePhotos ? `<div class="issue-photos" style="margin-top:8px">${resolvePhotos}</div>` : ''}
+    </div>` : '';
+
+  return `
+  <div class="issue-card" id="ic-${issue.id}">
+  <div class="issue-card-top" onclick="toggleCard('${issue.id}')">
+    <div class="issue-top-row">
+      <div class="issue-title">${issue.category}${issue.location ? ' — ' + issue.location : ''}</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+        ${statusBadge(issue.status)} ${prioBadge(issue.priority)}
+      </div>
+    </div>
+    <div class="issue-meta">
+      <span><i class="ti ti-map-pin" style="font-size:13px"></i> ${projectName(issue.project_id)}</span>
+      <span><i class="ti ti-building" style="font-size:13px"></i> ${issue.unit}</span>
+      <span><i class="ti ti-user" style="font-size:13px"></i> ${issue.client_name}</span>
+      ${issue.client_email ? `<span><i class="ti ti-mail" style="font-size:13px"></i> ${issue.client_email}</span>` : ''}
+      ${issue.client_phone ? `<span><i class="ti ti-phone" style="font-size:13px"></i> ${issue.client_phone}</span>` : ''}
+      <span><i class="ti ti-calendar" style="font-size:13px"></i> ${fmtDate(issue.created_at)}</span>
+      ${issue.photo_urls?.length ? `<span><i class="ti ti-photo" style="font-size:13px"></i> ${issue.photo_urls.length} foto(s)</span>` : ''}
+    </div>
+    <div class="issue-desc">${issue.description||''}</div>
+    ${photos ? `<div class="issue-photos-row">${photos}</div>` : ''}
+    ${issue.notes ? `<div class="note-box"><strong><i class="ti ti-note"></i> Nota interna</strong>${issue.notes}</div>` : ''}
+    ${resolvedInfo}
+
+  </div>
+  <div class="issue-detail" id="detail-${issue.id}" style="display:none">
+    <div class="issue-actions">
+      <select style="padding:6px 10px;font-size:12px;width:auto;flex:none;min-width:130px" onchange="changeStatus(${JSON.stringify(issue.id)},this.value)" onclick="event.stopPropagation()">
+        ${['nova','em_analise','agendada','resolvida','rejeitada'].map(s => `<option value="${s}"${issue.status===s?' selected':''}>${{nova:'Nova',em_analise:'Em análise',agendada:'Agendada',resolvida:'Resolvida',rejeitada:'Rejeitada'}[s]}</option>`).join('')}
+      </select>
+      <button class="btn btn-secondary btn-sm" onclick="openNote(${JSON.stringify(issue.id)})"><i class="ti ti-pencil"></i> Nota</button>
+      ${issue.status !== 'resolvida' ? `<button class="btn btn-mint btn-sm" onclick="openResolvePanel(${JSON.stringify(issue.id)})"><i class="ti ti-circle-check"></i> Fechar ocorrência</button>` : ''}
+      <button class="btn btn-danger btn-sm" onclick="deleteIssue(${JSON.stringify(issue.id)})"><i class="ti ti-trash"></i></button>
+    </div>
+
+    <div class="timeline-box">
+      <h4><i class="ti ti-timeline" style="font-size:13px;vertical-align:-2px"></i> Histórico de acompanhamento</h4>
+      <div id="tl-list-${issue.id}">
+        ${renderTimeline(issue)}
+      </div>
+      <div class="tl-add-row">
+        <textarea id="tl-text-${issue.id}" placeholder="Ex: Visita inicial do empreiteiro agendada para 20/06. Intervenção planeada para 27/06..." onclick="event.stopPropagation()"></textarea>
+        <label class="tl-notify"><input type="checkbox" id="tl-notify-${issue.id}" checked onclick="event.stopPropagation()"> Notificar cliente por email</label>
+        <button class="btn btn-mint btn-sm" style="align-self:flex-start" onclick="event.stopPropagation();addEvent(${JSON.stringify(issue.id)})"><i class="ti ti-plus"></i> Adicionar evento</button>
+      </div>
+    </div>
+
+    <div id="resolve-${issue.id}" style="display:none">
+      <div class="resolve-box">
+        <h3><i class="ti ti-circle-check"></i> Fechar ocorrência</h3>
+        <div class="fg" style="margin-bottom:10px">
+          <div class="fg-full">
+            <label class="lbl">Descrição das medidas corretivas *</label>
+            <textarea id="rn-${issue.id}" rows="3" placeholder="Descreva o trabalho realizado, materiais usados, entidade executante..."></textarea>
+          </div>
+          <div>
+            <label class="lbl">Tempo de resolução (horas)</label>
+            <input type="number" id="rh-${issue.id}" placeholder="Ex: 4" min="0">
+          </div>
+          <div>
+            <label class="lbl">Fotos das medidas corretivas</label>
+            <input type="file" id="rf-${issue.id}" accept="image/*" multiple style="padding:8px">
+          </div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-secondary btn-sm" onclick="closeResolvePanel(${JSON.stringify(issue.id)})">Cancelar</button>
+          <button class="btn btn-mint btn-sm" onclick="resolveIssue(${JSON.stringify(issue.id)})"><i class="ti ti-check"></i> Confirmar resolução</button>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ══════════════════════════════════════════════════════
+//  MANAGER — ACTIONS
+// ══════════════════════════════════════════════════════
+async function changeStatus(id, status) {
+  if (usingLocalFallback) {
+    const local = JSON.parse(localStorage.getItem('pa_issues') || '[]');
+    const i = local.find(x => x.id == id);
+    if (i) { i.status = status; localStorage.setItem('pa_issues', JSON.stringify(local)); }
+    loadLocalIssues(); renderStats(); renderIssues();
+    return;
+  }
+  await sb.from('issues').update({ status }).eq('id', id);
+  console.log('changeStatus chamado:', id, '→', status);
+
+  if (status === 'em_analise') {
+    const issue = issues.find(x => String(x.id) === String(id));
+    console.log('Ocorrência encontrada:', issue);
+    if (issue) {
+      // Email ao condomínio
+      try {
+        await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TPL_RESOLVED, {
+          to_email:    EMAIL_CONDO,
+          client:      issue.client_name,
+          subject_line:'Ocorrência em análise — ' + issue.unit,
+          message_body:'A seguinte ocorrência foi recebida e está a ser analisada pela equipa pós-venda.',
+          unit:        issue.unit,
+          category:    issue.category,
+          extra_info:  'Cliente: ' + issue.client_name + '\nEmail: ' + (issue.client_email || '—') + '\nTelefone: ' + (issue.client_phone || '—') + '\nDescrição: ' + (issue.description || '—')
+        });
+        console.log('Email condomínio enviado');
+      } catch(e) { console.warn('EmailJS error (em_analise condo):', e); }
+      // Email ao cliente
+      if (issue.client_email) {
+        try {
+          await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TPL_RESOLVED, {
+            to_email:    issue.client_email,
+            client:      issue.client_name,
+            subject_line:'A sua ocorrência está a ser tratada',
+            message_body:'Confirmamos que recebemos a sua ocorrência e que a nossa equipa já iniciou a sua análise. Entraremos em contacto assim que tivermos novidades.',
+            unit:        issue.unit,
+            category:    issue.category,
+            extra_info:  ''
+          });
+          console.log('Email cliente enviado para', issue.client_email);
+        } catch(e) { console.warn('EmailJS error (em_analise client):', e); }
+      }
+      toast('Estado actualizado. Condomínio e cliente notificados.', 'success');
+    } else {
+      console.warn('Ocorrência não encontrada para id:', id);
+    }
+  }
+
+  await loadIssues();
+}
+
+function openNote(id) {
+  const issue = issues.find(x => x.id == id);
+  document.getElementById('note-text').value = issue?.notes || '';
+  activeNoteId = id;
+  document.getElementById('note-modal').classList.add('open');
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+
+async function saveNote() {
+  const note = document.getElementById('note-text').value;
+  closeModal('note-modal');
+  if (usingLocalFallback) {
+    const local = JSON.parse(localStorage.getItem('pa_issues') || '[]');
+    const i = local.find(x => x.id == activeNoteId);
+    if (i) { i.notes = note; localStorage.setItem('pa_issues', JSON.stringify(local)); }
+    loadLocalIssues(); renderStats(); renderIssues();
+    return;
+  }
+  await sb.from('issues').update({ notes: note }).eq('id', activeNoteId);
+  await loadIssues();
+  toast('Nota guardada.');
+}
+
+function openResolvePanel(id) {
+  document.querySelectorAll('[id^="resolve-"]').forEach(el => el.style.display = 'none');
+  const panel = document.getElementById(`resolve-${id}`);
+  if (panel) { panel.style.display = 'block'; panel.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+}
+
+function closeResolvePanel(id) {
+  const panel = document.getElementById(`resolve-${id}`);
+  if (panel) panel.style.display = 'none';
+}
+
+async function resolveIssue(id) {
+  const notes = document.getElementById(`rn-${id}`).value.trim();
+  const hours = parseInt(document.getElementById(`rh-${id}`).value) || null;
+  const files = document.getElementById(`rf-${id}`).files;
+  if (!notes) { toast('Descreva as medidas corretivas.', 'error'); return; }
+
+  const issue = issues.find(x => x.id == id);
+  const resolvedAt = new Date().toISOString();
+  const resolvePhotoUrls = [];
+
+  if (!usingLocalFallback && files.length) {
+    for (const f of Array.from(files)) {
+      const path = `resolves/${Date.now()}_${f.name.replace(/\s/g,'_')}`;
+      const { data, error } = await sb.storage.from('photos').upload(path, f, { upsert: true });
+      if (!error) {
+        const { data: url } = sb.storage.from('photos').getPublicUrl(path);
+        resolvePhotoUrls.push(url.publicUrl);
+      }
+    }
+  } else if (usingLocalFallback && files.length) {
+    await Promise.all(Array.from(files).map(f => new Promise(res => {
+      const r = new FileReader();
+      r.onload = ev => { resolvePhotoUrls.push(ev.target.result); res(); };
+      r.readAsDataURL(f);
+    })));
+  }
+
+  const update = {
+    status: 'resolvida', resolve_notes: notes, duration_hours: hours,
+    resolved_at: resolvedAt, resolve_photo_urls: resolvePhotoUrls
+  };
+
+  if (usingLocalFallback) {
+    const local = JSON.parse(localStorage.getItem('pa_issues') || '[]');
+    const i = local.find(x => x.id == id);
+    if (i) { Object.assign(i, update); localStorage.setItem('pa_issues', JSON.stringify(local)); }
+    loadLocalIssues(); renderStats(); renderIssues();
+  } else {
+    await sb.from('issues').update(update).eq('id', id);
+    // Emails ocorrência resolvida
+    const dh = update.duration_hours;
+    const durStr = dh ? (dh < 24 ? dh + 'h' : Math.floor(dh/24) + 'd ' + (dh%24) + 'h') : '—';
+    // Email ao condomínio
+    try {
+      await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TPL_RESOLVED, {
+        to_email:    EMAIL_CONDO,
+        client:      issue.client_name,
+        subject_line:'Ocorrência resolvida — ' + issue.unit,
+        message_body:'A seguinte ocorrência foi resolvida pela equipa pós-venda.',
+        unit:        issue.unit,
+        category:    issue.category,
+        extra_info:  'Medidas aplicadas: ' + update.resolve_notes + '\nTempo de resolução: ' + durStr + '\nData de resolução: ' + new Date().toLocaleDateString('pt-PT')
+      });
+    } catch(e) { console.warn('EmailJS error (resolved condo):', e); }
+    // Email ao cliente
+    if (issue?.client_email) {
+      try {
+        await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TPL_RESOLVED, {
+          to_email:    issue.client_email,
+          client:      issue.client_name,
+          subject_line:'A sua ocorrência foi resolvida',
+          message_body:'Temos o prazer de informar que a ocorrência que reportou foi resolvida pela nossa equipa.',
+          unit:        issue.unit,
+          category:    issue.category,
+          extra_info:  'Medidas aplicadas: ' + update.resolve_notes + '\nTempo de resolução: ' + durStr + '\nData de resolução: ' + new Date().toLocaleDateString('pt-PT')
+        });
+      } catch(e) { console.warn('EmailJS error (resolved client):', e); }
+    }
+    await loadIssues();
+  }
+  toast('Ocorrência fechada. Condomínio e cliente notificados por email.', 'success');
+}
+
+async function deleteIssue(id) {
+  if (!confirm('Eliminar esta ocorrência? Esta ação não pode ser revertida.')) return;
+  if (usingLocalFallback) {
+    const local = JSON.parse(localStorage.getItem('pa_issues') || '[]').filter(x => x.id != id);
+    localStorage.setItem('pa_issues', JSON.stringify(local));
+    loadLocalIssues(); renderStats(); renderIssues();
+    return;
+  }
+  await sb.from('issues').delete().eq('id', id);
+  await loadIssues();
+  toast('Ocorrência eliminada.');
+}
+
+// ══════════════════════════════════════════════════════
+//  EXPORT CSV
+// ══════════════════════════════════════════════════════
+function exportCSV() {
+  if (!issues.length) { toast('Sem ocorrências para exportar.', 'error'); return; }
+
+  const statusLabel = {nova:'Nova',em_analise:'Em análise',agendada:'Agendada',resolvida:'Resolvida',rejeitada:'Rejeitada'};
+  const prioLabel = {alta:'Alta',media:'Média',baixa:'Baixa'};
+
+  // respeitar filtros activos
+  const filtered = issues.filter(i => {
+    if (filters.status !== 'all' && i.status !== filters.status) return false;
+    if (filters.priority !== 'all' && i.priority !== filters.priority) return false;
+    if (filters.project !== 'all' && String(i.project_id) !== String(filters.project)) return false;
+    return true;
+  });
+
+  const data = filtered.map(i => ({
+    'ID': i.id,
+    'Empreendimento': projectName(i.project_id),
+    'Data abertura': fmtDate(i.created_at),
+    'Nome': i.client_name || '',
+    'Email': i.client_email || '',
+    'Telefone': i.client_phone || '',
+    'Fração': i.unit || '',
+    'Categoria': i.category || '',
+    'Localização': i.location || '',
+    'Prioridade': prioLabel[i.priority] || i.priority || '',
+    'Estado': statusLabel[i.status] || i.status || '',
+    'Nº fotos': (i.photo_urls||[]).length,
+    'Descrição': (i.description||'').replace(/\r?\n/g, ' '),
+    'Nota interna': (i.notes||'').replace(/\r?\n/g, ' '),
+    'Data resolução': fmtDate(i.resolved_at),
+    'Tempo resolução (h)': i.duration_hours || '',
+    'Notas resolução': (i.resolve_notes||'').replace(/\r?\n/g, ' ')
+  }));
+
+  const ws = XLSX.utils.json_to_sheet(data);
+
+  // Column widths
+  ws['!cols'] = [
+    {wch:8},{wch:22},{wch:16},{wch:22},{wch:28},{wch:16},{wch:20},
+    {wch:30},{wch:20},{wch:10},{wch:14},{wch:8},
+    {wch:50},{wch:30},{wch:16},{wch:10},{wch:40}
+  ];
+
+  // Auto filter on header row
+  ws['!autofilter'] = { ref: XLSX.utils.encode_range({s:{r:0,c:0}, e:{r:0,c:16}}) };
+
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Ocorrências');
+  XLSX.writeFile(wb, `solive_posVenda_${new Date().toISOString().slice(0,10)}.xlsx`);
+  toast('Excel exportado.');
+}
+
+// ══════════════════════════════════════════════════════
+//  UI HELPERS
+// ══════════════════════════════════════════════════════
+function toast(msg, type = '') {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.className = 'toast ' + type + ' show';
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.classList.remove('show'), 3500);
+}
+
+function openLightbox(url) {
+  document.getElementById('lightbox-img').src = url;
+  document.getElementById('lightbox').classList.add('open');
+}
+
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
+  document.getElementById('lightbox-img').src = '';
+}
+
+document.getElementById('note-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal('note-modal');
+});
+
+// ══════════════════════════════════════════════════════
+//  START
+// ══════════════════════════════════════════════════════
+boot();
+</script>
+
+<!-- PRIVACY POLICY MODAL -->
+<div class="modal-wrap" id="privacy-modal">
+  <div class="modal privacy-modal">
+    <h2>Política de Privacidade</h2>
+    <p style="font-size:11px;color:var(--ink-60);margin-bottom:1.5rem;text-transform:uppercase;letter-spacing:0.08em">Última actualização: Maio de 2025</p>
+
+    <div class="privacy-section">
+      <h3>1. Responsável pelo tratamento</h3>
+      <p><strong>Solive, S.A.</strong> — representada pela Groupe Legendre Portugal<br>
+      Contacto: <a href="mailto:geral@solive.pt">geral@solive.pt</a></p>
+    </div>
+    <div class="privacy-section">
+      <h3>2. Dados recolhidos</h3>
+      <ul>
+        <li>Nome completo</li>
+        <li>Endereço de email</li>
+        <li>Número de telefone (opcional)</li>
+        <li>Identificação da fração</li>
+        <li>Descrição e fotografias da ocorrência</li>
+      </ul>
+    </div>
+    <div class="privacy-section">
+      <h3>3. Finalidade e base legal</h3>
+      <p>Tratamento exclusivo para gestão e resolução de ocorrências pós-venda, ao abrigo do contrato de compra e venda (Art. 6.º, n.º 1, al. b) do RGPD).</p>
+    </div>
+    <div class="privacy-section">
+      <h3>4. Conservação dos dados</h3>
+      <p><strong>5 anos</strong> após resolução da ocorrência, em conformidade com os prazos de garantia legal aplicáveis à construção.</p>
+    </div>
+    <div class="privacy-section">
+      <h3>5. Partilha de dados</h3>
+      <p>Dados partilhados apenas com prestadores de serviços de construção e manutenção, exclusivamente para resolução das ocorrências. Não são partilhados para fins comerciais.</p>
+    </div>
+    <div class="privacy-section">
+      <h3>6. Direitos do titular</h3>
+      <ul>
+        <li>Acesso, rectificação e eliminação dos dados</li>
+        <li>Oposição ao tratamento</li>
+        <li>Reclamação à <strong>CNPD</strong> (cnpd.pt)</li>
+      </ul>
+      <p style="margin-top:8px">Exercer direitos: <a href="mailto:geral@solive.pt">geral@solive.pt</a></p>
+    </div>
+    <div class="privacy-section">
+      <h3>7. Segurança</h3>
+      <p>Dados armazenados na União Europeia (Irlanda), com acesso restrito e encriptação em trânsito e em repouso.</p>
+    </div>
+
+    <div class="modal-btns">
+      <button class="btn btn-primary" onclick="closeModal('privacy-modal')">Fechar</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
