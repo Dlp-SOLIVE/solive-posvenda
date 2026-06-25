@@ -802,8 +802,8 @@ async function showTracking(id) {
     const local = JSON.parse(localStorage.getItem('pa_issues') || '[]');
     issue = local.find(x => x.id == id);
   } else {
-    const { data } = await sb.from('issues').select('*').eq('id', id).single();
-    issue = data;
+    const { data } = await sb.rpc('get_issue_public', { p_id: Number(id) });
+    issue = (data && data.length) ? data[0] : null;
   }
 
   const content = document.getElementById('track-content');
@@ -1261,8 +1261,20 @@ async function submitIssue() {
       }
     }
     issue.photo_urls = photoUrls;
-    const { data, error } = await sb.from('issues').insert([issue]).select().single();
-    if (error) { toast('Erro ao submeter. Tente novamente.', 'error'); btn.disabled = false; btn.innerHTML = '<i class="ti ti-send"></i> Submeter ocorrência'; return; }
+    const { data: newId, error } = await sb.rpc('create_issue', {
+      p_project_id:   issue.project_id,
+      p_client_name:  issue.client_name,
+      p_client_email: issue.client_email,
+      p_client_phone: issue.client_phone || '',
+      p_unit:         issue.unit,
+      p_category:     issue.category,
+      p_location:     issue.location || '',
+      p_description:  issue.description,
+      p_priority:     issue.priority,
+      p_photo_urls:   photoUrls
+    });
+    if (error) { console.warn('create_issue error:', error); toast('Erro ao submeter. Tente novamente.', 'error'); btn.disabled = false; btn.innerHTML = '<i class="ti ti-send"></i> Submeter ocorrência'; return; }
+    const data = { id: newId };
     // Email à Ana: nova ocorrência
     try {
       await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TPL_NEW_ISSUE, {
