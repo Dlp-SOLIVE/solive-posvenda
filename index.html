@@ -7,6 +7,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
@@ -64,7 +65,7 @@ h1,h2,h3{font-family:'Roboto',sans-serif}
 
 /* ── HERO ── */
 .hero{background:var(--white);padding:3rem 3rem 2.5rem;margin-bottom:0;position:relative;overflow:hidden;border-bottom:1px solid var(--ink-08);border-left:4px solid var(--mint)}
-.hero::before{content:none}
+.hero::before{content:'';position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg width='120' height='60' viewBox='0 0 120 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 30 Q15 10 30 30 Q45 50 60 30 Q75 10 90 30 Q105 50 120 30' fill='none' stroke='%23E62336' stroke-width='1.5' stroke-opacity='0.05'/%3E%3Cpath d='M0 42 Q15 22 30 42 Q45 62 60 42 Q75 22 90 42 Q105 62 120 42' fill='none' stroke='%23E62336' stroke-width='1' stroke-opacity='0.04'/%3E%3C/svg%3E");background-size:120px 60px}
 .hero-eyebrow{font-family:'Roboto',sans-serif;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--mint);margin-bottom:0.75rem;position:relative;font-weight:700}
 .hero h1{font-size:40px;font-weight:700;color:var(--navy);line-height:1.1;margin-bottom:0.75rem;position:relative;max-width:560px}
 .hero p{color:var(--ink-60);font-size:14px;max-width:480px;line-height:1.7;position:relative}
@@ -139,7 +140,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 
 /* ── MANAGER HEADER ── */
 .mgr-header{background:var(--white);padding:2.25rem 3rem 1.75rem;position:relative;overflow:hidden;border-bottom:1px solid var(--ink-08);border-left:4px solid var(--mint)}
-.mgr-header::before{content:none}
+.mgr-header::before{content:'';position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg width='120' height='60' viewBox='0 0 120 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 30 Q15 10 30 30 Q45 50 60 30 Q75 10 90 30 Q105 50 120 30' fill='none' stroke='%23E62336' stroke-width='1.5' stroke-opacity='0.05'/%3E%3C/svg%3E");background-size:120px 60px}
 .mgr-header h1{font-size:32px;font-weight:700;color:var(--navy);position:relative;margin-bottom:4px}
 .mgr-header p{color:var(--ink-60);font-size:13px;position:relative}
 .mgr-header-row{display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:12px}
@@ -169,23 +170,31 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 .search-box i{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--ink-60);font-size:15px}
 
 /* ── ISSUE CARDS ── */
-.issue-card{background:var(--white);border:1px solid var(--ink-20);border-left:4px solid var(--gray);border-radius:var(--rlg);margin-bottom:12px;overflow:hidden;transition:box-shadow 0.2s,border-color 0.2s;box-shadow:0 1px 3px rgba(20,58,103,0.04)}
-.issue-card:hover{box-shadow:0 4px 14px rgba(20,58,103,0.10)}
-.issue-card.st-nova{border-left-color:var(--danger)}
-.issue-card.st-em_analise{border-left-color:var(--warn)}
-.issue-card.st-agendada{border-left-color:var(--info)}
-.issue-card.st-resolvida{border-left-color:var(--success)}
-.issue-card.st-rejeitada{border-left-color:var(--gray)}
-.issue-card-top{padding:1.1rem 1.4rem;cursor:pointer}
-.issue-top-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px;flex-wrap:wrap}
-.issue-title{font-weight:700;font-size:15px;flex:1;min-width:180px;font-family:'Roboto',sans-serif;color:var(--navy)}
-.issue-meta{font-size:12px;color:var(--ink-60);display:flex;gap:8px 16px;flex-wrap:wrap;margin-bottom:8px;row-gap:4px}
+.issue-card{background:var(--white);border:1px solid var(--ink-20);border-radius:var(--rlg);margin-bottom:10px;overflow:hidden;transition:box-shadow 0.18s,border-color 0.18s;box-shadow:0 1px 2px rgba(20,58,103,0.04)}
+.issue-card:hover{border-color:var(--ink-20);box-shadow:0 3px 12px rgba(20,58,103,0.09)}
+.issue-card.open{border-color:var(--mint);box-shadow:0 3px 14px rgba(230,35,54,0.10)}
+.issue-card-top{padding:1rem 1.3rem;cursor:pointer;display:flex;align-items:flex-start;gap:12px}
+.issue-statusdot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.sd-nova{background:var(--danger)}
+.sd-em_analise{background:var(--warn)}
+.sd-agendada{background:var(--info)}
+.sd-resolvida{background:var(--success)}
+.sd-rejeitada{background:var(--gray)}
+.issue-main{flex:1;min-width:0}
+.issue-top-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:7px;flex-wrap:wrap}
+.issue-title{font-weight:700;font-size:15px;flex:1;min-width:180px;font-family:'Roboto',sans-serif;color:var(--navy);line-height:1.35}
+.issue-meta{font-size:12px;color:var(--ink-60);display:flex;gap:6px 16px;flex-wrap:wrap;margin-bottom:0;row-gap:5px}
 .issue-meta span{display:flex;align-items:center;gap:5px}
 .issue-meta .meta-proj{font-weight:700;color:var(--mint)}
-.issue-desc{font-size:13px;color:var(--ink);line-height:1.6;background:var(--cream);padding:10px 12px;border-radius:var(--r)}
-.issue-photos-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.issue-chevron{flex-shrink:0;color:var(--ink-60);transition:transform 0.2s;margin-top:3px}
+.issue-card.open .issue-chevron{transform:rotate(180deg)}
+.issue-desc{font-size:13px;color:var(--ink);line-height:1.6;background:var(--cream);padding:11px 13px;border-radius:var(--r);margin-top:4px}
+.issue-desc-label{font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--ink-60);font-weight:700;margin-bottom:5px}
+.issue-photos-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
 .issue-photo{width:72px;height:72px;border-radius:6px;object-fit:cover;border:1px solid var(--ink-20);cursor:pointer;transition:opacity 0.2s}
 .issue-photo:hover{opacity:0.85}
+.photo-fallback{display:inline-flex;align-items:center;justify-content:center;width:72px;height:72px;border:1px solid var(--ink-20);border-radius:6px;font-size:11px;color:var(--mint);text-decoration:none;text-align:center;background:var(--cream)}
+.photo-fallback:hover{background:var(--mint-lt)}
 .issue-detail{border-top:1px solid var(--ink-20);padding:1.1rem 1.4rem;background:var(--cream)}
 .note-box{background:var(--white);border-left:3px solid var(--mint);padding:10px 14px;font-size:13px;color:var(--ink-60);margin-top:10px;border-radius:0 var(--r) var(--r) 0}
 .note-box strong{color:var(--ink);display:block;font-size:10px;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:3px}
@@ -684,7 +693,12 @@ let usingLocalFallback = false;
 // ══════════════════════════════════════════════════════
 function toggleCard(id) {
   const detail = document.getElementById('detail-' + id);
-  if (detail) detail.style.display = detail.style.display === 'block' ? 'none' : 'block';
+  const card = document.getElementById('ic-' + id);
+  if (detail) {
+    const opening = detail.style.display !== 'block';
+    detail.style.display = opening ? 'block' : 'none';
+    if (card) card.classList.toggle('open', opening);
+  }
 }
 
 // ══════════════════════════════════════════════════════
@@ -1180,9 +1194,24 @@ async function logout() {
 // ══════════════════════════════════════════════════════
 //  CLIENT — PHOTO HANDLING
 // ══════════════════════════════════════════════════════
-function handleClientPhotos(e) {
+async function convertIfHeic(file) {
+  // Converte HEIC/HEIF para JPEG para garantir preview e compatibilidade
+  const isHeic = /heic|heif/i.test(file.type) || /\.(heic|heif)$/i.test(file.name);
+  if (!isHeic) return file;
+  try {
+    const blob = await heic2any({ blob: file, toType: 'image/jpeg', quality: 0.85 });
+    const out = Array.isArray(blob) ? blob[0] : blob;
+    return new File([out], file.name.replace(/\.(heic|heif)$/i, '.jpg'), { type: 'image/jpeg' });
+  } catch (err) {
+    console.warn('Falha ao converter HEIC:', err);
+    return file; // fallback: envia original
+  }
+}
+
+async function handleClientPhotos(e) {
   const files = Array.from(e.target.files).slice(0, 10 - clientPhotos.length);
-  files.forEach(f => {
+  for (const original of files) {
+    const f = await convertIfHeic(original);
     clientPhotoFiles.push(f);
     const reader = new FileReader();
     reader.onload = ev => {
@@ -1190,7 +1219,7 @@ function handleClientPhotos(e) {
       renderClientPhotoPreview();
     };
     reader.readAsDataURL(f);
-  });
+  }
   e.target.value = '';
 }
 
@@ -1417,11 +1446,11 @@ function fmtDuration(h) {
 
 function renderIssueCard(issue) {
   const photos = (issue.photo_urls || []).map(url =>
-    `<img class="issue-photo" src="${url}" onclick="openLightbox('${url}')" title="Ver foto">`
+    `<img class="issue-photo" src="${url}" onclick="openLightbox('${url}')" title="Ver foto" onerror="this.outerHTML='<a href=&quot;${url}&quot; target=_blank class=photo-fallback>Abrir foto</a>'">`
   ).join('');
 
   const resolvePhotos = (issue.resolve_photo_urls || []).map(url =>
-    `<img class="issue-photo" src="${url}" onclick="openLightbox('${url}')" title="Ver foto resolução">`
+    `<img class="issue-photo" src="${url}" onclick="openLightbox('${url}')" title="Ver foto resolução" onerror="this.outerHTML='<a href=&quot;${url}&quot; target=_blank class=photo-fallback>Abrir foto</a>'">`
   ).join('');
 
   const resolvedInfo = issue.status === 'resolvida' ? `
@@ -1435,30 +1464,38 @@ function renderIssueCard(issue) {
     </div>` : '';
 
   return `
-  <div class="issue-card st-${issue.status}" id="ic-${issue.id}">
+  <div class="issue-card" id="ic-${issue.id}">
   <div class="issue-card-top" onclick="toggleCard('${issue.id}')">
-    <div class="issue-top-row">
-      <div class="issue-title">${issue.category}${issue.location ? ' — ' + issue.location : ''}</div>
-      <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
-        ${statusBadge(issue.status)} ${prioBadge(issue.priority)}
+    <div class="issue-statusdot sd-${issue.status}"></div>
+    <div class="issue-main">
+      <div class="issue-top-row">
+        <div class="issue-title">${issue.category}${issue.location ? ' — ' + issue.location : ''}</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+          ${statusBadge(issue.status)} ${prioBadge(issue.priority)}
+        </div>
+      </div>
+      <div class="issue-meta">
+        <span class="meta-proj"><i class="ti ti-map-pin" style="font-size:13px"></i> ${projectName(issue.project_id)}</span>
+        <span><i class="ti ti-building" style="font-size:13px"></i> ${issue.unit}</span>
+        <span><i class="ti ti-user" style="font-size:13px"></i> ${issue.client_name}</span>
+        <span><i class="ti ti-calendar" style="font-size:13px"></i> ${fmtDate(issue.created_at)}</span>
+        ${issue.photo_urls?.length ? `<span><i class="ti ti-photo" style="font-size:13px"></i> ${issue.photo_urls.length}</span>` : ''}
       </div>
     </div>
-    <div class="issue-meta">
-      <span class="meta-proj"><i class="ti ti-map-pin" style="font-size:13px"></i> ${projectName(issue.project_id)}</span>
-      <span><i class="ti ti-building" style="font-size:13px"></i> ${issue.unit}</span>
-      <span><i class="ti ti-user" style="font-size:13px"></i> ${issue.client_name}</span>
-      ${issue.client_email ? `<span><i class="ti ti-mail" style="font-size:13px"></i> ${issue.client_email}</span>` : ''}
-      ${issue.client_phone ? `<span><i class="ti ti-phone" style="font-size:13px"></i> ${issue.client_phone}</span>` : ''}
-      <span><i class="ti ti-calendar" style="font-size:13px"></i> ${fmtDate(issue.created_at)}</span>
-      ${issue.photo_urls?.length ? `<span><i class="ti ti-photo" style="font-size:13px"></i> ${issue.photo_urls.length} foto(s)</span>` : ''}
+    <i class="ti ti-chevron-down issue-chevron"></i>
+  </div>
+  <div class="issue-detail" id="detail-${issue.id}" style="display:none">
+    <div style="display:flex;gap:6px 16px;flex-wrap:wrap;font-size:12px;color:var(--ink-60);margin-bottom:12px">
+      ${issue.client_email ? `<span><i class="ti ti-mail" style="font-size:13px;vertical-align:-2px"></i> ${issue.client_email}</span>` : ''}
+      ${issue.client_phone ? `<span><i class="ti ti-phone" style="font-size:13px;vertical-align:-2px"></i> ${issue.client_phone}</span>` : ''}
     </div>
+    <div class="issue-desc-label">Descrição</div>
     <div class="issue-desc">${issue.description||''}</div>
     ${photos ? `<div class="issue-photos-row">${photos}</div>` : ''}
     ${issue.notes ? `<div class="note-box"><strong><i class="ti ti-note"></i> Nota interna</strong>${issue.notes}</div>` : ''}
     ${resolvedInfo}
 
-  </div>
-  <div class="issue-detail" id="detail-${issue.id}" style="display:none">
+    <hr class="div">
     <div class="issue-actions">
       <select style="padding:6px 10px;font-size:12px;width:auto;flex:none;min-width:130px" onchange="changeStatus(${JSON.stringify(issue.id)},this.value)" onclick="event.stopPropagation()">
         ${['nova','em_analise','agendada','resolvida','rejeitada'].map(s => `<option value="${s}"${issue.status===s?' selected':''}>${{nova:'Nova',em_analise:'Em análise',agendada:'Agendada',resolvida:'Resolvida',rejeitada:'Rejeitada'}[s]}</option>`).join('')}
