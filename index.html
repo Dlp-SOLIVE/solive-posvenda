@@ -330,6 +330,16 @@ hr.div{border:none;border-top:0.5px solid var(--ink-20);margin:1.25rem 0}
 .kpi-table td{padding:8px 10px;border-bottom:0.5px solid var(--ink-08)}
 .kpi-table tr:last-child td{border-bottom:none}
 .kpi-rate{font-weight:700;color:var(--success)}
+
+/* ── PHOTO MARKER ── */
+.photo-thumb{position:relative}
+.photo-thumb .mark-btn{position:absolute;bottom:4px;left:4px;background:rgba(20,58,103,0.82);color:#fff;border:none;border-radius:4px;font-size:9px;padding:2px 6px;cursor:pointer;display:flex;align-items:center;gap:3px;font-family:'Roboto'}
+.photo-thumb .mark-btn:hover{background:var(--mint)}
+.photo-thumb .marked-badge{position:absolute;bottom:4px;left:4px;background:var(--mint);color:#fff;border-radius:4px;font-size:9px;padding:2px 6px;display:flex;align-items:center;gap:3px}
+.marker-stage{position:relative;display:inline-block;max-width:100%;cursor:crosshair;line-height:0}
+.marker-stage img{max-width:100%;max-height:60vh;border-radius:8px;display:block}
+.marker-pin{position:absolute;width:28px;height:28px;transform:translate(-50%,-100%);pointer-events:none;color:var(--mint);filter:drop-shadow(0 1px 2px rgba(0,0,0,0.4))}
+.marker-hint{font-size:13px;color:var(--ink-60);margin-bottom:12px}
 </style>
 </head>
 <body>
@@ -474,6 +484,10 @@ hr.div{border:none;border-top:0.5px solid var(--ink-20);margin:1.25rem 0}
           <option>Área comum</option>
           <option>Outro / Não aplicável</option>
         </select>
+      </div>
+      <div class="fg-full">
+        <label class="lbl">Zona específica (opcional)</label>
+        <input type="text" id="c-zone" placeholder="Ex: parede à direita da janela, junto ao teto / canto inferior esquerdo do pavimento...">
       </div>
       <div class="fg-full">
         <label class="lbl">Descrição detalhada *</label>
@@ -683,6 +697,21 @@ hr.div{border:none;border-top:0.5px solid var(--ink-20);margin:1.25rem 0}
     <div class="modal-btns">
       <button class="btn btn-secondary" onclick="closeModal('project-modal')">Cancelar</button>
       <button class="btn btn-mint" onclick="saveProject()"><i class="ti ti-check"></i> Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- PHOTO MARKER MODAL -->
+<div class="modal-wrap" id="marker-modal">
+  <div class="modal" style="max-width:560px;text-align:center">
+    <h2 style="text-align:left">Marcar local do problema</h2>
+    <p class="marker-hint" style="text-align:left">Toque no ponto exato onde se encontra a patologia. Pode tocar novamente para corrigir.</p>
+    <input type="hidden" id="mk-index">
+    <div id="mk-stage-wrap"></div>
+    <div class="modal-btns">
+      <button class="btn btn-secondary" onclick="clearMarker()">Remover marca</button>
+      <button class="btn btn-secondary" onclick="closeModal('marker-modal')">Cancelar</button>
+      <button class="btn btn-mint" onclick="saveMarker()"><i class="ti ti-check"></i> Confirmar</button>
     </div>
   </div>
 </div>
@@ -1508,19 +1537,104 @@ async function handleClientPhotos(e) {
   e.target.value = '';
 }
 
+let clientPhotoMarked = [];
 function renderClientPhotoPreview() {
   const grid = document.getElementById('c-photo-preview');
   grid.innerHTML = clientPhotos.map((src, i) => `
     <div class="photo-thumb">
       <img src="${src}">
       <button class="rm-btn" onclick="removeClientPhoto(${i})"><i class="ti ti-x" style="font-size:10px"></i></button>
+      ${clientPhotoMarked[i]
+        ? `<span class="marked-badge"><i class="ti ti-map-pin" style="font-size:10px"></i> Marcada</span>`
+        : `<button class="mark-btn" onclick="openMarker(${i})"><i class="ti ti-map-pin" style="font-size:10px"></i> Marcar local</button>`}
     </div>`).join('');
 }
 
 function removeClientPhoto(i) {
   clientPhotos.splice(i, 1);
   clientPhotoFiles.splice(i, 1);
+  clientPhotoMarked.splice(i, 1);
   renderClientPhotoPreview();
+}
+
+// ── PHOTO MARKER LOGIC ──
+let markerPos = null;
+function openMarker(i) {
+  document.getElementById('mk-index').value = i;
+  markerPos = null;
+  const wrap = document.getElementById('mk-stage-wrap');
+  wrap.innerHTML = `<div class="marker-stage" id="mk-stage" onclick="placeMarker(event)">
+    <img src="${clientPhotos[i]}" id="mk-img">
+  </div>`;
+  document.getElementById('marker-modal').classList.add('open');
+}
+function placeMarker(e) {
+  const stage = document.getElementById('mk-stage');
+  const img = document.getElementById('mk-img');
+  const rect = img.getBoundingClientRect();
+  const x = (e.clientX - rect.left) / rect.width;
+  const y = (e.clientY - rect.top) / rect.height;
+  if (x < 0 || x > 1 || y < 0 || y > 1) return;
+  markerPos = { x, y };
+  let pin = document.getElementById('mk-pin');
+  if (!pin) {
+    pin = document.createElement('div');
+    pin.id = 'mk-pin';
+    pin.className = 'marker-pin';
+    pin.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z"/></svg>';
+    stage.appendChild(pin);
+  }
+  pin.style.left = (x * 100) + '%';
+  pin.style.top = (y * 100) + '%';
+}
+function clearMarker() {
+  markerPos = null;
+  const pin = document.getElementById('mk-pin');
+  if (pin) pin.remove();
+}
+async function saveMarker() {
+  const i = Number(document.getElementById('mk-index').value);
+  if (!markerPos) {
+    // no marker placed: just close, mark as not marked
+    closeModal('marker-modal');
+    return;
+  }
+  // Burn the pin into the image via canvas
+  const dataUrl = clientPhotos[i];
+  const img = new Image();
+  img.onload = () => {
+    const canvas = document.createElement('canvas');
+    canvas.width = img.naturalWidth;
+    canvas.height = img.naturalHeight;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0);
+    // pin geometry scaled to image
+    const px = markerPos.x * canvas.width;
+    const py = markerPos.y * canvas.height;
+    const r = Math.max(canvas.width, canvas.height) * 0.022; // dot radius
+    const ring = r * 1.9;
+    // outer ring (white)
+    ctx.beginPath(); ctx.arc(px, py, ring, 0, Math.PI*2);
+    ctx.strokeStyle = '#fff'; ctx.lineWidth = r*0.55; ctx.stroke();
+    // red ring
+    ctx.beginPath(); ctx.arc(px, py, ring, 0, Math.PI*2);
+    ctx.strokeStyle = '#E62336'; ctx.lineWidth = r*0.32; ctx.stroke();
+    // center dot
+    ctx.beginPath(); ctx.arc(px, py, r*0.6, 0, Math.PI*2);
+    ctx.fillStyle = '#E62336'; ctx.fill();
+    const newUrl = canvas.toDataURL('image/jpeg', 0.9);
+    clientPhotos[i] = newUrl;
+    clientPhotoMarked[i] = true;
+    // rebuild the File for upload from the new dataURL
+    fetch(newUrl).then(r=>r.blob()).then(blob => {
+      const orig = clientPhotoFiles[i];
+      clientPhotoFiles[i] = new File([blob], (orig?.name||'foto').replace(/\.[^.]+$/, '') + '_marcada.jpg', { type: 'image/jpeg' });
+      renderClientPhotoPreview();
+    });
+    closeModal('marker-modal');
+    toast('Local marcado na fotografia.', 'success');
+  };
+  img.src = dataUrl;
 }
 
 // ══════════════════════════════════════════════════════
@@ -1534,6 +1648,8 @@ async function submitIssue() {
   const unit = document.getElementById('c-unit').value;
   const cat = document.getElementById('c-cat').value;
   const loc = document.getElementById('c-loc').value;
+  const zone = document.getElementById('c-zone').value.trim();
+  const locFull = loc + (zone ? (loc ? ' — ' : '') + zone : '');
   const desc = document.getElementById('c-desc').value.trim();
   const priority = document.querySelector('input[name=prio]:checked')?.value || 'media';
 
@@ -1551,7 +1667,7 @@ async function submitIssue() {
   const issue = {
     project_id: projectId ? Number(projectId) : null,
     client_name: name, client_email: email, client_phone: phone,
-    unit, category: cat, location: loc, description: desc,
+    unit, category: cat, location: locFull, description: desc,
     priority, status: 'nova',
     created_at: new Date().toISOString(),
     photo_urls: [], notes: '', resolve_notes: '', resolve_photo_urls: [],
@@ -1625,10 +1741,10 @@ function onSubmitSuccess() {
   banner.style.display = 'flex';
   setTimeout(() => banner.style.display = 'none', 8000);
   ['c-name','c-email','c-phone','c-desc'].forEach(id => document.getElementById(id).value = '');
-  ['c-project','c-unit','c-cat','c-loc'].forEach(id => document.getElementById(id).value = '');
+  ['c-project','c-unit','c-cat','c-loc','c-zone'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('c-unit').innerHTML = '<option value="">Selecione primeiro o empreendimento</option>';
   document.querySelector('input[name=prio][value=media]').checked = true;
-  clientPhotos = []; clientPhotoFiles = [];
+  clientPhotos = []; clientPhotoFiles = []; clientPhotoMarked = [];
   renderClientPhotoPreview();
   document.getElementById('c-progress').style.display = 'none';
   document.getElementById('c-progress-bar').style.width = '0';
