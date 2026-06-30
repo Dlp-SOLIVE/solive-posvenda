@@ -845,6 +845,58 @@ function renderTimeline(issue) {
 }
 
 // ── RELATÓRIO PDF POR OCORRÊNCIA ──
+// carrega uma imagem (URL) e devolve {dataUrl, w, h} ou null se falhar
+async function loadImageForPdf(url) {
+  // dataURL direto (fotos marcadas já são dataURL)
+  let src = url;
+  if (url.startsWith('http')) {
+    try {
+      const resp = await fetch(url, { mode: 'cors' });
+      const blob = await resp.blob();
+      src = await new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; r.readAsDataURL(blob); });
+    } catch(e) { /* tenta via Image abaixo */ }
+  }
+  return new Promise(resolve => {
+    const img = new Image();
+    if (src.startsWith('http')) img.crossOrigin = 'anonymous';
+    const timer = setTimeout(() => resolve(null), 10000);
+    img.onload = () => {
+      clearTimeout(timer);
+      try {
+        const canvas = document.createElement('canvas');
+        const maxDim = 1000;
+        let w = img.naturalWidth, h = img.naturalHeight;
+        if (!w || !h) { resolve(null); return; }
+        if (Math.max(w,h) > maxDim) { const s = maxDim/Math.max(w,h); w = Math.round(w*s); h = Math.round(h*s); }
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        resolve({ dataUrl: canvas.toDataURL('image/jpeg', 0.82), w, h });
+      } catch(e) { resolve(null); }
+    };
+    img.onerror = () => { clearTimeout(timer); resolve(null); };
+    img.src = src;
+  });
+}
+
+// desenha uma grelha de fotos no PDF (2 por linha), devolve novo y
+async function drawPhotoGrid(doc, urls, startY, M, W) {
+  let y = startY;
+  const gap = 4;
+  const colW = (W - 2*M - gap) / 2;  // 2 colunas
+  let col = 0, rowMaxH = 0, x = M;
+  for (const url of urls) {
+    const im = await loadImageForPdf(url);
+    if (!im) continue;
+    const h = colW * (im.h / im.w);
+    if (y + h > 285) { doc.addPage(); y = 20; col = 0; x = M; rowMaxH = 0; }
+    doc.addImage(im.dataUrl, 'JPEG', x, y, colW, h);
+    if (col === 0) { col = 1; x = M + colW + gap; rowMaxH = h; }
+    else { col = 0; x = M; y += Math.max(rowMaxH, h) + gap; rowMaxH = 0; }
+  }
+  if (col === 1) y += rowMaxH + gap;  // fechar linha incompleta
+  return y;
+}
+
 async function generateIssuePDF(id) {
   const issue = issues.find(x => String(x.id) === String(id));
   if (!issue) return;
@@ -906,6 +958,16 @@ async function generateIssuePDF(id) {
   const descLines = doc.splitTextToSize(issue.description || '—', W - 2*M);
   doc.text(descLines, M, y); y += descLines.length * 4.6 + 4;
 
+  // Fotografias da ocorrência
+  const issuePhotos = (issue.photo_urls || []);
+  if (issuePhotos.length) {
+    if (y > 235) { doc.addPage(); y = 20; }
+    doc.setFont('helvetica','bold'); doc.setTextColor(...navy); doc.setFontSize(10);
+    doc.text('Fotografias da ocorrência', M, y); y += 5;
+    y = await drawPhotoGrid(doc, issuePhotos, y, M, W);
+    y += 2;
+  }
+
   // Histórico
   if ((issue.events||[]).length) {
     if (y > 240) { doc.addPage(); y = 20; }
@@ -935,6 +997,14 @@ async function generateIssuePDF(id) {
     if (issue.resolve_notes) {
       const rLines = doc.splitTextToSize('Medidas: ' + issue.resolve_notes, W - 2*M);
       doc.text(rLines, M, y); y += rLines.length * 4.6 + 3;
+    }
+    const resPhotos = (issue.resolve_photo_urls || []);
+    if (resPhotos.length) {
+      if (y > 235) { doc.addPage(); y = 20; }
+      doc.setFont('helvetica','bold'); doc.setTextColor(26,107,69); doc.setFontSize(10);
+      doc.text('Fotografias da resolução', M, y); y += 5;
+      y = await drawPhotoGrid(doc, resPhotos, y, M, W);
+      y += 2;
     }
   }
 
