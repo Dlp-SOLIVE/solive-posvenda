@@ -970,12 +970,54 @@ async function showTracking(id) {
         </div>`).join('')
     : '<p style="font-size:13px;color:var(--ink-60);font-style:italic">Ainda não existem atualizações registadas.</p>';
 
-  const resolvedHtml = issue.status === 'resolvida' ? `
-    <div class="track-card" style="border-left:3px solid var(--mint)">
-      <h3><i class="ti ti-circle-check" style="vertical-align:-2px"></i> Ocorrência resolvida</h3>
-      <div class="track-detail-row"><span class="lbl-t">Data de resolução</span><span>${fmtDate(issue.resolved_at)}</span></div>
-      ${issue.resolve_notes ? `<div style="margin-top:8px;font-size:14px">${issue.resolve_notes}</div>` : ''}
-    </div>` : '';
+  let resolvedHtml = '';
+  if (issue.status === 'resolvida' || issue.validation_status === 'aceite' || issue.validation_status === 'aceite_tacito') {
+    const vs = issue.validation_status;
+    let validationBlock = '';
+    if (vs === 'aceite' || vs === 'aceite_tacito') {
+      validationBlock = `
+        <div style="margin-top:14px;padding:12px 14px;background:var(--success-lt);border-radius:8px;border:0.5px solid rgba(26,107,69,0.25)">
+          <div style="font-size:13px;color:var(--success);font-weight:700"><i class="ti ti-circle-check" style="vertical-align:-2px"></i> Conclusão ${vs === 'aceite_tacito' ? 'aceite automaticamente' : 'confirmada pelo cliente'}</div>
+          ${issue.validation_comment ? `<div style="font-size:13px;color:var(--success);margin-top:6px">"${issue.validation_comment}"</div>` : ''}
+          <div style="font-size:11px;color:var(--ink-60);margin-top:6px">${fmtDate(issue.validation_at)}</div>
+        </div>`;
+    } else {
+      // pendente → mostra botões de validação
+      validationBlock = `
+        <div style="margin-top:14px;padding:14px;background:var(--cream);border-radius:8px;border:1px solid var(--ink-20)">
+          <div style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:4px">Confirma que a ocorrência está resolvida?</div>
+          <p style="font-size:12px;color:var(--ink-60);margin-bottom:12px">A sua confirmação fica registada. Se não responder em 5 dias úteis, será considerada aceite.</p>
+          <div id="val-buttons" style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn btn-mint btn-sm" onclick="validateAccept(${issue.id})"><i class="ti ti-check"></i> Confirmo que está resolvido</button>
+            <button class="btn btn-secondary btn-sm" onclick="showRefuseBox()"><i class="ti ti-x"></i> Não está resolvido</button>
+          </div>
+          <div id="val-accept-box" style="display:none;margin-top:12px">
+            <label class="lbl">Comentário (opcional)</label>
+            <textarea id="val-accept-comment" rows="2" placeholder="Pode deixar uma observação..."></textarea>
+            <button class="btn btn-mint btn-sm" style="margin-top:8px" onclick="submitValidation(${issue.id}, true)"><i class="ti ti-check"></i> Confirmar conclusão</button>
+          </div>
+          <div id="val-refuse-box" style="display:none;margin-top:12px">
+            <label class="lbl">Indique a razão pela qual não considera resolvido *</label>
+            <textarea id="val-refuse-comment" rows="3" placeholder="Descreva o que ainda está por resolver..."></textarea>
+            <button class="btn btn-danger btn-sm" style="margin-top:8px" onclick="submitValidation(${issue.id}, false)"><i class="ti ti-send"></i> Submeter e reabrir ocorrência</button>
+          </div>
+        </div>`;
+    }
+    resolvedHtml = `
+      <div class="track-card" style="border-left:3px solid var(--mint)">
+        <h3><i class="ti ti-circle-check" style="vertical-align:-2px"></i> Ocorrência resolvida</h3>
+        <div class="track-detail-row"><span class="lbl-t">Data de resolução</span><span>${fmtDate(issue.resolved_at)}</span></div>
+        ${issue.resolve_notes ? `<div style="margin-top:8px;font-size:14px">${issue.resolve_notes}</div>` : ''}
+        ${validationBlock}
+      </div>`;
+  } else if (issue.validation_status === 'recusado') {
+    resolvedHtml = `
+      <div class="track-card" style="border-left:3px solid var(--warn)">
+        <h3><i class="ti ti-alert-triangle" style="vertical-align:-2px"></i> Resolução contestada — reaberta</h3>
+        <p style="font-size:13px;color:var(--ink-60)">A ocorrência foi reaberta e está novamente a ser tratada pela equipa.</p>
+        ${issue.validation_comment ? `<div style="margin-top:8px;font-size:14px">Razão indicada: "${issue.validation_comment}"</div>` : ''}
+      </div>`;
+  }
 
   content.innerHTML = `
     <div class="track-card">
@@ -995,6 +1037,60 @@ async function showTracking(id) {
 
     ${resolvedHtml}
   `;
+}
+
+// ── VALIDATION (cliente) ──
+function showRefuseBox() {
+  document.getElementById('val-accept-box').style.display = 'none';
+  document.getElementById('val-refuse-box').style.display = 'block';
+}
+function validateAccept(id) {
+  document.getElementById('val-refuse-box').style.display = 'none';
+  document.getElementById('val-accept-box').style.display = 'block';
+}
+async function submitValidation(id, accept) {
+  let comment = '';
+  if (accept) {
+    comment = document.getElementById('val-accept-comment').value.trim();
+  } else {
+    comment = document.getElementById('val-refuse-comment').value.trim();
+    if (!comment) { toast('Por favor indique a razão.', 'error'); return; }
+  }
+
+  if (usingLocalFallback) {
+    const local = JSON.parse(localStorage.getItem('pa_issues') || '[]');
+    const i = local.find(x => x.id == id);
+    if (i) {
+      i.validation_status = accept ? 'aceite' : 'recusado';
+      i.validation_comment = comment;
+      i.validation_at = new Date().toISOString();
+      if (!accept) i.status = 'em_analise';
+      localStorage.setItem('pa_issues', JSON.stringify(local));
+    }
+  } else {
+    const { data, error } = await sb.rpc('validate_issue', { p_id: Number(id), p_accept: accept, p_comment: comment });
+    if (error) { console.warn('validate_issue error:', error); toast('Erro ao registar. Tente novamente.', 'error'); return; }
+    if (data === 'already') { toast('Esta ocorrência já tinha sido validada.', 'error'); }
+    else if (data === 'not_resolved' || data === 'not_found') { toast('Não foi possível validar.', 'error'); }
+    // notify Ana on refusal
+    if (!accept && (data === 'reopened')) {
+      try {
+        await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TPL_RESOLVED, {
+          to_email:    EMAIL_CONDO,
+          client:      'Equipa Pós-Venda',
+          subject_line:'Ocorrência contestada pelo cliente — reaberta',
+          message_body:'O cliente indicou que a ocorrência não está resolvida. Foi reaberta automaticamente.',
+          unit:        'Ref. #' + id,
+          category:    'Validação recusada',
+          extra_info:  'Razão indicada pelo cliente: ' + comment
+        });
+      } catch(e) { console.warn('EmailJS refuse notify error:', e); }
+    }
+  }
+
+  // refresh tracking view
+  showTracking(id);
+  toast(accept ? 'Obrigado! Conclusão confirmada.' : 'Registado. A ocorrência foi reaberta.', 'success');
 }
 
 function goToClientForm() {
@@ -1797,9 +1893,50 @@ async function loadIssues() {
   const { data, error } = await sb.from('issues').select('*').order('created_at', { ascending: false });
   if (error) { toast('Erro ao carregar ocorrências.', 'error'); return; }
   issues = data || [];
+  await applyTacitAcceptance();
   populateProjectFilter();
   renderStats();
   renderIssues();
+}
+
+// Conta dias úteis (exclui Sáb/Dom) entre duas datas
+function workingDaysBetween(d1, d2) {
+  let count = 0;
+  const cur = new Date(d1);
+  cur.setHours(0,0,0,0);
+  const end = new Date(d2);
+  end.setHours(0,0,0,0);
+  while (cur < end) {
+    cur.setDate(cur.getDate() + 1);
+    const day = cur.getDay();
+    if (day !== 0 && day !== 6) count++;
+  }
+  return count;
+}
+
+// Marca como 'aceite_tacito' as ocorrências resolvidas há mais de 5 dias úteis sem validação
+async function applyTacitAcceptance() {
+  if (usingLocalFallback) return;
+  const now = new Date();
+  const toUpdate = issues.filter(i =>
+    i.status === 'resolvida' &&
+    (i.validation_status === 'pendente' || !i.validation_status) &&
+    i.resolved_at &&
+    workingDaysBetween(new Date(i.resolved_at), now) >= 5
+  );
+  for (const i of toUpdate) {
+    const at = new Date().toISOString();
+    try {
+      await sb.from('issues').update({
+        validation_status: 'aceite_tacito',
+        validation_at: at,
+        validation_comment: 'Aceitação automática por ausência de resposta em 5 dias úteis.'
+      }).eq('id', i.id);
+      i.validation_status = 'aceite_tacito';
+      i.validation_at = at;
+      i.validation_comment = 'Aceitação automática por ausência de resposta em 5 dias úteis.';
+    } catch(e) { console.warn('tacit acceptance error:', e); }
+  }
 }
 
 function populateProjectFilter() {
@@ -1889,6 +2026,20 @@ function renderIssueCard(issue) {
     `<img class="issue-photo" src="${url}" onclick="openLightbox('${url}')" title="Ver foto resolução" onerror="this.outerHTML='<a href=&quot;${url}&quot; target=_blank class=photo-fallback>Abrir foto</a>'">`
   ).join('');
 
+  const valLabels = {
+    pendente: { t: 'Aguarda validação do cliente', c: 'var(--warn)', bg: 'var(--warn-lt)', ic: 'ti-clock-hour-4' },
+    aceite: { t: 'Aceite pelo cliente', c: 'var(--success)', bg: 'var(--success-lt)', ic: 'ti-circle-check' },
+    aceite_tacito: { t: 'Aceite (tácito, 5 dias úteis)', c: 'var(--success)', bg: 'var(--success-lt)', ic: 'ti-circle-check' },
+    recusado: { t: 'Contestada pelo cliente', c: 'var(--danger)', bg: 'var(--danger-lt)', ic: 'ti-alert-triangle' }
+  };
+  const vinfo = issue.validation_status ? valLabels[issue.validation_status] : null;
+  const validationBadge = vinfo ? `
+    <div style="background:${vinfo.bg};border-radius:6px;padding:8px 11px;margin-top:8px;font-size:12px;color:${vinfo.c};font-weight:600">
+      <i class="ti ${vinfo.ic}" style="vertical-align:-2px"></i> ${vinfo.t}
+      ${issue.validation_at && issue.validation_status !== 'pendente' ? `<span style="font-weight:400;color:var(--ink-60)"> · ${fmtDate(issue.validation_at)}</span>` : ''}
+      ${issue.validation_comment ? `<div style="font-weight:400;color:${vinfo.c};margin-top:4px">"${issue.validation_comment}"</div>` : ''}
+    </div>` : '';
+
   const resolvedInfo = issue.status === 'resolvida' ? `
     <div style="background:var(--success-lt);border:0.5px solid rgba(26,107,69,0.25);border-radius:8px;padding:10px 12px;margin-top:10px">
       <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:var(--success);margin-bottom:6px;font-weight:500">
@@ -1897,7 +2048,8 @@ function renderIssueCard(issue) {
       </div>
       ${issue.resolve_notes ? `<p style="font-size:13px;color:var(--success)">${issue.resolve_notes}</p>` : ''}
       ${resolvePhotos ? `<div class="issue-photos" style="margin-top:8px">${resolvePhotos}</div>` : ''}
-    </div>` : '';
+      ${validationBadge}
+    </div>` : (validationBadge || '');
 
   return `
   <div class="issue-card" id="ic-${issue.id}">
@@ -2102,7 +2254,8 @@ async function resolveIssue(id) {
 
   const update = {
     status: 'resolvida', resolve_notes: notes, duration_hours: hours,
-    resolved_at: resolvedAt, resolve_photo_urls: resolvePhotoUrls
+    resolved_at: resolvedAt, resolve_photo_urls: resolvePhotoUrls,
+    validation_status: 'pendente', validation_comment: null, validation_at: null
   };
 
   if (usingLocalFallback) {
@@ -2127,17 +2280,18 @@ async function resolveIssue(id) {
         extra_info:  'Medidas aplicadas: ' + update.resolve_notes + '\nTempo de resolução: ' + durStr + '\nData de resolução: ' + new Date().toLocaleDateString('pt-PT')
       });
     } catch(e) { console.warn('EmailJS error (resolved condo):', e); }
-    // Email ao cliente
+    // Email ao cliente com link de validação
     if (issue?.client_email) {
+      const valUrl = window.location.origin + window.location.pathname + '?track=' + id;
       try {
         await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TPL_RESOLVED, {
           to_email:    issue.client_email,
           client:      issue.client_name,
-          subject_line:'A sua ocorrência foi resolvida',
-          message_body:'Temos o prazer de informar que a ocorrência que reportou foi resolvida pela nossa equipa.',
+          subject_line:'A sua ocorrência foi resolvida — confirme a conclusão',
+          message_body:'Temos o prazer de informar que a ocorrência que reportou foi resolvida pela nossa equipa. Por favor confirme se considera o assunto resolvido, acedendo ao link abaixo. Caso não responda em 5 dias úteis, a resolução será considerada aceite.',
           unit:        issue.unit,
           category:    issue.category,
-          extra_info:  'Medidas aplicadas: ' + update.resolve_notes + '\nTempo de resolução: ' + durStr + '\nData de resolução: ' + new Date().toLocaleDateString('pt-PT')
+          extra_info:  'Medidas aplicadas: ' + update.resolve_notes + '\nData de resolução: ' + new Date().toLocaleDateString('pt-PT') + '\n\nValidar a conclusão aqui: ' + valUrl
         });
       } catch(e) { console.warn('EmailJS error (resolved client):', e); }
     }
