@@ -8,6 +8,7 @@
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
@@ -147,7 +148,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 
 /* ── STATS ── */
 .stats-strip{background:var(--white);border-bottom:0.5px solid var(--ink-20);padding:0 3rem}
-.stats-grid{display:grid;grid-template-columns:repeat(5,1fr)}
+.stats-grid{display:grid;grid-template-columns:repeat(6,1fr)}
 .stat{padding:1.25rem 0;border-right:0.5px solid var(--ink-20)}
 .stat:last-child{border-right:none}
 .stat .lbl{font-size:10px;text-transform:uppercase;letter-spacing:0.12em;color:var(--ink-60);margin-bottom:4px;font-family:'Roboto',sans-serif}
@@ -340,6 +341,11 @@ hr.div{border:none;border-top:0.5px solid var(--ink-20);margin:1.25rem 0}
 .marker-stage img{max-width:100%;max-height:60vh;border-radius:8px;display:block}
 .marker-pin{position:absolute;width:28px;height:28px;transform:translate(-50%,-100%);pointer-events:none;color:var(--mint);filter:drop-shadow(0 1px 2px rgba(0,0,0,0.4))}
 .marker-hint{font-size:13px;color:var(--ink-60);margin-bottom:12px}
+
+/* ── REF + OVERDUE ── */
+.meta-ref{font-weight:700;color:var(--ink);background:var(--cream);padding:1px 7px;border-radius:4px}
+.badge-overdue{display:inline-flex;align-items:center;gap:4px;background:var(--danger);color:#fff;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;padding:3px 9px;border-radius:4px}
+.issue-card.card-overdue{border-left:3px solid var(--danger)}
 </style>
 </head>
 <body>
@@ -595,6 +601,7 @@ hr.div{border:none;border-top:0.5px solid var(--ink-20);margin:1.25rem 0}
       <div class="stat"><div class="lbl">Em análise</div><div class="val" id="s-analise" style="color:var(--warn)">—</div><div class="sub">em curso</div></div>
       <div class="stat"><div class="lbl">Agendadas</div><div class="val" id="s-agendada" style="color:var(--info)">—</div><div class="sub">marcadas</div></div>
       <div class="stat"><div class="lbl">Resolvidas</div><div class="val" id="s-resolvida" style="color:var(--success)">—</div><div class="sub">fechadas</div></div>
+      <div class="stat"><div class="lbl">Em atraso</div><div class="val" id="s-atraso" style="color:var(--danger)">—</div><div class="sub">fora do prazo</div></div>
     </div>
   </div>
 
@@ -829,12 +836,151 @@ function renderTimeline(issue) {
   }
   return events.map(ev => `
     <div class="tl-event">
-      <div class="tl-dot"></div>
+      <div class="tl-dot" style="${ev.auto?'background:var(--gray)':''}"></div>
       <div class="tl-content">
-        <div class="tl-date">${fmtDate(ev.date)}</div>
+        <div class="tl-date">${fmtDate(ev.date)}${ev.auto?' · <span style=\"color:var(--ink-60)\">Sistema</span>':''}</div>
         <div class="tl-text">${ev.text}</div>
       </div>
     </div>`).join('');
+}
+
+// ── RELATÓRIO PDF POR OCORRÊNCIA ──
+async function generateIssuePDF(id) {
+  const issue = issues.find(x => String(x.id) === String(id));
+  if (!issue) return;
+  if (!window.jspdf) { toast('Biblioteca PDF a carregar, tente novamente.', 'error'); return; }
+  toast('A gerar PDF...');
+
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+  const W = 210, M = 16;
+  let y = 16;
+
+  const navy = [20, 58, 103], red = [230, 35, 54], grey = [120, 130, 145];
+  const statusLbls = {nova:'Nova',em_analise:'Em análise',agendada:'Agendada',resolvida:'Resolvida',rejeitada:'Rejeitada'};
+  const prioLbls = {alta:'Alta',media:'Média',baixa:'Baixa'};
+
+  // Cabeçalho
+  doc.setFillColor(...navy); doc.rect(0, 0, W, 26, 'F');
+  doc.setTextColor(255,255,255); doc.setFont('helvetica','bold'); doc.setFontSize(16);
+  doc.text('SOLIVE', M, 13);
+  doc.setFont('helvetica','normal'); doc.setFontSize(9);
+  doc.text('Assistência Pós-Venda — Relatório de Ocorrência', M, 20);
+  doc.setFont('helvetica','bold'); doc.setFontSize(13); doc.setTextColor(...red);
+  doc.text(issueRef(issue), W - M, 15, { align: 'right' });
+  y = 36;
+
+  // Título
+  doc.setTextColor(...navy); doc.setFont('helvetica','bold'); doc.setFontSize(14);
+  const titulo = issue.category + (issue.location ? ' — ' + issue.location : '');
+  doc.text(doc.splitTextToSize(titulo, W - 2*M), M, y);
+  y += 9;
+
+  // Linha de estado
+  doc.setFontSize(10); doc.setFont('helvetica','normal'); doc.setTextColor(...grey);
+  doc.text(`Estado: ${statusLbls[issue.status]||issue.status}   |   Prioridade: ${prioLbls[issue.priority]||issue.priority}   |   Aberta: ${fmtDate(issue.created_at)}`, M, y);
+  y += 4;
+  doc.setDrawColor(...red); doc.setLineWidth(0.8); doc.line(M, y, W-M, y); y += 8;
+
+  // Bloco de dados
+  function row(label, value) {
+    doc.setFont('helvetica','bold'); doc.setTextColor(...navy); doc.setFontSize(9);
+    doc.text(label, M, y);
+    doc.setFont('helvetica','normal'); doc.setTextColor(40,40,40);
+    const lines = doc.splitTextToSize(String(value||'—'), W - M - 52);
+    doc.text(lines, M + 42, y);
+    y += Math.max(5.5, lines.length * 4.6);
+  }
+  row('Empreendimento:', projectName(issue.project_id));
+  row('Fração / Unidade:', issue.unit);
+  row('Localização:', issue.location || '—');
+  row('Cliente:', issue.client_name);
+  row('Contacto:', [issue.client_email, issue.client_phone].filter(Boolean).join('  ·  '));
+  row('Prazo-alvo:', dueDate(issue).toLocaleDateString('pt-PT') + (isOverdue(issue) ? '  (EM ATRASO)' : ''));
+  y += 2;
+
+  // Descrição
+  doc.setFont('helvetica','bold'); doc.setTextColor(...navy); doc.setFontSize(10);
+  doc.text('Descrição', M, y); y += 5;
+  doc.setFont('helvetica','normal'); doc.setTextColor(40,40,40); doc.setFontSize(9.5);
+  const descLines = doc.splitTextToSize(issue.description || '—', W - 2*M);
+  doc.text(descLines, M, y); y += descLines.length * 4.6 + 4;
+
+  // Histórico
+  if ((issue.events||[]).length) {
+    if (y > 240) { doc.addPage(); y = 20; }
+    doc.setFont('helvetica','bold'); doc.setTextColor(...navy); doc.setFontSize(10);
+    doc.text('Histórico de acompanhamento', M, y); y += 5;
+    doc.setFontSize(9); 
+    issue.events.forEach(ev => {
+      if (y > 270) { doc.addPage(); y = 20; }
+      doc.setFont('helvetica','bold'); doc.setTextColor(...grey);
+      doc.text('• ' + fmtDate(ev.date) + (ev.auto ? ' (Sistema)' : ''), M, y); y += 4.4;
+      doc.setFont('helvetica','normal'); doc.setTextColor(40,40,40);
+      const evLines = doc.splitTextToSize(ev.text, W - 2*M - 4);
+      doc.text(evLines, M + 4, y); y += evLines.length * 4.4 + 2;
+    });
+    y += 2;
+  }
+
+  // Resolução
+  if (issue.status === 'resolvida' || issue.resolve_notes) {
+    if (y > 250) { doc.addPage(); y = 20; }
+    doc.setFillColor(228, 244, 236); doc.rect(M, y-4, W-2*M, 7, 'F');
+    doc.setFont('helvetica','bold'); doc.setTextColor(26,107,69); doc.setFontSize(10);
+    doc.text('Resolução', M+2, y+1); y += 8;
+    doc.setFont('helvetica','normal'); doc.setTextColor(40,40,40); doc.setFontSize(9.5);
+    row('Data de resolução:', fmtDate(issue.resolved_at));
+    if (issue.duration_hours) row('Tempo:', fmtDuration(issue.duration_hours));
+    if (issue.resolve_notes) {
+      const rLines = doc.splitTextToSize('Medidas: ' + issue.resolve_notes, W - 2*M);
+      doc.text(rLines, M, y); y += rLines.length * 4.6 + 3;
+    }
+  }
+
+  // Validação do cliente
+  if (issue.validation_status) {
+    if (y > 260) { doc.addPage(); y = 20; }
+    const vMap = { pendente:'Aguarda validação do cliente', aceite:'Aceite pelo cliente', aceite_tacito:'Aceite (tácito, 5 dias úteis)', recusado:'Contestada pelo cliente' };
+    doc.setFont('helvetica','bold'); doc.setTextColor(...navy); doc.setFontSize(10);
+    doc.text('Validação do cliente', M, y); y += 5;
+    doc.setFont('helvetica','normal'); doc.setTextColor(40,40,40); doc.setFontSize(9.5);
+    doc.text('Estado: ' + (vMap[issue.validation_status]||issue.validation_status), M, y); y += 5;
+    if (issue.validation_at) { doc.text('Data: ' + fmtDate(issue.validation_at), M, y); y += 5; }
+    if (issue.validation_comment) {
+      const vLines = doc.splitTextToSize('Comentário: ' + issue.validation_comment, W - 2*M);
+      doc.text(vLines, M, y); y += vLines.length * 4.6;
+    }
+  }
+
+  // Rodapé em todas as páginas
+  const pages = doc.internal.getNumberOfPages();
+  for (let p = 1; p <= pages; p++) {
+    doc.setPage(p);
+    doc.setDrawColor && doc.setDrawColor(...grey);
+    doc.setFontSize(8); doc.setTextColor(...grey); doc.setFont('helvetica','normal');
+    doc.text('Solive — Assistência Pós-Venda  ·  ' + issueRef(issue) + '  ·  Gerado em ' + new Date().toLocaleDateString('pt-PT'), M, 290);
+    doc.text(p + '/' + pages, W - M, 290, { align: 'right' });
+  }
+
+  doc.save(issueRef(issue) + '.pdf');
+  toast('PDF gerado.', 'success');
+}
+
+// ── AUDIT TRAIL automático (regista evento no histórico, silencioso) ──
+async function logAudit(id, text) {
+  const issue = issues.find(x => String(x.id) === String(id));
+  if (!issue) return;
+  const events = issue.events || [];
+  events.push({ date: new Date().toISOString(), text, auto: true });
+  issue.events = events;
+  if (usingLocalFallback) {
+    const local = JSON.parse(localStorage.getItem('pa_issues') || '[]');
+    const i = local.find(x => String(x.id) === String(id));
+    if (i) { i.events = events; localStorage.setItem('pa_issues', JSON.stringify(local)); }
+  } else {
+    await sb.from('issues').update({ events }).eq('id', id);
+  }
 }
 
 async function addEvent(id) {
@@ -1480,6 +1626,8 @@ async function confirmAssign() {
       notified++;
     } catch(e) { console.warn('EmailJS assign error:', e); }
   }
+  const subNames = checked.map(sid => subName(sid)).join(', ');
+  await logAudit(issueId, 'Atribuído a: ' + subNames);
   closeModal('assign-modal'); await loadIssues();
   toast(notified ? `Atribuido. ${notified} subempreiteiro(s) notificado(s).` : 'Atribuido. (Sem emails - verifique os contactos)', 'success');
 }
@@ -1965,6 +2113,8 @@ function renderStats() {
   document.getElementById('s-analise').textContent = issues.filter(i => i.status === 'em_analise').length;
   document.getElementById('s-agendada').textContent = issues.filter(i => i.status === 'agendada').length;
   document.getElementById('s-resolvida').textContent = issues.filter(i => i.status === 'resolvida').length;
+  const atrasoEl = document.getElementById('s-atraso');
+  if (atrasoEl) atrasoEl.textContent = issues.filter(i => isOverdue(i)).length;
 }
 
 function setChip(type, el) {
@@ -1982,7 +2132,7 @@ function renderIssues() {
     if (filters.priority !== 'all' && i.priority !== filters.priority) return false;
     if (filters.project !== 'all' && String(i.project_id) !== String(filters.project)) return false;
     if (filters.sub !== 'all' && !(i.assigned_ids||[]).map(String).includes(String(filters.sub))) return false;
-    if (q && !`${i.unit}${i.client_name}${i.category}${i.description}${i.location}${projectName(i.project_id)}`.toLowerCase().includes(q)) return false;
+    if (q && !`${issueRef(i)}${i.unit}${i.client_name}${i.category}${i.description}${i.location}${projectName(i.project_id)}`.toLowerCase().includes(q)) return false;
     return true;
   });
 
@@ -2004,6 +2154,32 @@ function prioBadge(p) {
   const map = { alta: 'dot-h', media: 'dot-m', baixa: 'dot-l' };
   const lbl = { alta: 'Alta', media: 'Média', baixa: 'Baixa' };
   return `<span style="display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--ink-70)"><span class="dot ${map[p]||'dot-l'}"></span>${lbl[p]||p}</span>`;
+}
+
+// ── REFERÊNCIA ÚNICA ──
+function issueRef(issue) {
+  const pName = projectName(issue.project_id) || '';
+  const prefix = (pName.replace(/[^A-Za-zÀ-ÿ]/g,'').substring(0,2) || 'OC').toUpperCase();
+  const year = issue.created_at ? new Date(issue.created_at).getFullYear() : new Date().getFullYear();
+  const num = String(issue.id).padStart(4, '0');
+  return `${prefix}-${year}-${num}`;
+}
+
+// ── PRAZOS POR PRIORIDADE ──
+const PRIO_DAYS = { alta: 7, media: 15, baixa: 30 };
+function dueDate(issue) {
+  const days = PRIO_DAYS[issue.priority] ?? 15;
+  const base = new Date(issue.created_at);
+  base.setDate(base.getDate() + days);
+  return base;
+}
+function isOverdue(issue) {
+  if (issue.status === 'resolvida' || issue.status === 'rejeitada') return false;
+  return new Date() > dueDate(issue);
+}
+function daysOverdue(issue) {
+  const diff = (new Date() - dueDate(issue)) / 86400000;
+  return Math.floor(diff);
 }
 
 function fmtDate(iso) {
@@ -2052,21 +2228,24 @@ function renderIssueCard(issue) {
     </div>` : (validationBadge || '');
 
   return `
-  <div class="issue-card" id="ic-${issue.id}">
+  <div class="issue-card${isOverdue(issue)?' card-overdue':''}" id="ic-${issue.id}">
   <div class="issue-card-top" onclick="toggleCard('${issue.id}')">
     <div class="issue-statusdot sd-${issue.status}"></div>
     <div class="issue-main">
       <div class="issue-top-row">
         <div class="issue-title">${issue.category}${issue.location ? ' — ' + issue.location : ''}</div>
         <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+          ${isOverdue(issue) ? `<span class="badge-overdue"><i class="ti ti-alert-triangle" style="font-size:11px"></i> Em atraso ${daysOverdue(issue)>0?('('+daysOverdue(issue)+'d)'):''}</span>` : ''}
           ${statusBadge(issue.status)} ${prioBadge(issue.priority)}
         </div>
       </div>
       <div class="issue-meta">
+        <span class="meta-ref"><i class="ti ti-hash" style="font-size:13px"></i> ${issueRef(issue)}</span>
         <span class="meta-proj"><i class="ti ti-map-pin" style="font-size:13px"></i> ${projectName(issue.project_id)}</span>
         <span><i class="ti ti-building" style="font-size:13px"></i> ${issue.unit}</span>
         <span><i class="ti ti-user" style="font-size:13px"></i> ${issue.client_name}</span>
         <span><i class="ti ti-calendar" style="font-size:13px"></i> ${fmtDate(issue.created_at)}</span>
+        ${issue.status!=='resolvida'&&issue.status!=='rejeitada' ? `<span title="Prazo-alvo"><i class="ti ti-clock" style="font-size:13px"></i> Prazo: ${dueDate(issue).toLocaleDateString('pt-PT')}</span>` : ''}
         ${issue.photo_urls?.length ? `<span><i class="ti ti-photo" style="font-size:13px"></i> ${issue.photo_urls.length}</span>` : ''}
       </div>
     </div>
@@ -2091,6 +2270,7 @@ function renderIssueCard(issue) {
       </select>
       <button class="btn btn-secondary btn-sm" onclick="openNote(${JSON.stringify(issue.id)})"><i class="ti ti-pencil"></i> Nota</button>
       <button class="btn btn-secondary btn-sm" onclick="openAssignModal(${JSON.stringify(issue.id)})"><i class="ti ti-user-cog"></i> Atribuir</button>
+      <button class="btn btn-secondary btn-sm" onclick="generateIssuePDF(${JSON.stringify(issue.id)})"><i class="ti ti-file-text"></i> PDF</button>
       ${issue.status !== 'resolvida' ? `<button class="btn btn-mint btn-sm" onclick="openResolvePanel(${JSON.stringify(issue.id)})"><i class="ti ti-circle-check"></i> Fechar ocorrência</button>` : ''}
       <button class="btn btn-danger btn-sm" onclick="deleteIssue(${JSON.stringify(issue.id)})"><i class="ti ti-trash"></i></button>
     </div>
@@ -2145,6 +2325,8 @@ async function changeStatus(id, status) {
     return;
   }
   await sb.from('issues').update({ status }).eq('id', id);
+  const statusLbls = {nova:'Nova',em_analise:'Em análise',agendada:'Agendada',resolvida:'Resolvida',rejeitada:'Rejeitada'};
+  await logAudit(id, 'Estado alterado para: ' + (statusLbls[status]||status));
   console.log('changeStatus chamado:', id, '→', status);
 
   if (status === 'em_analise') {
@@ -2210,6 +2392,7 @@ async function saveNote() {
     return;
   }
   await sb.from('issues').update({ notes: note }).eq('id', activeNoteId);
+  await logAudit(activeNoteId, 'Nota interna atualizada.');
   await loadIssues();
   toast('Nota guardada.');
 }
@@ -2297,6 +2480,7 @@ async function resolveIssue(id) {
     }
     await loadIssues();
   }
+  await logAudit(id, 'Ocorrência resolvida e fechada.');
   toast('Ocorrência fechada. Condomínio e cliente notificados por email.', 'success');
 }
 
