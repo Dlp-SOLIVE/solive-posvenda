@@ -305,6 +305,31 @@ hr.div{border:none;border-top:0.5px solid var(--ink-20);margin:1.25rem 0}
 .proj-card-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
 .proj-card-head h3{font-size:17px;font-weight:700}
 .proj-card-stats{font-size:13px;color:var(--ink-60);display:flex;gap:16px;flex-wrap:wrap}
+
+/* ── SUBCONTRACTORS ── */
+.sub-card{background:var(--white);border:1px solid var(--ink-20);border-radius:var(--rlg);padding:1.1rem 1.4rem;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;box-shadow:0 1px 2px rgba(20,58,103,0.04)}
+.sub-card h3{font-size:16px;font-weight:700;color:var(--navy);margin-bottom:3px}
+.sub-card .sub-meta{font-size:12px;color:var(--ink-60);display:flex;gap:14px;flex-wrap:wrap}
+.sub-card .sub-meta span{display:flex;align-items:center;gap:4px}
+.sub-spec{display:inline-block;background:var(--info-lt);color:var(--info);font-size:11px;padding:2px 9px;border-radius:4px;margin-bottom:5px;font-weight:500}
+.as-sub-opt{display:flex;align-items:center;gap:9px;padding:9px 12px;border:1px solid var(--ink-20);border-radius:var(--r);cursor:pointer;font-size:14px}
+.as-sub-opt:has(input:checked){border-color:var(--mint);background:var(--mint-lt)}
+.as-sub-opt input{width:16px;height:16px;accent-color:var(--mint);cursor:pointer}
+.as-sub-opt .as-spec{font-size:11px;color:var(--ink-60);margin-left:auto}
+.as-photo{position:relative;width:64px;height:64px;border-radius:6px;overflow:hidden;border:2px solid transparent;cursor:pointer}
+.as-photo.sel{border-color:var(--mint)}
+.as-photo img{width:100%;height:100%;object-fit:cover;display:block}
+.as-photo .as-check{position:absolute;top:3px;right:3px;width:18px;height:18px;border-radius:50%;background:var(--mint);color:#fff;display:none;align-items:center;justify-content:center;font-size:11px}
+.as-photo.sel .as-check{display:flex}
+.as-photo .as-dim{position:absolute;inset:0;background:rgba(255,255,255,0.55)}
+.as-photo.sel .as-dim{display:none}
+.assigned-chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.assigned-chip{display:inline-flex;align-items:center;gap:5px;background:var(--info-lt);color:var(--info);font-size:11px;padding:3px 10px;border-radius:20px;font-weight:500}
+.kpi-table{width:100%;border-collapse:collapse;font-size:13px}
+.kpi-table th{text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:var(--ink-60);padding:8px 10px;border-bottom:1px solid var(--ink-20)}
+.kpi-table td{padding:8px 10px;border-bottom:0.5px solid var(--ink-08)}
+.kpi-table tr:last-child td{border-bottom:none}
+.kpi-rate{font-weight:700;color:var(--success)}
 </style>
 </head>
 <body>
@@ -341,6 +366,7 @@ hr.div{border:none;border-top:0.5px solid var(--ink-20);margin:1.25rem 0}
   <button class="nav-tab" id="tab-manager" onclick="tryManagerView()">Painel de gestão</button>
   <button class="nav-tab" id="tab-analise" onclick="tryAnalyticsView()" style="display:none">Análise</button>
   <button class="nav-tab" id="tab-projectos" onclick="tryProjectsView()" style="display:none">Projectos</button>
+  <button class="nav-tab" id="tab-subs" onclick="trySubsView()" style="display:none">Subempreiteiros</button>
   <div class="nav-user" id="nav-user" style="display:none">
     <span id="nav-username"></span>
     <button onclick="logout()">Sair</button>
@@ -564,6 +590,10 @@ hr.div{border:none;border-top:0.5px solid var(--ink-20);margin:1.25rem 0}
       <select id="project-filter" onchange="filters.project=this.value;renderIssues()" style="width:auto;padding:6px 10px;font-size:12px">
         <option value="all">Todos os empreendimentos</option>
       </select>
+      <span class="filter-label" style="margin-left:10px">Subempreiteiro</span>
+      <select id="sub-filter" onchange="filters.sub=this.value;renderIssues()" style="width:auto;padding:6px 10px;font-size:12px">
+        <option value="all">Todos</option>
+      </select>
     </div>
     <div class="filter-bar" id="status-chips">
       <span class="filter-label">Estado</span>
@@ -611,6 +641,7 @@ hr.div{border:none;border-top:0.5px solid var(--ink-20);margin:1.25rem 0}
       <div class="an-card"><h3>Ocorrências por estado</h3><canvas id="chart-status"></canvas></div>
       <div class="an-card"><h3>Top categorias recorrentes</h3><div id="top-cats"></div></div>
     </div>
+    <div class="an-card" style="margin-top:1rem"><h3>Desempenho por subempreiteiro</h3><div id="kpi-subs" style="overflow-x:auto"></div></div>
   </div>
 </div>
 
@@ -656,6 +687,62 @@ hr.div{border:none;border-top:0.5px solid var(--ink-20);margin:1.25rem 0}
   </div>
 </div>
 
+<!-- SUBCONTRACTORS VIEW -->
+<div class="page" id="view-subs">
+  <div class="mgr-header">
+    <div class="mgr-header-row">
+      <div>
+        <div style="font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--mint);margin-bottom:8px;position:relative;font-weight:700">Configuração</div>
+        <h1>Subempreiteiros</h1>
+        <p>Criar e gerir a lista de subempreiteiros</p>
+      </div>
+      <div style="position:relative">
+        <button class="btn btn-mint btn-sm" onclick="openSubEditor()"><i class="ti ti-plus"></i> Novo subempreiteiro</button>
+      </div>
+    </div>
+  </div>
+  <div class="mgr-body"><div id="subs-list"></div></div>
+</div>
+
+<!-- SUBCONTRACTOR EDITOR MODAL -->
+<div class="modal-wrap" id="sub-modal">
+  <div class="modal" style="max-width:520px">
+    <h2 id="sub-modal-title">Novo subempreiteiro</h2>
+    <input type="hidden" id="se-id">
+    <label class="lbl">Nome / Empresa *</label>
+    <input type="text" id="se-name" placeholder="Ex: Climatec, Lda." style="margin-bottom:1rem">
+    <label class="lbl">Especialidade</label>
+    <input type="text" id="se-specialty" placeholder="Ex: AVAC / Climatização" style="margin-bottom:1rem">
+    <div class="fg">
+      <div><label class="lbl">Email</label><input type="email" id="se-email" placeholder="email@empresa.pt"></div>
+      <div><label class="lbl">Telefone</label><input type="tel" id="se-phone" placeholder="+351 ..."></div>
+    </div>
+    <div class="modal-btns">
+      <button class="btn btn-secondary" onclick="closeModal('sub-modal')">Cancelar</button>
+      <button class="btn btn-mint" onclick="saveSub()"><i class="ti ti-check"></i> Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ASSIGN MODAL -->
+<div class="modal-wrap" id="assign-modal">
+  <div class="modal" style="max-width:560px">
+    <h2>Atribuir a subempreiteiro</h2>
+    <input type="hidden" id="as-issue-id">
+    <p style="font-size:13px;color:var(--ink-60);margin-bottom:1rem">Selecione o(s) subempreiteiro(s) e as fotografias a incluir. Os dados pessoais do cliente não são partilhados.</p>
+    <label class="lbl">Subempreiteiro(s) *</label>
+    <div id="as-subs-list" style="margin-bottom:1.25rem;display:flex;flex-direction:column;gap:6px"></div>
+    <label class="lbl">Fotografias a incluir</label>
+    <div id="as-photos" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:1.25rem"></div>
+    <label class="lbl">Nota para o subempreiteiro (opcional)</label>
+    <textarea id="as-note" rows="3" placeholder="Instruções adicionais..." style="margin-bottom:1rem"></textarea>
+    <div class="modal-btns">
+      <button class="btn btn-secondary" onclick="closeModal('assign-modal')">Cancelar</button>
+      <button class="btn btn-mint" onclick="confirmAssign()"><i class="ti ti-send"></i> Atribuir e notificar</button>
+    </div>
+  </div>
+</div>
+
 <script>
 // ══════════════════════════════════════════════════════
 //  CONFIG — Preencher com as tuas chaves
@@ -681,9 +768,10 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 // ── State ──
 let issues = [];
 let projects = [];
+let subcontractors = [];
 let clientPhotos = []; // base64 for preview; actual uploads go to Supabase Storage
 let clientPhotoFiles = [];
-let filters = { status: 'all', priority: 'all', project: 'all' };
+let filters = { status: 'all', priority: 'all', project: 'all', sub: 'all' };
 let activeNoteId = null;
 let currentUser = null;
 let usingLocalFallback = false;
@@ -895,6 +983,10 @@ function tryProjectsView() {
   if (usingLocalFallback || currentUser) { showView('projectos'); renderProjectsList(); }
   else showView('login');
 }
+function trySubsView() {
+  if (usingLocalFallback || currentUser) { showView('subs'); renderSubsList(); }
+  else showView('login');
+}
 
 // ══════════════════════════════════════════════════════
 //  ANALYTICS
@@ -937,6 +1029,49 @@ async function renderAnalytics() {
       <div class="top-cat-bar" style="width:${(n/catSorted[0][1]*100)}%"></div>
     </div>`).join('');
   document.getElementById('top-cats').innerHTML = topHtml || '<p style="color:var(--ink-60)">Sem dados.</p>';
+
+  // ── KPIs por subempreiteiro ──
+  await loadSubs();
+  const kpiEl = document.getElementById('kpi-subs');
+  if (!subcontractors.length) {
+    kpiEl.innerHTML = '<p style="color:var(--ink-60);font-size:13px">Ainda não há subempreiteiros registados.</p>';
+  } else {
+    const rows = subcontractors.map(s => {
+      const assigned = issues.filter(i => (i.assigned_ids||[]).map(String).includes(String(s.id)));
+      const resolved = assigned.filter(i => i.status === 'resolvida');
+      const rate = assigned.length ? Math.round(resolved.length / assigned.length * 100) : 0;
+      // tempo médio desde atribuição até resolução (horas)
+      let avgH = null;
+      const durs = resolved.filter(i => i.assigned_at && i.resolved_at)
+        .map(i => (new Date(i.resolved_at) - new Date(i.assigned_at)) / 3600000)
+        .filter(h => h >= 0);
+      if (durs.length) avgH = durs.reduce((a,b)=>a+b,0) / durs.length;
+      const avgStr = avgH === null ? '—' : (avgH < 24 ? Math.round(avgH) + 'h' : Math.round(avgH/24) + 'd');
+      return { name: s.name, specialty: s.specialty || '—', assigned: assigned.length, resolved: resolved.length, rate, avgStr };
+    }).sort((a,b) => b.assigned - a.assigned);
+
+    kpiEl.innerHTML = `
+      <table class="kpi-table">
+        <thead><tr>
+          <th>Subempreiteiro</th><th>Especialidade</th>
+          <th style="text-align:center">Atribuídas</th>
+          <th style="text-align:center">Resolvidas</th>
+          <th style="text-align:center">Taxa resolução</th>
+          <th style="text-align:center">Tempo médio*</th>
+        </tr></thead>
+        <tbody>
+          ${rows.map(r => `<tr>
+            <td style="font-weight:700;color:var(--navy)">${r.name}</td>
+            <td style="color:var(--ink-60)">${r.specialty}</td>
+            <td style="text-align:center">${r.assigned}</td>
+            <td style="text-align:center">${r.resolved}</td>
+            <td style="text-align:center"><span class="kpi-rate">${r.rate}%</span></td>
+            <td style="text-align:center">${r.avgStr}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+      <p style="font-size:11px;color:var(--ink-60);margin-top:10px">* Tempo médio desde a atribuição até à resolução.</p>`;
+  }
 }
 
 function drawChart(id, type, labels, data, palette) {
@@ -1073,6 +1208,156 @@ async function deleteProject(id) {
 // ══════════════════════════════════════════════════════
 //  PROJECTS
 // ══════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════
+//  SUBCONTRACTORS
+// ══════════════════════════════════════════════════════
+async function loadSubs() {
+  if (usingLocalFallback) { subcontractors = JSON.parse(localStorage.getItem('pa_subs') || '[]'); return; }
+  const { data, error } = await sb.from('subcontractors').select('*').order('name');
+  if (!error) subcontractors = data || [];
+}
+function subName(id) {
+  const s = subcontractors.find(x => String(x.id) === String(id));
+  return s ? s.name : '\u2014';
+}
+function renderSubsList() {
+  loadSubs().then(() => {
+    const container = document.getElementById('subs-list');
+    if (!subcontractors.length) {
+      container.innerHTML = '<div class="empty"><i class="ti ti-users"></i><p>Ainda nao existem subempreiteiros. Crie o primeiro.</p></div>';
+      return;
+    }
+    container.innerHTML = subcontractors.map(s => {
+      const nAssigned = issues.filter(i => (i.assigned_ids||[]).map(String).includes(String(s.id))).length;
+      return `
+      <div class="sub-card">
+        <div>
+          ${s.specialty ? `<span class="sub-spec">${s.specialty}</span>` : ''}
+          <h3>${s.name}</h3>
+          <div class="sub-meta">
+            ${s.email ? `<span><i class="ti ti-mail" style="font-size:13px"></i> ${s.email}</span>` : ''}
+            ${s.phone ? `<span><i class="ti ti-phone" style="font-size:13px"></i> ${s.phone}</span>` : ''}
+            <span><i class="ti ti-clipboard-list" style="font-size:13px"></i> ${nAssigned} atribu\u00eddas</span>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-secondary btn-sm" onclick="openSubEditor('${s.id}')"><i class="ti ti-pencil"></i> Editar</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteSub('${s.id}')"><i class="ti ti-trash"></i></button>
+        </div>
+      </div>`;
+    }).join('');
+  });
+}
+function openSubEditor(id) {
+  document.getElementById('se-id').value = id || '';
+  document.getElementById('sub-modal-title').textContent = id ? 'Editar subempreiteiro' : 'Novo subempreiteiro';
+  const s = id ? subcontractors.find(x => String(x.id) === String(id)) : null;
+  document.getElementById('se-name').value = s?.name || '';
+  document.getElementById('se-specialty').value = s?.specialty || '';
+  document.getElementById('se-email').value = s?.email || '';
+  document.getElementById('se-phone').value = s?.phone || '';
+  document.getElementById('sub-modal').classList.add('open');
+}
+async function saveSub() {
+  const id = document.getElementById('se-id').value;
+  const name = document.getElementById('se-name').value.trim();
+  if (!name) { toast('Indique o nome do subempreiteiro.', 'error'); return; }
+  const record = { name, specialty: document.getElementById('se-specialty').value.trim(), email: document.getElementById('se-email').value.trim(), phone: document.getElementById('se-phone').value.trim(), active: true };
+  if (usingLocalFallback) {
+    let local = JSON.parse(localStorage.getItem('pa_subs') || '[]');
+    if (id) { const s = local.find(x=>String(x.id)===String(id)); if(s) Object.assign(s, record); }
+    else { record.id = Date.now(); local.push(record); }
+    localStorage.setItem('pa_subs', JSON.stringify(local));
+  } else {
+    if (id) await sb.from('subcontractors').update(record).eq('id', id);
+    else await sb.from('subcontractors').insert([record]);
+  }
+  closeModal('sub-modal'); await loadSubs(); renderSubsList();
+  toast('Subempreiteiro guardado.', 'success');
+}
+async function deleteSub(id) {
+  const nAssigned = issues.filter(i => (i.assigned_ids||[]).map(String).includes(String(id))).length;
+  if (nAssigned > 0) { toast('Nao e possivel eliminar: tem ocorrencias atribuidas.', 'error'); return; }
+  if (!confirm('Eliminar este subempreiteiro?')) return;
+  if (usingLocalFallback) {
+    const local = JSON.parse(localStorage.getItem('pa_subs') || '[]').filter(x=>String(x.id)!==String(id));
+    localStorage.setItem('pa_subs', JSON.stringify(local));
+  } else { await sb.from('subcontractors').delete().eq('id', id); }
+  await loadSubs(); renderSubsList(); toast('Subempreiteiro eliminado.');
+}
+let assignPhotoSel = [];
+function openAssignModal(issueId) {
+  const issue = issues.find(x => String(x.id) === String(issueId));
+  if (!issue) return;
+  document.getElementById('as-issue-id').value = issueId;
+  document.getElementById('as-note').value = '';
+  const already = (issue.assigned_ids||[]).map(String);
+  const subsList = document.getElementById('as-subs-list');
+  if (!subcontractors.length) {
+    subsList.innerHTML = '<p style="font-size:13px;color:var(--ink-60)">Nao ha subempreiteiros. Crie primeiro na aba Subempreiteiros.</p>';
+  } else {
+    subsList.innerHTML = subcontractors.map(s => `
+      <label class="as-sub-opt">
+        <input type="checkbox" value="${s.id}" ${already.includes(String(s.id))?'checked':''}>
+        <span>${s.name}</span>
+        ${s.specialty ? `<span class="as-spec">${s.specialty}</span>` : ''}
+      </label>`).join('');
+  }
+  const photos = issue.photo_urls || [];
+  assignPhotoSel = photos.slice();
+  const photosEl = document.getElementById('as-photos');
+  if (!photos.length) {
+    photosEl.innerHTML = '<p style="font-size:13px;color:var(--ink-60)">Sem fotografias nesta ocorrencia.</p>';
+  } else {
+    photosEl.innerHTML = photos.map((url,idx) => `
+      <div class="as-photo sel" data-url="${url}" onclick="toggleAssignPhoto(this)">
+        <img src="${url}" onerror="this.parentElement.innerHTML='<div style=&quot;font-size:9px;padding:4px;text-align:center;color:#888&quot;>Foto ${idx+1}</div>'">
+        <div class="as-dim"></div>
+        <div class="as-check"><i class="ti ti-check"></i></div>
+      </div>`).join('');
+  }
+  document.getElementById('assign-modal').classList.add('open');
+}
+function toggleAssignPhoto(el) {
+  const url = el.dataset.url;
+  el.classList.toggle('sel');
+  if (el.classList.contains('sel')) { if (!assignPhotoSel.includes(url)) assignPhotoSel.push(url); }
+  else { assignPhotoSel = assignPhotoSel.filter(u => u !== url); }
+}
+async function confirmAssign() {
+  const issueId = document.getElementById('as-issue-id').value;
+  const issue = issues.find(x => String(x.id) === String(issueId));
+  if (!issue) return;
+  const checked = Array.from(document.querySelectorAll('#as-subs-list input:checked')).map(i => Number(i.value));
+  if (!checked.length) { toast('Selecione pelo menos um subempreiteiro.', 'error'); return; }
+  const note = document.getElementById('as-note').value.trim();
+  const update = { assigned_ids: checked };
+  if (!issue.assigned_at) update.assigned_at = new Date().toISOString();
+  if (usingLocalFallback) {
+    const local = JSON.parse(localStorage.getItem('pa_issues') || '[]');
+    const i = local.find(x => String(x.id) === String(issueId));
+    if (i) { Object.assign(i, update); localStorage.setItem('pa_issues', JSON.stringify(local)); }
+  } else { await sb.from('issues').update(update).eq('id', issueId); }
+  const photosText = assignPhotoSel.length ? assignPhotoSel.map((u,idx)=>'Foto '+(idx+1)+': '+u).join('\n') : 'Sem fotografias.';
+  let notified = 0;
+  for (const subId of checked) {
+    const s = subcontractors.find(x => String(x.id) === String(subId));
+    if (!s || !s.email) continue;
+    try {
+      await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TPL_RESOLVED, {
+        to_email: s.email, client: s.name,
+        subject_line: 'Nova intervencao atribuida \u2014 ' + projectName(issue.project_id) + ' \u00b7 ' + issue.unit,
+        message_body: 'Foi-lhe atribuida uma intervencao no ambito da assistencia pos-venda Solive.' + (note ? '\n\nNota: ' + note : ''),
+        unit: issue.unit, category: issue.category + (issue.location ? ' \u2014 ' + issue.location : ''),
+        extra_info: 'Empreendimento: ' + projectName(issue.project_id) + '\nDescricao: ' + (issue.description || '\u2014') + '\n\nFotografias:\n' + photosText
+      });
+      notified++;
+    } catch(e) { console.warn('EmailJS assign error:', e); }
+  }
+  closeModal('assign-modal'); await loadIssues();
+  toast(notified ? `Atribuido. ${notified} subempreiteiro(s) notificado(s).` : 'Atribuido. (Sem emails - verifique os contactos)', 'success');
+}
+
 async function loadProjects() {
   if (usingLocalFallback) {
     projects = JSON.parse(localStorage.getItem('pa_projects') || '[]');
@@ -1141,7 +1426,7 @@ function showView(v) {
 }
 
 function showManagerTabs() {
-  ['tab-analise','tab-projectos'].forEach(id => {
+  ['tab-analise','tab-projectos','tab-subs'].forEach(id => {
     const t = document.getElementById(id);
     if (t) t.style.display = '';
   });
@@ -1187,7 +1472,7 @@ async function logout() {
   if (!usingLocalFallback) await sb.auth.signOut();
   currentUser = null;
   document.getElementById('nav-user').style.display = 'none';
-  ['tab-analise','tab-projectos'].forEach(id => { const t=document.getElementById(id); if(t) t.style.display='none'; });
+  ['tab-analise','tab-projectos','tab-subs'].forEach(id => { const t=document.getElementById(id); if(t) t.style.display='none'; });
   showView('client');
 }
 
@@ -1360,6 +1645,7 @@ function loadLocalIssues() {
 
 async function loadIssues() {
   await loadProjects();
+  await loadSubs();
   if (usingLocalFallback) {
     loadLocalIssues();
     populateProjectFilter();
@@ -1377,11 +1663,19 @@ async function loadIssues() {
 
 function populateProjectFilter() {
   const sel = document.getElementById('project-filter');
-  if (!sel) return;
-  const current = filters.project;
-  sel.innerHTML = '<option value="all">Todos os empreendimentos</option>' +
-    projects.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
-  sel.value = current;
+  if (sel) {
+    const current = filters.project;
+    sel.innerHTML = '<option value="all">Todos os empreendimentos</option>' +
+      projects.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+    sel.value = current;
+  }
+  const subSel = document.getElementById('sub-filter');
+  if (subSel) {
+    const cur = filters.sub;
+    subSel.innerHTML = '<option value="all">Todos</option>' +
+      subcontractors.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+    subSel.value = cur;
+  }
 }
 
 // ══════════════════════════════════════════════════════
@@ -1409,6 +1703,7 @@ function renderIssues() {
     if (filters.status !== 'all' && i.status !== filters.status) return false;
     if (filters.priority !== 'all' && i.priority !== filters.priority) return false;
     if (filters.project !== 'all' && String(i.project_id) !== String(filters.project)) return false;
+    if (filters.sub !== 'all' && !(i.assigned_ids||[]).map(String).includes(String(filters.sub))) return false;
     if (q && !`${i.unit}${i.client_name}${i.category}${i.description}${i.location}${projectName(i.project_id)}`.toLowerCase().includes(q)) return false;
     return true;
   });
@@ -1494,6 +1789,7 @@ function renderIssueCard(issue) {
     ${photos ? `<div class="issue-photos-row">${photos}</div>` : ''}
     ${issue.notes ? `<div class="note-box"><strong><i class="ti ti-note"></i> Nota interna</strong>${issue.notes}</div>` : ''}
     ${resolvedInfo}
+    ${(issue.assigned_ids&&issue.assigned_ids.length) ? `<div class="assigned-chips"><span style="font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--ink-60);font-weight:700;align-self:center">Atribuído a:</span>${issue.assigned_ids.map(sid=>`<span class="assigned-chip"><i class="ti ti-user-cog" style="font-size:12px"></i> ${subName(sid)}</span>`).join('')}</div>` : ''}
 
     <hr class="div">
     <div class="issue-actions">
@@ -1501,6 +1797,7 @@ function renderIssueCard(issue) {
         ${['nova','em_analise','agendada','resolvida','rejeitada'].map(s => `<option value="${s}"${issue.status===s?' selected':''}>${{nova:'Nova',em_analise:'Em análise',agendada:'Agendada',resolvida:'Resolvida',rejeitada:'Rejeitada'}[s]}</option>`).join('')}
       </select>
       <button class="btn btn-secondary btn-sm" onclick="openNote(${JSON.stringify(issue.id)})"><i class="ti ti-pencil"></i> Nota</button>
+      <button class="btn btn-secondary btn-sm" onclick="openAssignModal(${JSON.stringify(issue.id)})"><i class="ti ti-user-cog"></i> Atribuir</button>
       ${issue.status !== 'resolvida' ? `<button class="btn btn-mint btn-sm" onclick="openResolvePanel(${JSON.stringify(issue.id)})"><i class="ti ti-circle-check"></i> Fechar ocorrência</button>` : ''}
       <button class="btn btn-danger btn-sm" onclick="deleteIssue(${JSON.stringify(issue.id)})"><i class="ti ti-trash"></i></button>
     </div>
@@ -1735,6 +2032,7 @@ function exportCSV() {
     if (filters.status !== 'all' && i.status !== filters.status) return false;
     if (filters.priority !== 'all' && i.priority !== filters.priority) return false;
     if (filters.project !== 'all' && String(i.project_id) !== String(filters.project)) return false;
+    if (filters.sub !== 'all' && !(i.assigned_ids||[]).map(String).includes(String(filters.sub))) return false;
     return true;
   });
 
@@ -1750,6 +2048,7 @@ function exportCSV() {
     'Localização': i.location || '',
     'Prioridade': prioLabel[i.priority] || i.priority || '',
     'Estado': statusLabel[i.status] || i.status || '',
+    'Subempreiteiros': (i.assigned_ids||[]).map(sid => subName(sid)).join(', '),
     'Nº fotos': (i.photo_urls||[]).length,
     'Descrição': (i.description||'').replace(/\r?\n/g, ' '),
     'Nota interna': (i.notes||'').replace(/\r?\n/g, ' '),
@@ -1763,12 +2062,12 @@ function exportCSV() {
   // Column widths
   ws['!cols'] = [
     {wch:8},{wch:22},{wch:16},{wch:22},{wch:28},{wch:16},{wch:20},
-    {wch:30},{wch:20},{wch:10},{wch:14},{wch:8},
+    {wch:30},{wch:20},{wch:10},{wch:14},{wch:26},{wch:8},
     {wch:50},{wch:30},{wch:16},{wch:10},{wch:40}
   ];
 
   // Auto filter on header row
-  ws['!autofilter'] = { ref: XLSX.utils.encode_range({s:{r:0,c:0}, e:{r:0,c:16}}) };
+  ws['!autofilter'] = { ref: XLSX.utils.encode_range({s:{r:0,c:0}, e:{r:0,c:17}}) };
 
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, 'Ocorrências');
