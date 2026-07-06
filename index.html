@@ -708,6 +708,24 @@ hr.div{border:none;border-top:0.5px solid var(--ink-20);margin:1.25rem 0}
   </div>
 </div>
 
+<!-- PRIORITY MODAL -->
+<div class="modal-wrap" id="prio-modal">
+  <div class="modal" style="max-width:460px">
+    <h2>Atribuir grau de urgência</h2>
+    <p style="font-size:13px;color:var(--ink-60);margin-bottom:6px">Para passar a ocorrência a <strong>Em análise</strong> é obrigatório atribuir o grau de urgência oficial. O cliente será informado do grau atribuído.</p>
+    <p style="font-size:12px;color:var(--ink-60);margin-bottom:14px">Perceção do cliente: <strong id="prio-perception">—</strong></p>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:1rem">
+      <label class="as-sub-opt"><input type="radio" name="prio-official" value="alta"><span class="dot dot-h"></span> Alta — risco imediato ou danos em progressão</label>
+      <label class="as-sub-opt"><input type="radio" name="prio-official" value="media"><span class="dot dot-m"></span> Média — sem urgência imediata</label>
+      <label class="as-sub-opt"><input type="radio" name="prio-official" value="baixa"><span class="dot dot-l"></span> Baixa — estética / acabamento</label>
+    </div>
+    <div class="modal-btns">
+      <button class="btn btn-secondary" onclick="cancelPrioModal()">Cancelar</button>
+      <button class="btn btn-mint" onclick="confirmPrio()"><i class="ti ti-check"></i> Confirmar e notificar</button>
+    </div>
+  </div>
+</div>
+
 <!-- PHOTO MARKER MODAL -->
 <div class="modal-wrap" id="marker-modal">
   <div class="modal" style="max-width:560px;text-align:center">
@@ -930,7 +948,7 @@ async function generateIssuePDF(id) {
 
   // Linha de estado
   doc.setFontSize(10); doc.setFont('helvetica','normal'); doc.setTextColor(...grey);
-  doc.text(`Estado: ${statusLbls[issue.status]||issue.status}   |   Prioridade: ${prioLbls[issue.priority]||issue.priority}   |   Aberta: ${fmtDate(issue.created_at)}`, M, y);
+  doc.text(`Estado: ${statusLbls[issue.status]||issue.status}   |   Urgência: ${prioLbls[issue.priority_official]||'Por atribuir'} (perceção cliente: ${prioLbls[issue.priority]||'—'})   |   Aberta: ${fmtDate(issue.created_at)}`, M, y);
   y += 4;
   doc.setDrawColor(...red); doc.setLineWidth(0.8); doc.line(M, y, W-M, y); y += 8;
 
@@ -2199,7 +2217,7 @@ function renderIssues() {
   const q = (document.getElementById('m-search')?.value || '').toLowerCase();
   let list = issues.filter(i => {
     if (filters.status !== 'all' && i.status !== filters.status) return false;
-    if (filters.priority !== 'all' && i.priority !== filters.priority) return false;
+    if (filters.priority !== 'all' && (i.priority_official || i.priority) !== filters.priority) return false;
     if (filters.project !== 'all' && String(i.project_id) !== String(filters.project)) return false;
     if (filters.sub !== 'all' && !(i.assigned_ids||[]).map(String).includes(String(filters.sub))) return false;
     if (q && !`${issueRef(i)}${i.unit}${i.client_name}${i.category}${i.description}${i.location}${projectName(i.project_id)}`.toLowerCase().includes(q)) return false;
@@ -2235,17 +2253,19 @@ function issueRef(issue) {
   return `${prefix}-${year}-${num}`;
 }
 
-// ── PRAZOS POR PRIORIDADE ──
+// ── PRAZOS POR PRIORIDADE (oficial, atribuída pela gestão) ──
 const PRIO_DAYS = { alta: 7, media: 15, baixa: 30 };
 function dueDate(issue) {
-  const days = PRIO_DAYS[issue.priority] ?? 15;
+  if (!issue.priority_official) return null;   // sem prioridade oficial → sem prazo
+  const days = PRIO_DAYS[issue.priority_official] ?? 15;
   const base = new Date(issue.created_at);
   base.setDate(base.getDate() + days);
   return base;
 }
 function isOverdue(issue) {
   if (issue.status === 'resolvida' || issue.status === 'rejeitada') return false;
-  return new Date() > dueDate(issue);
+  const d = dueDate(issue);
+  return d ? new Date() > d : false;
 }
 function daysOverdue(issue) {
   const diff = (new Date() - dueDate(issue)) / 86400000;
@@ -2306,7 +2326,7 @@ function renderIssueCard(issue) {
         <div class="issue-title">${issue.category}${issue.location ? ' — ' + issue.location : ''}</div>
         <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
           ${isOverdue(issue) ? `<span class="badge-overdue"><i class="ti ti-alert-triangle" style="font-size:11px"></i> Em atraso ${daysOverdue(issue)>0?('('+daysOverdue(issue)+'d)'):''}</span>` : ''}
-          ${statusBadge(issue.status)} ${prioBadge(issue.priority)}
+          ${statusBadge(issue.status)} ${issue.priority_official ? prioBadge(issue.priority_official) : `<span style="font-size:11px;color:var(--ink-60);font-style:italic">Perceção: ${({alta:'Alta',media:'Média',baixa:'Baixa'})[issue.priority]||'—'}</span>`}
         </div>
       </div>
       <div class="issue-meta">
@@ -2315,7 +2335,7 @@ function renderIssueCard(issue) {
         <span><i class="ti ti-building" style="font-size:13px"></i> ${issue.unit}</span>
         <span><i class="ti ti-user" style="font-size:13px"></i> ${issue.client_name}</span>
         <span><i class="ti ti-calendar" style="font-size:13px"></i> ${fmtDate(issue.created_at)}</span>
-        ${issue.status!=='resolvida'&&issue.status!=='rejeitada' ? `<span title="Prazo-alvo"><i class="ti ti-clock" style="font-size:13px"></i> Prazo: ${dueDate(issue).toLocaleDateString('pt-PT')}</span>` : ''}
+        ${issue.status!=='resolvida'&&issue.status!=='rejeitada'&&dueDate(issue) ? `<span title="Prazo-alvo"><i class="ti ti-clock" style="font-size:13px"></i> Prazo: ${dueDate(issue).toLocaleDateString('pt-PT')}</span>` : ''}
         ${issue.photo_urls?.length ? `<span><i class="ti ti-photo" style="font-size:13px"></i> ${issue.photo_urls.length}</span>` : ''}
       </div>
     </div>
@@ -2388,6 +2408,11 @@ function renderIssueCard(issue) {
 //  MANAGER — ACTIONS
 // ══════════════════════════════════════════════════════
 async function changeStatus(id, status) {
+  // Passagem a "Em análise" exige atribuição obrigatória da prioridade oficial
+  if (status === 'em_analise') {
+    openPrioModal(id);
+    return;
+  }
   if (usingLocalFallback) {
     const local = JSON.parse(localStorage.getItem('pa_issues') || '[]');
     const i = local.find(x => x.id == id);
@@ -2398,46 +2423,74 @@ async function changeStatus(id, status) {
   await sb.from('issues').update({ status }).eq('id', id);
   const statusLbls = {nova:'Nova',em_analise:'Em análise',agendada:'Agendada',resolvida:'Resolvida',rejeitada:'Rejeitada'};
   await logAudit(id, 'Estado alterado para: ' + (statusLbls[status]||status));
-  console.log('changeStatus chamado:', id, '→', status);
+  await loadIssues();
+}
 
-  if (status === 'em_analise') {
-    const issue = issues.find(x => String(x.id) === String(id));
-    console.log('Ocorrência encontrada:', issue);
-    if (issue) {
-      // Email ao condomínio
-      try {
-        await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TPL_RESOLVED, {
-          to_email:    EMAIL_CONDO,
-          client:      issue.client_name,
-          subject_line:'Ocorrência em análise — ' + issue.unit,
-          message_body:'A seguinte ocorrência foi recebida e está a ser analisada pela equipa pós-venda.',
-          unit:        issue.unit,
-          category:    issue.category,
-          extra_info:  'Cliente: ' + issue.client_name + '\nEmail: ' + (issue.client_email || '—') + '\nTelefone: ' + (issue.client_phone || '—') + '\nDescrição: ' + (issue.description || '—')
-        });
-        console.log('Email condomínio enviado');
-      } catch(e) { console.warn('EmailJS error (em_analise condo):', e); }
-      // Email ao cliente
-      if (issue.client_email) {
-        try {
-          await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TPL_RESOLVED, {
-            to_email:    issue.client_email,
-            client:      issue.client_name,
-            subject_line:'A sua ocorrência está a ser tratada',
-            message_body:'Confirmamos que recebemos a sua ocorrência e que a nossa equipa já iniciou a sua análise. Entraremos em contacto assim que tivermos novidades.',
-            unit:        issue.unit,
-            category:    issue.category,
-            extra_info:  ''
-          });
-          console.log('Email cliente enviado para', issue.client_email);
-        } catch(e) { console.warn('EmailJS error (em_analise client):', e); }
-      }
-      toast('Estado actualizado. Condomínio e cliente notificados.', 'success');
-    } else {
-      console.warn('Ocorrência não encontrada para id:', id);
-    }
+// ── PRIORIDADE OFICIAL (modal obrigatório ao passar a Em análise) ──
+let prioPendingId = null;
+function openPrioModal(id) {
+  prioPendingId = id;
+  const issue = issues.find(x => String(x.id) === String(id));
+  const perc = ({alta:'Alta',media:'Média',baixa:'Baixa'})[issue?.priority] || '—';
+  document.getElementById('prio-perception').textContent = perc;
+  document.querySelectorAll('input[name=prio-official]').forEach(r => r.checked = false);
+  document.getElementById('prio-modal').classList.add('open');
+}
+function cancelPrioModal() {
+  closeModal('prio-modal');
+  prioPendingId = null;
+  loadIssues(); // repõe o dropdown no estado anterior
+}
+async function confirmPrio() {
+  const sel = document.querySelector('input[name=prio-official]:checked');
+  if (!sel) { toast('Selecione o grau de urgência.', 'error'); return; }
+  const prio = sel.value;
+  const id = prioPendingId;
+  const prioLbl = ({alta:'Alta',media:'Média',baixa:'Baixa'})[prio];
+  closeModal('prio-modal');
+
+  if (usingLocalFallback) {
+    const local = JSON.parse(localStorage.getItem('pa_issues') || '[]');
+    const i = local.find(x => x.id == id);
+    if (i) { i.status = 'em_analise'; i.priority_official = prio; localStorage.setItem('pa_issues', JSON.stringify(local)); }
+    loadLocalIssues(); renderStats(); renderIssues();
+    return;
   }
 
+  await sb.from('issues').update({ status: 'em_analise', priority_official: prio }).eq('id', id);
+  await logAudit(id, 'Estado alterado para: Em análise. Grau de urgência atribuído: ' + prioLbl);
+
+  const issue = issues.find(x => String(x.id) === String(id));
+  if (issue) {
+    // Email ao condomínio
+    try {
+      await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TPL_RESOLVED, {
+        to_email:    EMAIL_CONDO,
+        client:      issue.client_name,
+        subject_line:'Ocorrência em análise — ' + issue.unit,
+        message_body:'A seguinte ocorrência foi recebida e está a ser analisada pela equipa pós-venda.',
+        unit:        issue.unit,
+        category:    issue.category,
+        extra_info:  'Grau de urgência atribuído: ' + prioLbl + '\nCliente: ' + issue.client_name + '\nEmail: ' + (issue.client_email || '—') + '\nTelefone: ' + (issue.client_phone || '—') + '\nDescrição: ' + (issue.description || '—')
+      });
+    } catch(e) { console.warn('EmailJS error (em_analise condo):', e); }
+    // Email ao cliente — informa o grau atribuído (sem prazos)
+    if (issue.client_email) {
+      try {
+        await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TPL_RESOLVED, {
+          to_email:    issue.client_email,
+          client:      issue.client_name,
+          subject_line:'A sua ocorrência está a ser tratada',
+          message_body:'Confirmamos que recebemos a sua ocorrência e que a nossa equipa já iniciou a sua análise. Após avaliação, foi-lhe atribuído o grau de urgência: ' + prioLbl + '. Entraremos em contacto assim que tivermos novidades.',
+          unit:        issue.unit,
+          category:    issue.category,
+          extra_info:  ''
+        });
+      } catch(e) { console.warn('EmailJS error (em_analise client):', e); }
+    }
+    toast('Em análise. Urgência ' + prioLbl + ' atribuída. Notificações enviadas.', 'success');
+  }
+  prioPendingId = null;
   await loadIssues();
 }
 
@@ -2580,7 +2633,7 @@ function exportCSV() {
   // respeitar filtros activos
   const filtered = issues.filter(i => {
     if (filters.status !== 'all' && i.status !== filters.status) return false;
-    if (filters.priority !== 'all' && i.priority !== filters.priority) return false;
+    if (filters.priority !== 'all' && (i.priority_official || i.priority) !== filters.priority) return false;
     if (filters.project !== 'all' && String(i.project_id) !== String(filters.project)) return false;
     if (filters.sub !== 'all' && !(i.assigned_ids||[]).map(String).includes(String(filters.sub))) return false;
     return true;
@@ -2596,7 +2649,8 @@ function exportCSV() {
     'Fração': i.unit || '',
     'Categoria': i.category || '',
     'Localização': i.location || '',
-    'Prioridade': prioLabel[i.priority] || i.priority || '',
+    'Perceção cliente': prioLabel[i.priority] || i.priority || '',
+    'Prioridade oficial': prioLabel[i.priority_official] || i.priority_official || '—',
     'Estado': statusLabel[i.status] || i.status || '',
     'Subempreiteiros': (i.assigned_ids||[]).map(sid => subName(sid)).join(', '),
     'Nº fotos': (i.photo_urls||[]).length,
