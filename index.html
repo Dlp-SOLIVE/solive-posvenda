@@ -149,7 +149,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 /* ── STATS ── */
 .stats-strip{background:var(--white);border-bottom:0.5px solid var(--ink-20);padding:0 3rem}
 .stats-grid{display:grid;grid-template-columns:repeat(6,1fr)}
-.stat{padding:1.25rem 0;border-right:0.5px solid var(--ink-20)}
+.stat{padding:1.25rem 0;border-right:0.5px solid var(--ink-20);text-align:center}
 .stat:last-child{border-right:none}
 .stat .lbl{font-size:10px;text-transform:uppercase;letter-spacing:0.12em;color:var(--ink-60);margin-bottom:4px;font-family:'Roboto',sans-serif}
 .stat .val{font-size:28px;font-family:'Roboto',sans-serif;font-weight:700;line-height:1}
@@ -608,11 +608,11 @@ hr.div{border:none;border-top:0.5px solid var(--ink-20);margin:1.25rem 0}
   <div class="mgr-body">
     <div class="filter-bar">
       <span class="filter-label">Empreendimento</span>
-      <select id="project-filter" onchange="filters.project=this.value;renderIssues()" style="width:auto;padding:6px 10px;font-size:12px">
+      <select id="project-filter" onchange="filters.project=this.value;renderIssues()" style="width:auto;padding:6px 32px 6px 10px;font-size:12px">
         <option value="all">Todos os empreendimentos</option>
       </select>
       <span class="filter-label" style="margin-left:10px">Subempreiteiro</span>
-      <select id="sub-filter" onchange="filters.sub=this.value;renderIssues()" style="width:auto;padding:6px 10px;font-size:12px">
+      <select id="sub-filter" onchange="filters.sub=this.value;renderIssues()" style="width:auto;padding:6px 32px 6px 10px;font-size:12px">
         <option value="all">Todos</option>
       </select>
     </div>
@@ -2335,7 +2335,7 @@ function renderIssueCard(issue) {
 
     <hr class="div">
     <div class="issue-actions">
-      <select style="padding:6px 10px;font-size:12px;width:auto;flex:none;min-width:130px" onchange="changeStatus(${JSON.stringify(issue.id)},this.value)" onclick="event.stopPropagation()">
+      <select style="padding:6px 32px 6px 10px;font-size:12px;width:auto;flex:none;min-width:130px" onchange="changeStatus(${JSON.stringify(issue.id)},this.value)" onclick="event.stopPropagation()">
         ${['nova','em_analise','agendada','resolvida','rejeitada'].map(s => `<option value="${s}"${issue.status===s?' selected':''}>${{nova:'Nova',em_analise:'Em análise',agendada:'Agendada',resolvida:'Resolvida',rejeitada:'Rejeitada'}[s]}</option>`).join('')}
       </select>
       <button class="btn btn-secondary btn-sm" onclick="openNote(${JSON.stringify(issue.id)})"><i class="ti ti-pencil"></i> Nota</button>
@@ -2380,6 +2380,7 @@ function renderIssueCard(issue) {
         </div>
       </div>
     </div>
+  </div>
   </div>`;
 }
 
