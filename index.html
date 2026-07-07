@@ -359,6 +359,13 @@ hr.div{border:none;border-top:0.5px solid var(--ink-20);margin:1.25rem 0}
 .v-warn{background:var(--warn-lt);color:var(--warn)}
 .v-bad{background:var(--danger-lt);color:var(--danger)}
 @media(max-width:700px){.mon-grid{grid-template-columns:repeat(2,1fr)}}
+
+/* ── LANG TOGGLE ── */
+.lang-toggle{display:flex;align-items:center;gap:2px;margin-left:auto}
+.lang-toggle button{background:none;border:none;cursor:pointer;font-family:'Roboto',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.06em;color:var(--ink-60);padding:4px 8px;border-radius:12px;transition:all 0.2s}
+.lang-toggle button.active{color:#fff;background:var(--navy)}
+.lang-toggle span{color:var(--ink-20);font-size:11px}
+.nav-user{margin-left:1rem}
 </style>
 </head>
 <body>
@@ -375,12 +382,12 @@ hr.div{border:none;border-top:0.5px solid var(--ink-20);margin:1.25rem 0}
 <!-- NOTE MODAL -->
 <div class="modal-wrap" id="note-modal">
   <div class="modal">
-    <h2>Nota interna</h2>
-    <label class="lbl">Observação</label>
-    <textarea id="note-text" rows="5" placeholder="Contacto com empreiteiro, data acordada, material necessário..."></textarea>
+    <h2 data-i18n="note.title">Nota interna</h2>
+    <label class="lbl" data-i18n="note.lbl">Observação</label>
+    <textarea id="note-text" rows="5" placeholder="Contacto com empreiteiro, data acordada, material necessário..." data-i18n-ph="note.ph"></textarea>
     <div class="modal-btns">
-      <button class="btn btn-secondary" onclick="closeModal('note-modal')">Cancelar</button>
-      <button class="btn btn-primary" onclick="saveNote()">Guardar nota</button>
+      <button class="btn btn-secondary" onclick="closeModal('note-modal')" data-i18n="btn.cancel">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveNote()" data-i18n="btn.savenote">Guardar nota</button>
     </div>
   </div>
 </div>
@@ -389,143 +396,114 @@ hr.div{border:none;border-top:0.5px solid var(--ink-20);margin:1.25rem 0}
 <nav class="nav">
   <div class="nav-logo">
     <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAL4AAABDCAIAAACtGigNAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsQAAA7DAdpqmNwAAB61SURBVHhe7V13fFTF2v7+uVclddPr7qaRspvQ0nuy2QRsCSAqEBRCDcFrgQAiegW96lUBsVxUEDCCgkJsEIrtkyKoiIiFYqGG3WT7bno2yffMmZPl5GzJJnL9fZp9eH9xc857Zs7MPPOWmcn6Pz0uuDAouKjjwiDhoo4Lg4SLOi4MEi7quDBIuKjjwiDhoo4Lg4SLOi4MEkOLOt093d09XfhHf7AXrMTc3d3V1WPGp+6ubuZBC7pwwwo2L/7lMdSsTldPdyfo0A7SOARud3d2m7vMZvYCAaiEn2q1es2aNZMnT66oqHjzzTc7Ojost4YUhhp1GEr09Ji7OlR7PtFvfse45V1DXzFtebdh85bmSxegC/JQ62TBz2fPZqSlu90wzEcgEHh5uw9zu/22SUaDkb09lDC0qAObAybAkHQolOdSSzX+YzRhGRbRMj91gcnn4ouaz10Ew9pAHfNVc2I2myeWjfcc5hYljogSiSGRQvGwv1/36PJHWI2hhKFndboJdXQHDzVE5xrjZTppERVtokyVWKSXytTidGXVw8Q6gTY9cG7E7FB/dPLkybCg4IiwcMobKriSOmqMyWhiyh9CGHKxDg181WvXa0Iz9RJwhQo4JGtMKjFICxpFqbp39jOqDF8Yo0M/fvLJJ0F+/pFCEZc64rDwmIjIC+cvEL2hhKFFnU7CB+K2GqbfbxBlaYmZIcJ8kDXFl6gSclUppZ31DTA1HSAMnuFQB4GOKDQMwqVOsH9AdnpGa0sr0RtKGGKxDkOB9vqGxrRSw/BsXS914LBggZrjS5QR6YoqEriAOgxn+Jg3a7bbdddbDA9MDmKdF9Y8x94eShhiDssMW9Jj2ndQGZmpk+YaWG9FRCuVa6VFmvAM7c7dRBPEscUdjUp9x8TbBJ5Irjy83D0CfP2WLVlq7kRIPeQwxKjTRaijevwlhTDTICm08EYvlWsS5Ya41MbUsjaFilW2g+6urt27dq9cufKpp546euQIe3XoYYg5LHirrs6GSQsM4hzEN8RP9Qr5LBqjrnyYGBCbvooBDXpcAAZMnT913+HVW89dVI6+uTUmV5Ukt8Q6EJNEdiUiXb9jTxv0/uQbC3/MGA3S6uj1+tOnTx88eHD37rr9+/cfO3bs119/NV67tY329vZz5859/fXX+/btq6urO3z48JkzZ4zGa7Boq3/vI6U43SDNVicW66RyyhuDpMgYm3c+s7T9SgN6nSzoXAugFeyn34FB86CpqemXX345cuTInj179u7d+9VXX/3222+trdcsE+yfOnh1y/aeTqt9a+ubM+66O3XMmEiROCQwyNdb4O/jKwwNi46ITE9Jvbt82qYNr9XX11N9J2HpnY729n179y68777CvPzY6JjwkFAU7icQhAYFR4kj0pJTUPXm1zZeqb9C9fGg5Vm7wH0qzA/NQ6sbw1PVSTK99GqsYyArgSkN9zwKHbDGcZENCuUjyx8eKy8eV1T85GOPNzc14SLvNQ4dODB92rSC3LwJpWXv7tzJXnUaXWTRu6dBqUQMXiwrunncuLWr1zgYddRuGSO1Wr1927a5s2ZnZ2RgUMKCQ/wEPhB0ZkxkVE5mVtW8ytodO4wGA9UfNJyiDv2wceOm0aNGIbPw8/IOCwpGXsrmqEJRRLgQv+Kiv8BH4OEZHzP8sZUraZ/2C1q+2Wyu2bS5ICc3QODr6+kV4h8gCg1DsSgcVUT2lu/nLUD5kti4ZYuXOLsKh+LJGjIJdDo62pW3zDGKszXE5BTopSAQtToyTXgqvBVRt9ot5wK8ycvKdr/+hiA//yAfP7e/XTdpwsQmE9tS2pYPP/ggEIT38AwJCMQLew1z+88LL1IFJ4H3VSoVGGYPVOTrF+jjO+zv15XfObmtjbhTe1CpVE888URSUpKPpxfqDQ0MQqeRPmTWEfABXRrsH+Dr5Y0RTB2TvGbNmt9jyJ1yWE0m0+yZszzc3IMCAul7OBYw3f2GYeNKxioVCrYIW7DMlW+OH7/pxhvR19ZrtTZFGBIKBscPj92wYQMtytGxB4YIdH2v+aefFdKS5uEF+oSxmkSWN4Q6sXmNqaVtCiVMTpe5y0GqvfzBZeBNNLOHFS0k08bt+hs2vbaRvc24iazMzAAfX8vbgvEwmZcuXsJdB6TkYflDy1EyrQiCbgGNtm7ZgluWycxF7Y6dY0aOwhgRC91btQMBsaCckZaObJGWYLNYB3BEHYs9qLjrbo8bhjkzqFzxHOZWPnkKHqelWYOWv3Xr1vDwcB+BgPe4Y0GfhgQFe3h4zJ07t7mlmRZoD6BVFzNqmrd2NwpTdJICY/xNmkTip+jSjkaUoVjwEDSQund1czY8+wIEleXlY+Ky7yAkIvDyrqqcz2r09Bw/fjw4KAhm0vKqEC93j389/i9WwwkolIq42DjMQG4hsCXz5s7FXd4Yo4eXLl3q6+kNI2ehmpOCuQpH8fijKwbKG8Ch1WGKW/fiS2Sv2KrWfgUWEpPvyKHDtDAu8KL0XZ9fs9YHphV91LfNdFSshasDEWMuDnObWDbexBx7sNl+MNeM6wx3FAuf0IhStYkyg6SEbHlKi1RJxU2SAkVEhn7HXqpMCrHTjZ2dnYU5uRgh7jvANcyfW8lq9PR89913ocHBFjdBBYZnRGKSVq1hleyDNmHNqtVgG69PQJ3KufOoGgGjieiwYvoMTzd3+CauskUcdyCohlfF+IL95k4yyW32oU3047Dg2qVx8cTk9q0SAiOE1w0PDoHAg1jbJLwW3MqGV15ly+KA+pe3tmxFWAMHHN33QfKspanhIsjVX601RRHebu53Ty2n5s265aiJUKe7p6OlSVk81RCdS52ULpFsm6uSSoxx2Yq00o7LWjxphh7+Y6f3zJ2dsDp86nh5L5h31eq0tbeVFBcH+fpzdSACd4/1615mlRzCaDCmjUmGQ+GVgBhlx9vvsEoA85L/mF8Fh0AjQpvC60PeXSoYOwRk1fc/QEp1mjv9UAehK4afVxM4AaMNQxcpihiZNCJ51OiEuHh0KNoGDnHnio+H5wfvvc+W1RfI58NCQoXBITZtLMrx8/YReHoF+vkH+5OS8Zk3ZlzBvHn8scfYonlgjoqCQE3Hv7uSUGiMZxMrxDqmBLkpoVgZma6tJPtWCHE6fzd1gLe3bUPDuToQBP65mVmtLS2skn3U1NRY9zk6vCA7hyZZlsFd98KLXm7uNgMJXAT50G+wVaQPMTreAvLZ1w9mxrrPCXvcPNYz8/zaUKdyzlxUz6sGzSgulL29bfvZM2caGxuRDdZfrj908ODDy5Yh9/Hx8MLAwyChVTkZmQadni2Lg5aWloLCQl+BD68N+BUNQwuHR8fMmTV7w/r1H+3b/9mnn76z/W3kw1kZmXgZmEDrlovCwv39/b+wuS3QzRACWeuGrerwZMu+lQ6BjkRuipfXR2Toaom3ss8ZFk5SB3lQfnaOJSSyCNr19vbtrJIddHR0FBUVIQThPYscYtN6Nieg1Pn+5EkYbDJX+2qic0Aa1JWZmvZg9eItNW98tH///372v7U7a//95FMTSsvwCKY97ykIvIcoXPjjTz/SWvpFP9SZNH4CeMqtICwwKD05xZ7bPv/buX9ULYiOjBSHC0tvvuXUjz+xNyxgBufldes83NwiOcVCSJuDgjE/llRXn/vtHKPdB83NzTWv14yQJiK8sGYPiFhWWmqdaqGf6cKcovJBnSiV8oYROSJlfVyOKrWsRdnAqPbDHSepA2zc8BoGm6sGQU/efONNfY8787Hrww99rTIGUAEuzKhnV2IodcqnTLGe1egWP4FPkkS6eeNGk53E+6ujX955+x2w4ryADO7C28PzrmnTWL3+0A91xt9ya1Bf6oCwM6fPIPfsd/T58+dPnz7N/mIFnU6XOnpMWEBQFMf1os0gJTzghx9+yOrZAQq/cew4dBCfPeGiAG+fj/Z/xOr1oqurG9Tp0GqVeZMM0Xkc6hRrEgv1opGqqkf5dLMD56mjNxjGjB7Di1fgFJA3fPrRx6wSB5aOvH3CRG5iTwUh81rmXIdF7YuDh6jrseiQUIbhTZGs6LfffmP17OPJJ55ERTz24FcYy6NfHIVCvzFPP9S587ZJvJbASCJwPnr4C1ajL1Bfv1W+uWWrt7snL2RDsTCYnzDd6uB5mvxoNVp4BPQdlz0xoggkqBUzKqimBTQtNx36+kJsXktcn91yvbRALUzT79xD7IAT9HGSOvT9V69abR2ywF5OmzKVud8H9JGjR44G+QfwhjMc2ZlEqmok+/mW3A/RMVwSVw39iRdLHj1GcYUstcP62hsIy/VHlj3EL0QcAWN5T9UCquAY/VDnoSVLeYaXmIegYEygpdXVR48ccby+aRNTJ0+B6eJRB3HlM08+xWo4gW++/BpU42akKBBeXBIXr1QqWSUGXehGpC2rN6rCU40SzjIgJC7vYmZpq6KR/jkM1XeAAVFH1diYlCDBS3KVQQv03onj31rUKCgnEN75WPkg8O9fK1b2qhEgWhgpTUSGwVWLDBMG+/nv37uPUXEKiNkLrNYawoNCRo4YCc/AKtlHP9Q5+PkBfx9fXgwP9sBIIK8OCgzMzcmtXlRdV1end6IyQK1SJUqk4cGhXOqgN+HL6dqMM6BbBfdWLeA6e1KgUASLvaeujqr1oruzx9wwbaFBmM5dQQaN1OL0K/eS3Ir8zZ4TZsd56tAxfnzFSkQPXGV0HSb6PQvuYe73walTp4Rh4bzlGUyG4VHRly5cpDq02M8++RSugDcogQLfu6eUM/cHgF3vf0AyZU5R+Bzo7//555+zGvbRD3UwFWdWVCBX4roGi2AOoR/RF6h+zMhRD9x736EDB3sfvLohx8VXR4+GBRKjxS0HJmflP8nWo5OgJvfA558jE+GZd9jIVU8/Q9UsaLty6VJmmSFGpuNueUryFeI047skNiJUpMPiEM7HOhQXL16MiY7mJUFkHUsc8evZn1mlXiyzMvAQmBzMTFajt+HPP7fWWjM0IHBiadm/n3gSJsoZAa2feOzxJQsX4VnecKDwV/6zjtboAI6oQ8e+saEhKy0dxdlkDytCESwHOIQga8KtpXv3kH1Em3hvZy38PfdZvDcY8IlVeNsvdFpt8oiRPI+Ad7jPak7rPv7sSlROa2yRJqnQcryraXiuOo3sW2E0SGDA6jrCQKkDLK6utu46EGLFI/9kNRgoFQpJbByPZLBAmBhnOAkH9WtLqhfDr/HGG1VgCFAXesBJgbLNLB23EKjQGh2gX6tD3vXcr7+iy2B7eObUWtBUvA3y5Dlz5qjVajzL28Oq2bQZ1OE2m+2gU3YzMgcYJy/mLZ+g9jkVs9jbvdA++bw2LK05XqZOKrBQRyvKaFzwMF6OLBjatJBWGAR1MPBooLjvH1GA7giDGpiYjPbw6mdX8WJqUAFDWDXv6haHBfPnVfKm37UVFD6nYiZbmX30Qx0Cpm1Gg2Hpomr0GsILxwSKJltLQnd39+zs7HPn+Mszr657mbcaQUv79edfWI2B4KaSsbzVM1Bn9oy+zTZ3KW+v0kci0CnUJRZQ3hgkRQpxhq52F+6TTfVuR2stFgyIOiiUEnJB5XyQgPsIBESB36Gaer0hJZm/84DpRALqY8epDheVc+f9d6nj5T13Jn/6WcMJ6gC91hzZ46zpM9Aq2Do0LEpIiIL4lJcuEWHWlwrz8vVaEj7TuQW8tXUr3oyrCerAUH/37Qmq4DwwkEX5BfyB9BZUzp6Duxg0akjaLpxvGH2LMS63KV6mSZSrE+WqJHnT8KxLmeM76oldJGpO+asBWx3a6m+//TY0OFjcNyZDIZmpaU3MuUpYYvQn9y5Mjq+XYFq57dU5JM9opvXG37URoXjYdde/+sorbGX24Rx1GFiG/4fvTj609MFRiUn+XgI/T2+yD2VNHUY8bhgGW8V9dm9dXUDfkB4CO7T9zbeogvO4eOFCbHQMzwRifj9YvRh3UR/qxE/NB3vVYTnaxAJjggy8MSYUq5PkOlGKqopEG3R7yzI3HGMQDouifGq5r5WdQHKwfStpdXFBIfJq7i30T6CvP/IA+rgF9DUfWf6wtRkD29AVoBQEdQ1OUKz79TdMnDDRaOo/2x0AdQALAwCNWvPBe+8tmF+VEBcPAxNqc2spNAyz7cyZM+wzPT2nf/wJRos73ngKXoZdoR4Iaja/7mvVg5i+G19dj7vwFV1msqOpXv5MU1CGKgkmh5yyaIkr1kuKLkdmNu8kSyBwVH8AdQ4eOBjQd/EXAlc7afyE92vfxQfeXELuPaG0jNvbXKDh1tRBVyePHHX/P+69Z35VVeX8QQhCqMp5la+t3+Dk+eWBUccmLl+69Nya5+xtLXm5e7z88tXDBm0trdnpmcgkuTrEZ4WFn/z+e1bJCXRiFAtlvBiZxAeBwceOfgmFNuZ7BtrbWupvrTBFZiG4IQGyRKaXFBuH59dnlrU2NJKCnCMNhU3qwGRW2acOiqcMmFg2HuaW+yAVaVw8XpvXb35egl3vf0BLsMaJb08g0OYREVdGSKTOr439ftimDlpLG6xWqd54vebpp/797s5aHRO1MHdt9Hj95ct3TS3HBKLRj6VJSCMXLOizsL3ogYU81w6B4UHnMkWThIdq2kDvRHzphResZx4GNTszq7W5Bc+bmTKaT59SJsp18fnGBBIdmxKKGkbI9MIMTdUjuM9UZqMtBPQ6VxBQd3bm5+cGBvhHiMURmOjiyGBxtJuHexUTXdkD7cm63bvhEXjWBb/SZR7uxUA//+IieWeH3WOuHe0d+Xn5QVY78yDxovvupzrM+9qFZUPDGrjl+FkLbFOHLnN8d+LEmBEjvd08kA5gsGEP36t9lyqQqq1qaG9ry8nIDAsI4lIHnJg8eTKrweDw4S8CrEw0ug++35nlBGBf3R5hcChvFQSUhYVb+egKKHTi3RjqqLfVqsLTLQctTAlyTaKsUZxleI85wU5UbAJ3zOaervbu7k6ydt3dzvRIm7krL1fm4xMQHBoWFBoSExo0JlRUJPB9YXY/DguAmSwuLuYdQ7ApAk+vt7ZtYx+zg2eefdbTw4MXKUcIRejtLa/XsEoOoVQqa2tra2pqTpwYcIJCYddhIbG88/Y7PIe5W94MFgU+eOOG11gNpuMJSRmQz13dedk5Yf6BXOr4CXzKy/sskEP59tsmWXs3WGDMm/mz5zZSV2IHm9ZvgIMj+R3nWQimbySS/F9Iko/QF3MW76S77zFdeBrlDSPFpuFFjaNuaj7/C/P6tgFfB94gae8gx8RoQwk6enpuzcstDAq9P1K6NjZllyT7RGJJ/fCCC5UPOjNXt2/fzljKPnOGJzCceVnZLc39nAirr6+Pi43lLYeiPzGdkORb0n4KOjpcbN60SRKfIPDy9vLwDAoIfH5tH30nYZc6Go1G2nf3jrxZaJifjx9CY27kS2EymaoXLoKxBW+41MEcWrpkCavUOwyHrc4MUIEpQucmjxq9bt26y5cvM7os9AZDXV3dpIm3IQ5AB/Foh1+93dyXP7iMKqOvYHQ6Tc2KomnG6EwOdeT6OJlKKm852/+BJsZs9Zj1hqYzZ417PtOu3tgw56Gzo0vqRxS3jhjXIynplJa0S4rbQ1Prq53aRWlpacnPzgmxcjRcgYF/jQnzHYBS4dmnn/FyuzqxqaAfMIXQhxNLy/bs2s0LfeAWjn7xxazpMzCfLctIGGLof7SffKWQNckcwC51mpqaUpNTeOtUEGRMCF9iIqOmT7vrhbXP1+7cue2tt1b889Gc7Gz4cthMXqwD6rzzztUTtZZXW3T/A9Yth6DxqFTg7Z0QHz++tOyeBQseuO/+qVOmpCQn+/v5+zMnQHi8gcAiJo8erVGRdRqA1tJ8/PuLUrkp/uoZHSP5LqYClShN8Ty7bgFNKhZ0NDW1nj5rqtuvXPNqw9ylDfJycKU+MoucMBSmNklkJmbXHUE3Qm/ynU7ClCsPEC/pGHR5EDabtyHKFTQc08agt3Gu0hoYoILcPJCAd/qdCmYmJCMl9a7yaYsXVUNmVlTk5+TCWvszIRfX2SEamTFjwBmubepQ9i1b+iCiB+txQq2gNtwq2EoXEvCBlzRRgfkdmZgEA0aL5cJgNBbk5dlMyqjAtAT5+iH1hReDo0SbeeERFTwOTaS+H3989QgVpULjxjeUwgxTQrGFOhBtYqExNudi0ljV27s6u8gfAbTqdG0nzppq9ymfeUUxa2mjrPzyiKL6yHRNaKpOlKGNyTXGFxg4pzUsopMyq0QR6VdmLuaSzwHQ6uTk5GCrCUkFvb1q1SpW1QkcP/YNMtMQ9IytPkR3odPQdRgdCMYLw2Ft6SEgWVlpGVuo07BNHRomXzx/IT46JiQwyN7o9iuew9xeeek/KIpnCemvZ06fHimRokmDLh9C7fNG5tyuZScKpeOTZu4SXXi6TnqVOhjshhFykySvIzJHEVOgKatsnL7ofHG5Mn6sSpSqEo7WiVObojINcQWGhKImJGUS+oVftoWhjhzUqZ+5xEnqAKtXM38oY9UQOA7EHw0NzFFXJ0D78P333vf39fs9Y4QH8T7zK21sljmGXYdFUfvODkx665jUGUFqdvuEiWb7SSbw48nvU0aNts7VnZRg/4AAgQ/vj1Qob1q1KnXW+ObobG0ix+pI5HpJsTZRpk/M10vyVTE5JmFmS2SWTpIDR6aTkmXDxhFyLTghYfzR1S8btCGs1YlMV1Q4a3WABmUDCSL7dinGD53wz4fJ4aEBBRzAjnd2hAaHwHKgkIESCProQ1Fo+LGvj6GoAVXtkDpMQVtr3gB14Fl4tdoTvA2soqeb21h5cSM9Lm4PTPn1ly/fMfE2xD2oxcmWQw1JFiLKxPiEug/JFiZ3KQiFwg01Hzh6ZXi2QZJL6NI72OCEQVJsTCgh35AilZniQSOSrpsSCg0SuQ5CCFGolcpgbLR4RFJkTCCHwhDTkCuJ4NPV0pgvypCrwlOU9zv7l510QeWxFSt4R6DIQoM44sK587hLT8Q6BSgyuocPHUJYgzJF/R1t4ApNSuKiYz5mTrwMlLL9WB2Kr7/8alzJWG9ENgIfjJklwqLJFDeliqSHLrwFlZWVTp4bBOBoXl63bqQ0EYYK/jiS8zd7PIkSioVMRoCIsnLu3AsX7H5jgf6NHfURGaBFU/zVwaZiWeahS8zUJZHzpswVEMWiQIVZhoa5KjEQwQfCMLKtkVjYFp13SZin2Wf7pLY9IHmMjY319/UlKQUzhNf/7e/LlrHp4eCgVqsXV1eHh4d7eHjQvzimw8TvQOYiBhEJh6en5/jx40+dOsUWMUA4RR2gs6Pz7W3by24tRYaFpAmCupFnYqRD/CEBMEvIHeB0y265dW+d3aNe1rCQHZZ81dPPZGVkIl3y8fBEIhDsF8AUTiRA4IuL8J6SuPiqeZXHvvqKPmVvrihe3GgMTie+qfdLdAYnxLRISowSuYlEPzKtNE8bn6dDwiVMV4VmNIgL6l/a2OH8EmwvPv3ss4S4eC83D3QaJuTMGRW/50snLJ1w8vvvFy1aNCIxEWXSkjljFBjo40fHThwmRPa6s/fbWywx4oDgHHU4Jf/444+bN21Csjf5zjtlBYWFefkFefklcvmsmbOeW/PcN8e+YfUGbgApmpubD3x+4Nmnn5lVMbNEXozCIbL8gil3Tn74oeU7d+ysv+zUl/fotu00hmboJOSgBY8NzgvMjzGhoCk2RxedrhKnNIQnayIKFSnjL02cp170+JUXN2qPk/a2o7G01oGgvr7+jZqa59euPXSQPZV7raBWqXbv2r3i0UfLp06VFRYW5hdQmXTbbYsWLsTw/fDDD6zq74Bz1EHHUOkL8n0iHR3tbe34wF5iMDjS2EA3sXaowtGuli0g1jEe/7o+Nk+XUMi1OiSU4XzhLbxPr5OiF+GqZMjDSYYVlaMVZjQK0xqjclQjb7x0S4Vi0WPqV7fqDx5tu3C5s6MNLUT8T0iDVxtAePJHw2w20z6k30ZwDeGsw7Lg/20fcYGBbW9tuzR1oVqUapLm66WFzJ8JM3GMBJ/JcUGDtBCpNQSxsC6+wBSVrRelK4VpyqgsxahxipumN9z7SMO6zYZPD7Werze32vpqN2aTAh3yO/vkmnfpHzNGA6bOnwJdzARr/u5ko3ScXpyFeIX5PpSixiSEt3I9opZYmTEqtzEy5Yo45XJ0lnJEibpkurbyEcWLmwwff9b867n2lhY6AH/MMPwZ8dekDtn7ZFyc7tAXF3MmKcKSTcJ0Y1S6HkYoOK1BnHVhZLGyeIp69jLNqg1Nez9t+fmX9varX18H4kE6uno6u8k+KHvVhb74a1KH2fpm/3dE7UqFYn1N/cyljbfM1kxfrHnqFdP7+5tPn25v0lGLAmoQqjEfGME/8oWCneSwO6I2l92xjb8mdQgTmP95EbU9FJ1dnfjNQgT6mQi51BuzkF9AOTbOx09OAS70wV+VOi781+GijguDhIs6LgwSLuq4MEi4qOPCIOGijguDhIs6LgwKPT3/ByJEwNUVEgxIAAAAAElFTkSuQmCC" alt="Solive" style="height:30px;width:auto;display:block">
-    <span class="subtype" style="margin-top:2px">Assistência Pós-Venda</span>
+    <span class="subtype" style="margin-top:2px" data-i18n="nav.subtype">Assistência Pós-Venda</span>
   </div>
-  <button class="nav-tab active" id="tab-client" onclick="showView('client')">Reportar ocorrência</button>
-  <button class="nav-tab" id="tab-manager" onclick="tryManagerView()">Painel de gestão</button>
-  <button class="nav-tab" id="tab-analise" onclick="tryAnalyticsView()" style="display:none">Análise</button>
-  <button class="nav-tab" id="tab-projectos" onclick="tryProjectsView()" style="display:none">Projectos</button>
-  <button class="nav-tab" id="tab-subs" onclick="trySubsView()" style="display:none">Subempreiteiros</button>
+  <button class="nav-tab active" id="tab-client" onclick="showView('client')" data-i18n="nav.report">Reportar ocorrência</button>
+  <button class="nav-tab" id="tab-manager" onclick="tryManagerView()" data-i18n="nav.panel">Painel de gestão</button>
+  <button class="nav-tab" id="tab-analise" onclick="tryAnalyticsView()" style="display:none" data-i18n="nav.analytics">Análise</button>
+  <button class="nav-tab" id="tab-projectos" onclick="tryProjectsView()" style="display:none" data-i18n="nav.projects">Projectos</button>
+  <button class="nav-tab" id="tab-subs" onclick="trySubsView()" style="display:none" data-i18n="nav.subs">Subempreiteiros</button>
+  <div class="lang-toggle" id="lang-toggle">
+    <button id="lang-pt" class="active" onclick="setLang('pt')">PT</button><span>|</span><button id="lang-en" onclick="setLang('en')">EN</button>
+  </div>
   <div class="nav-user" id="nav-user" style="display:none">
     <span id="nav-username"></span>
-    <button onclick="logout()">Sair</button>
+    <button onclick="logout()" data-i18n="nav.logout">Sair</button>
   </div>
 </nav>
 
 <!-- ═══════════════════════════════════════ PUBLIC TRACKING VIEW ═══════════════════════════════════════ -->
 <div class="page" id="view-track">
   <div class="track-header">
-    <h1>Acompanhamento da ocorrência</h1>
-    <p>Solive — Assistência Pós-Venda</p>
+    <h1 data-i18n="track.title">Acompanhamento da ocorrência</h1>
+    <p data-i18n="track.sub">Solive — Assistência Pós-Venda</p>
     <div class="track-status-badge" id="track-status"></div>
   </div>
   <div id="track-content"></div>
   <div style="text-align:center;margin-top:1.5rem">
-    <button class="btn btn-secondary btn-sm" onclick="goToClientForm()"><i class="ti ti-plus"></i> Reportar nova ocorrência</button>
+    <button class="btn btn-secondary btn-sm" onclick="goToClientForm()"><i class="ti ti-plus"></i> <span data-i18n="track.new">Reportar nova ocorrência</span></button>
   </div>
 </div>
 
 <!-- ═══════════════════════════════════════ CLIENT VIEW ═══════════════════════════════════════ -->
 <div class="page active" id="view-client">
   <div class="hero">
-    <div class="hero-eyebrow">Serviço pós-venda</div>
-    <h1>Reporte uma<br>ocorrência</h1>
-    <p>Descreva a patologia identificada na sua fração ou numa área comum. A nossa equipa analisará e dará seguimento brevemente.</p>
+    <div class="hero-eyebrow" data-i18n="hero.eyebrow">Serviço pós-venda</div>
+    <h1 data-i18n-html="hero.title">Reporte uma<br>ocorrência</h1>
+    <p data-i18n="hero.p">Descreva a patologia identificada na sua fração ou numa área comum. A nossa equipa analisará e dará seguimento brevemente.</p>
     <svg class="hero-accent" width="220" height="220" viewBox="0 0 120 120"><path d="M0 60 Q15 40 30 60 Q45 80 60 60 Q75 40 90 60 Q105 80 120 60" fill="none" stroke="#40C98E" stroke-width="2"/><path d="M0 75 Q15 55 30 75 Q45 95 60 75 Q75 55 90 75 Q105 95 120 75" fill="none" stroke="#40C98E" stroke-width="2"/><path d="M0 45 Q15 25 30 45 Q45 65 60 45 Q75 25 90 45 Q105 65 120 45" fill="none" stroke="#40C98E" stroke-width="2"/><path d="M0 90 Q15 70 30 90 Q45 110 60 90 Q75 70 90 90 Q105 110 120 90" fill="none" stroke="#40C98E" stroke-width="1.5"/><path d="M0 30 Q15 10 30 30 Q45 50 60 30 Q75 10 90 30 Q105 50 120 30" fill="none" stroke="#40C98E" stroke-width="1.5"/></svg>
   </div>
 
   <div class="success-banner" id="client-success">
     <i class="ti ti-circle-check" style="font-size:22px;color:var(--success);flex-shrink:0"></i>
-    <div style="color:var(--success)"><strong>Ocorrência submetida com sucesso.</strong><br><span style="font-size:13px">A nossa equipa irá contactá-lo brevemente.</span></div>
+    <div style="color:var(--success)"><strong data-i18n="success.strong">Ocorrência submetida com sucesso.</strong><br><span style="font-size:13px" data-i18n="success.sub">A nossa equipa irá contactá-lo brevemente.</span></div>
   </div>
 
   <div class="section">
-    <div class="section-title">Identificação</div>
-    <h2>Os seus dados</h2>
+    <div class="section-title" data-i18n="sec.id">Identificação</div>
+    <h2 data-i18n="sec.yourdata">Os seus dados</h2>
     <div class="fg">
       <div class="fg-full">
-        <label class="lbl">Empreendimento *</label>
+        <label class="lbl" data-i18n="lbl.project">Empreendimento *</label>
         <select id="c-project" onchange="onProjectChange()">
-          <option value="">Selecionar empreendimento...</option>
+          <option value="" data-i18n="opt.selectproject">Selecionar empreendimento...</option>
         </select>
       </div>
       <div>
-        <label class="lbl">Nome completo *</label>
-        <input id="c-name" type="text" placeholder="Ex: João Silva">
+        <label class="lbl" data-i18n="lbl.name">Nome completo *</label>
+        <input id="c-name" type="text" placeholder="Ex: João Silva" data-i18n-ph="ph.name">
       </div>
       <div>
-        <label class="lbl">Email de contacto *</label>
+        <label class="lbl" data-i18n="lbl.email">Email de contacto *</label>
         <input id="c-email" type="email" placeholder="joao@email.com">
       </div>
       <div>
-        <label class="lbl">Telefone</label>
+        <label class="lbl" data-i18n="lbl.phone">Telefone</label>
         <input id="c-phone" type="tel" placeholder="+351 9xx xxx xxx">
       </div>
       <div>
-        <label class="lbl">Fração / Unidade *</label>
+        <label class="lbl" data-i18n="lbl.unit">Fração / Unidade *</label>
         <select id="c-unit">
-          <option value="">Selecione primeiro o empreendimento</option>
+          <option value="" data-i18n="opt.selectfirst">Selecione primeiro o empreendimento</option>
         </select>
       </div>
     </div>
   </div>
 
   <div class="section">
-    <div class="section-title">Detalhe</div>
-    <h2>Descrição da ocorrência</h2>
+    <div class="section-title" data-i18n="sec.detail">Detalhe</div>
+    <h2 data-i18n="sec.desc">Descrição da ocorrência</h2>
     <div class="fg">
       <div>
-        <label class="lbl">Categoria da patologia *</label>
-        <select id="c-cat">
-          <option value="">Selecionar...</option>
-          <option>Infiltrações / Humidade</option>
-          <option>Fissuras / Fendas</option>
-          <option>Revestimentos — Pintura</option>
-          <option>Revestimentos — Cerâmica / Pedra</option>
-          <option>Revestimentos — Madeiras / Soalho</option>
-          <option>Caixilharia / Vidros</option>
-          <option>Instalações elétricas</option>
-          <option>Instalações de água / Saneamento</option>
-          <option>AVAC / Ventilação / Climatização</option>
-          <option>Isolamento térmico / Acústico</option>
-          <option>Equipamentos (elevador, portão, intercomunicador)</option>
-          <option>Estrutura / Betão / Argamassa</option>
-          <option>Impermeabilização</option>
-          <option>Outro</option>
-        </select>
+        <label class="lbl" data-i18n="lbl.cat">Categoria da patologia *</label>
+        <select id="c-cat"><!-- preenchido por populateCatLoc() --></select>
       </div>
       <div>
-        <label class="lbl">Localização na fração</label>
-        <select id="c-loc">
-          <option value="">Selecionar...</option>
-          <option>Sala de estar / Jantar</option>
-          <option>Cozinha</option>
-          <option>Quarto 1 (Suite)</option>
-          <option>Quarto 2</option>
-          <option>Quarto 3</option>
-          <option>Casa de banho 1</option>
-          <option>Casa de banho 2</option>
-          <option>Varanda / Terraço privativo</option>
-          <option>Hall de entrada</option>
-          <option>Corredor</option>
-          <option>Zona técnica / Lavandaria</option>
-          <option>Toda a fração</option>
-          <option>Área comum</option>
-          <option>Outro / Não aplicável</option>
-        </select>
+        <label class="lbl" data-i18n="lbl.loc">Localização na fração</label>
+        <select id="c-loc"><!-- preenchido por populateCatLoc() --></select>
       </div>
       <div class="fg-full">
-        <label class="lbl">Zona específica (opcional)</label>
-        <input type="text" id="c-zone" placeholder="Ex: parede à direita da janela, junto ao teto / canto inferior esquerdo do pavimento...">
+        <label class="lbl" data-i18n="lbl.zone">Zona específica (opcional)</label>
+        <input type="text" id="c-zone" placeholder="Ex: parede à direita da janela, junto ao teto / canto inferior esquerdo do pavimento..." data-i18n-ph="ph.zone">
       </div>
       <div class="fg-full">
-        <label class="lbl">Descrição detalhada *</label>
-        <textarea id="c-desc" placeholder="Descreva a patologia com o máximo de detalhe possível: quando foi detetada, dimensão aproximada, se agravou, se existe risco de danos em bens pessoais..."></textarea>
+        <label class="lbl" data-i18n="lbl.desc">Descrição detalhada *</label>
+        <textarea id="c-desc" placeholder="Descreva a patologia com o máximo de detalhe possível: quando foi detetada, dimensão aproximada, se agravou, se existe risco de danos em bens pessoais..." data-i18n-ph="ph.desc"></textarea>
       </div>
       <div class="fg-full">
-        <label class="lbl">Urgência percebida</label>
+        <label class="lbl" data-i18n="lbl.urgency">Urgência percebida</label>
         <div class="priority-row">
           <label class="prio-opt high">
             <input type="radio" name="prio" value="alta">
-            <span class="dot dot-h"></span> Alta — risco imediato ou danos em progressão
+            <span class="dot dot-h"></span> <span data-i18n="prio.alta.full">Alta — risco imediato ou danos em progressão</span>
           </label>
           <label class="prio-opt med">
             <input type="radio" name="prio" value="media" checked>
-            <span class="dot dot-m"></span> Média — sem urgência imediata
+            <span class="dot dot-m"></span> <span data-i18n="prio.media.full">Média — sem urgência imediata</span>
           </label>
           <label class="prio-opt low">
             <input type="radio" name="prio" value="baixa">
-            <span class="dot dot-l"></span> Baixa — estética / acabamento
+            <span class="dot dot-l"></span> <span data-i18n="prio.baixa.full">Baixa — estética / acabamento</span>
           </label>
         </div>
       </div>
@@ -533,33 +511,40 @@ hr.div{border:none;border-top:0.5px solid var(--ink-20);margin:1.25rem 0}
   </div>
 
   <div class="section">
-    <div class="section-title">Documentação</div>
-    <h2>Fotografias</h2>
+    <div class="section-title" data-i18n="sec.docs">Documentação</div>
+    <h2 data-i18n="sec.photos">Fotografias</h2>
     <div class="upload-zone" id="c-upload-zone">
       <input type="file" id="c-photo-input" accept="image/*" multiple style="display:none" onchange="handleClientPhotos(event)">
       <i class="ti ti-camera-plus"></i>
-      <p>Clique para adicionar fotografias<br><span style="font-size:11px;opacity:0.65">JPG · PNG · HEIC — até 10 fotos por ocorrência</span></p>
+      <p data-i18n-html="upload.click">Clique para adicionar fotografias<br><span style="font-size:11px;opacity:0.65">JPG · PNG · HEIC — até 10 fotos por ocorrência</span></p>
     </div>
     <div class="photo-grid" id="c-photo-preview"></div>
     <div class="upload-progress" id="c-progress"><div class="upload-progress-bar" id="c-progress-bar"></div></div>
   </div>
 
   <div class="section">
-    <div class="section-title">Privacidade</div>
+    <div class="section-title" data-i18n="sec.privacy">Privacidade</div>
     <div class="gdpr-box">
+      <div class="i18n-pt">
       <p><strong>Informação sobre tratamento de dados pessoais</strong></p>
       <p>Os seus dados pessoais (nome, email, telefone e identificação da fração) são recolhidos e tratados pela <strong>Solive, S.A.</strong>, exclusivamente para gestão e resolução de ocorrências pós-venda do respetivo empreendimento, ao abrigo do contrato de compra e venda celebrado. Os dados são conservados durante 5 anos após resolução da ocorrência. Tem direito de acesso, rectificação e eliminação contactando <a href="mailto:geral@solive.pt">geral@solive.pt</a>. Para mais informações consulte a nossa <a onclick="document.getElementById('privacy-modal').classList.add('open')">Política de Privacidade</a>.</p>
+      </div>
+      <div class="i18n-en" style="display:none">
+      <p><strong>Information on personal data processing</strong></p>
+      <p>Your personal data (name, email, phone and unit identification) is collected and processed by <strong>Solive, S.A.</strong>, exclusively for the management and resolution of after-sales issues of the respective development, under the executed purchase and sale agreement. Data is kept for 5 years after the issue is resolved. You have the right of access, rectification and erasure by contacting <a href="mailto:geral@solive.pt">geral@solive.pt</a>. For more information see our <a onclick="document.getElementById('privacy-modal').classList.add('open')">Privacy Policy</a>.</p>
+      </div>
       <div class="consent-row">
         <input type="checkbox" id="gdpr-consent">
-        <label for="gdpr-consent">Li e aceito o tratamento dos meus dados pessoais para efeitos de gestão pós-venda, conforme descrito acima e na <a onclick="document.getElementById('privacy-modal').classList.add('open')">Política de Privacidade</a>. *</label>
+        <label for="gdpr-consent" class="i18n-pt">Li e aceito o tratamento dos meus dados pessoais para efeitos de gestão pós-venda, conforme descrito acima e na <a onclick="document.getElementById('privacy-modal').classList.add('open')">Política de Privacidade</a>. *</label>
+        <label for="gdpr-consent" class="i18n-en" style="display:none">I have read and accept the processing of my personal data for after-sales management purposes, as described above and in the <a onclick="document.getElementById('privacy-modal').classList.add('open')">Privacy Policy</a>. *</label>
       </div>
     </div>
   </div>
 
   <div class="submit-row">
-    <p>* Campos obrigatórios</p>
+    <p data-i18n="submit.required">* Campos obrigatórios</p>
     <button class="btn btn-mint" id="submit-btn" onclick="submitIssue()">
-      <i class="ti ti-send"></i> Submeter ocorrência
+      <i class="ti ti-send"></i> <span data-i18n="btn.submit">Submeter ocorrência</span>
     </button>
   </div>
 </div>
@@ -569,8 +554,8 @@ hr.div{border:none;border-top:0.5px solid var(--ink-20);margin:1.25rem 0}
   <div id="login-page">
     <div class="login-box">
       <div style="margin:0 auto 1.5rem;text-align:center"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAL4AAABDCAIAAACtGigNAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsQAAA7DAdpqmNwAAB61SURBVHhe7V13fFTF2v7+uVclddPr7qaRspvQ0nuy2QRsCSAqEBRCDcFrgQAiegW96lUBsVxUEDCCgkJsEIrtkyKoiIiFYqGG3WT7bno2yffMmZPl5GzJJnL9fZp9eH9xc857Zs7MPPOWmcn6Pz0uuDAouKjjwiDhoo4Lg4SLOi4MEi7quDBIuKjjwiDhoo4Lg4SLOi4MEkOLOt093d09XfhHf7AXrMTc3d3V1WPGp+6ubuZBC7pwwwo2L/7lMdSsTldPdyfo0A7SOARud3d2m7vMZvYCAaiEn2q1es2aNZMnT66oqHjzzTc7Ojost4YUhhp1GEr09Ji7OlR7PtFvfse45V1DXzFtebdh85bmSxegC/JQ62TBz2fPZqSlu90wzEcgEHh5uw9zu/22SUaDkb09lDC0qAObAybAkHQolOdSSzX+YzRhGRbRMj91gcnn4ouaz10Ew9pAHfNVc2I2myeWjfcc5hYljogSiSGRQvGwv1/36PJHWI2hhKFndboJdXQHDzVE5xrjZTppERVtokyVWKSXytTidGXVw8Q6gTY9cG7E7FB/dPLkybCg4IiwcMobKriSOmqMyWhiyh9CGHKxDg181WvXa0Iz9RJwhQo4JGtMKjFICxpFqbp39jOqDF8Yo0M/fvLJJ0F+/pFCEZc64rDwmIjIC+cvEL2hhKFFnU7CB+K2GqbfbxBlaYmZIcJ8kDXFl6gSclUppZ31DTA1HSAMnuFQB4GOKDQMwqVOsH9AdnpGa0sr0RtKGGKxDkOB9vqGxrRSw/BsXS914LBggZrjS5QR6YoqEriAOgxn+Jg3a7bbdddbDA9MDmKdF9Y8x94eShhiDssMW9Jj2ndQGZmpk+YaWG9FRCuVa6VFmvAM7c7dRBPEscUdjUp9x8TbBJ5Irjy83D0CfP2WLVlq7kRIPeQwxKjTRaijevwlhTDTICm08EYvlWsS5Ya41MbUsjaFilW2g+6urt27dq9cufKpp546euQIe3XoYYg5LHirrs6GSQsM4hzEN8RP9Qr5LBqjrnyYGBCbvooBDXpcAAZMnT913+HVW89dVI6+uTUmV5Ukt8Q6EJNEdiUiXb9jTxv0/uQbC3/MGA3S6uj1+tOnTx88eHD37rr9+/cfO3bs119/NV67tY329vZz5859/fXX+/btq6urO3z48JkzZ4zGa7Boq3/vI6U43SDNVicW66RyyhuDpMgYm3c+s7T9SgN6nSzoXAugFeyn34FB86CpqemXX345cuTInj179u7d+9VXX/3222+trdcsE+yfOnh1y/aeTqt9a+ubM+66O3XMmEiROCQwyNdb4O/jKwwNi46ITE9Jvbt82qYNr9XX11N9J2HpnY729n179y68777CvPzY6JjwkFAU7icQhAYFR4kj0pJTUPXm1zZeqb9C9fGg5Vm7wH0qzA/NQ6sbw1PVSTK99GqsYyArgSkN9zwKHbDGcZENCuUjyx8eKy8eV1T85GOPNzc14SLvNQ4dODB92rSC3LwJpWXv7tzJXnUaXWTRu6dBqUQMXiwrunncuLWr1zgYddRuGSO1Wr1927a5s2ZnZ2RgUMKCQ/wEPhB0ZkxkVE5mVtW8ytodO4wGA9UfNJyiDv2wceOm0aNGIbPw8/IOCwpGXsrmqEJRRLgQv+Kiv8BH4OEZHzP8sZUraZ/2C1q+2Wyu2bS5ICc3QODr6+kV4h8gCg1DsSgcVUT2lu/nLUD5kti4ZYuXOLsKh+LJGjIJdDo62pW3zDGKszXE5BTopSAQtToyTXgqvBVRt9ot5wK8ycvKdr/+hiA//yAfP7e/XTdpwsQmE9tS2pYPP/ggEIT38AwJCMQLew1z+88LL1IFJ4H3VSoVGGYPVOTrF+jjO+zv15XfObmtjbhTe1CpVE888URSUpKPpxfqDQ0MQqeRPmTWEfABXRrsH+Dr5Y0RTB2TvGbNmt9jyJ1yWE0m0+yZszzc3IMCAul7OBYw3f2GYeNKxioVCrYIW7DMlW+OH7/pxhvR19ZrtTZFGBIKBscPj92wYQMtytGxB4YIdH2v+aefFdKS5uEF+oSxmkSWN4Q6sXmNqaVtCiVMTpe5y0GqvfzBZeBNNLOHFS0k08bt+hs2vbaRvc24iazMzAAfX8vbgvEwmZcuXsJdB6TkYflDy1EyrQiCbgGNtm7ZgluWycxF7Y6dY0aOwhgRC91btQMBsaCckZaObJGWYLNYB3BEHYs9qLjrbo8bhjkzqFzxHOZWPnkKHqelWYOWv3Xr1vDwcB+BgPe4Y0GfhgQFe3h4zJ07t7mlmRZoD6BVFzNqmrd2NwpTdJICY/xNmkTip+jSjkaUoVjwEDSQund1czY8+wIEleXlY+Ky7yAkIvDyrqqcz2r09Bw/fjw4KAhm0vKqEC93j389/i9WwwkolIq42DjMQG4hsCXz5s7FXd4Yo4eXLl3q6+kNI2ehmpOCuQpH8fijKwbKG8Ch1WGKW/fiS2Sv2KrWfgUWEpPvyKHDtDAu8KL0XZ9fs9YHphV91LfNdFSshasDEWMuDnObWDbexBx7sNl+MNeM6wx3FAuf0IhStYkyg6SEbHlKi1RJxU2SAkVEhn7HXqpMCrHTjZ2dnYU5uRgh7jvANcyfW8lq9PR89913ocHBFjdBBYZnRGKSVq1hleyDNmHNqtVgG69PQJ3KufOoGgGjieiwYvoMTzd3+CauskUcdyCohlfF+IL95k4yyW32oU3047Dg2qVx8cTk9q0SAiOE1w0PDoHAg1jbJLwW3MqGV15ly+KA+pe3tmxFWAMHHN33QfKspanhIsjVX601RRHebu53Ty2n5s265aiJUKe7p6OlSVk81RCdS52ULpFsm6uSSoxx2Yq00o7LWjxphh7+Y6f3zJ2dsDp86nh5L5h31eq0tbeVFBcH+fpzdSACd4/1615mlRzCaDCmjUmGQ+GVgBhlx9vvsEoA85L/mF8Fh0AjQpvC60PeXSoYOwRk1fc/QEp1mjv9UAehK4afVxM4AaMNQxcpihiZNCJ51OiEuHh0KNoGDnHnio+H5wfvvc+W1RfI58NCQoXBITZtLMrx8/YReHoF+vkH+5OS8Zk3ZlzBvHn8scfYonlgjoqCQE3Hv7uSUGiMZxMrxDqmBLkpoVgZma6tJPtWCHE6fzd1gLe3bUPDuToQBP65mVmtLS2skn3U1NRY9zk6vCA7hyZZlsFd98KLXm7uNgMJXAT50G+wVaQPMTreAvLZ1w9mxrrPCXvcPNYz8/zaUKdyzlxUz6sGzSgulL29bfvZM2caGxuRDdZfrj908ODDy5Yh9/Hx8MLAwyChVTkZmQadni2Lg5aWloLCQl+BD68N+BUNQwuHR8fMmTV7w/r1H+3b/9mnn76z/W3kw1kZmXgZmEDrlovCwv39/b+wuS3QzRACWeuGrerwZMu+lQ6BjkRuipfXR2Toaom3ss8ZFk5SB3lQfnaOJSSyCNr19vbtrJIddHR0FBUVIQThPYscYtN6Nieg1Pn+5EkYbDJX+2qic0Aa1JWZmvZg9eItNW98tH///372v7U7a//95FMTSsvwCKY97ykIvIcoXPjjTz/SWvpFP9SZNH4CeMqtICwwKD05xZ7bPv/buX9ULYiOjBSHC0tvvuXUjz+xNyxgBufldes83NwiOcVCSJuDgjE/llRXn/vtHKPdB83NzTWv14yQJiK8sGYPiFhWWmqdaqGf6cKcovJBnSiV8oYROSJlfVyOKrWsRdnAqPbDHSepA2zc8BoGm6sGQU/efONNfY8787Hrww99rTIGUAEuzKhnV2IodcqnTLGe1egWP4FPkkS6eeNGk53E+6ujX955+x2w4ryADO7C28PzrmnTWL3+0A91xt9ya1Bf6oCwM6fPIPfsd/T58+dPnz7N/mIFnU6XOnpMWEBQFMf1os0gJTzghx9+yOrZAQq/cew4dBCfPeGiAG+fj/Z/xOr1oqurG9Tp0GqVeZMM0Xkc6hRrEgv1opGqqkf5dLMD56mjNxjGjB7Di1fgFJA3fPrRx6wSB5aOvH3CRG5iTwUh81rmXIdF7YuDh6jrseiQUIbhTZGs6LfffmP17OPJJ55ERTz24FcYy6NfHIVCvzFPP9S587ZJvJbASCJwPnr4C1ajL1Bfv1W+uWWrt7snL2RDsTCYnzDd6uB5mvxoNVp4BPQdlz0xoggkqBUzKqimBTQtNx36+kJsXktcn91yvbRALUzT79xD7IAT9HGSOvT9V69abR2ywF5OmzKVud8H9JGjR44G+QfwhjMc2ZlEqmok+/mW3A/RMVwSVw39iRdLHj1GcYUstcP62hsIy/VHlj3EL0QcAWN5T9UCquAY/VDnoSVLeYaXmIegYEygpdXVR48ccby+aRNTJ0+B6eJRB3HlM08+xWo4gW++/BpU42akKBBeXBIXr1QqWSUGXehGpC2rN6rCU40SzjIgJC7vYmZpq6KR/jkM1XeAAVFH1diYlCDBS3KVQQv03onj31rUKCgnEN75WPkg8O9fK1b2qhEgWhgpTUSGwVWLDBMG+/nv37uPUXEKiNkLrNYawoNCRo4YCc/AKtlHP9Q5+PkBfx9fXgwP9sBIIK8OCgzMzcmtXlRdV1end6IyQK1SJUqk4cGhXOqgN+HL6dqMM6BbBfdWLeA6e1KgUASLvaeujqr1oruzx9wwbaFBmM5dQQaN1OL0K/eS3Ir8zZ4TZsd56tAxfnzFSkQPXGV0HSb6PQvuYe73walTp4Rh4bzlGUyG4VHRly5cpDq02M8++RSugDcogQLfu6eUM/cHgF3vf0AyZU5R+Bzo7//555+zGvbRD3UwFWdWVCBX4roGi2AOoR/RF6h+zMhRD9x736EDB3sfvLohx8VXR4+GBRKjxS0HJmflP8nWo5OgJvfA558jE+GZd9jIVU8/Q9UsaLty6VJmmSFGpuNueUryFeI047skNiJUpMPiEM7HOhQXL16MiY7mJUFkHUsc8evZn1mlXiyzMvAQmBzMTFajt+HPP7fWWjM0IHBiadm/n3gSJsoZAa2feOzxJQsX4VnecKDwV/6zjtboAI6oQ8e+saEhKy0dxdlkDytCESwHOIQga8KtpXv3kH1Em3hvZy38PfdZvDcY8IlVeNsvdFpt8oiRPI+Ad7jPak7rPv7sSlROa2yRJqnQcryraXiuOo3sW2E0SGDA6jrCQKkDLK6utu46EGLFI/9kNRgoFQpJbByPZLBAmBhnOAkH9WtLqhfDr/HGG1VgCFAXesBJgbLNLB23EKjQGh2gX6tD3vXcr7+iy2B7eObUWtBUvA3y5Dlz5qjVajzL28Oq2bQZ1OE2m+2gU3YzMgcYJy/mLZ+g9jkVs9jbvdA++bw2LK05XqZOKrBQRyvKaFzwMF6OLBjatJBWGAR1MPBooLjvH1GA7giDGpiYjPbw6mdX8WJqUAFDWDXv6haHBfPnVfKm37UVFD6nYiZbmX30Qx0Cpm1Gg2Hpomr0GsILxwSKJltLQnd39+zs7HPn+Mszr657mbcaQUv79edfWI2B4KaSsbzVM1Bn9oy+zTZ3KW+v0kci0CnUJRZQ3hgkRQpxhq52F+6TTfVuR2stFgyIOiiUEnJB5XyQgPsIBESB36Gaer0hJZm/84DpRALqY8epDheVc+f9d6nj5T13Jn/6WcMJ6gC91hzZ46zpM9Aq2Do0LEpIiIL4lJcuEWHWlwrz8vVaEj7TuQW8tXUr3oyrCerAUH/37Qmq4DwwkEX5BfyB9BZUzp6Duxg0akjaLpxvGH2LMS63KV6mSZSrE+WqJHnT8KxLmeM76oldJGpO+asBWx3a6m+//TY0OFjcNyZDIZmpaU3MuUpYYvQn9y5Mjq+XYFq57dU5JM9opvXG37URoXjYdde/+sorbGX24Rx1GFiG/4fvTj609MFRiUn+XgI/T2+yD2VNHUY8bhgGW8V9dm9dXUDfkB4CO7T9zbeogvO4eOFCbHQMzwRifj9YvRh3UR/qxE/NB3vVYTnaxAJjggy8MSYUq5PkOlGKqopEG3R7yzI3HGMQDouifGq5r5WdQHKwfStpdXFBIfJq7i30T6CvP/IA+rgF9DUfWf6wtRkD29AVoBQEdQ1OUKz79TdMnDDRaOo/2x0AdQALAwCNWvPBe+8tmF+VEBcPAxNqc2spNAyz7cyZM+wzPT2nf/wJRos73ngKXoZdoR4Iaja/7mvVg5i+G19dj7vwFV1msqOpXv5MU1CGKgkmh5yyaIkr1kuKLkdmNu8kSyBwVH8AdQ4eOBjQd/EXAlc7afyE92vfxQfeXELuPaG0jNvbXKDh1tRBVyePHHX/P+69Z35VVeX8QQhCqMp5la+t3+Dk+eWBUccmLl+69Nya5+xtLXm5e7z88tXDBm0trdnpmcgkuTrEZ4WFn/z+e1bJCXRiFAtlvBiZxAeBwceOfgmFNuZ7BtrbWupvrTBFZiG4IQGyRKaXFBuH59dnlrU2NJKCnCMNhU3qwGRW2acOiqcMmFg2HuaW+yAVaVw8XpvXb35egl3vf0BLsMaJb08g0OYREVdGSKTOr439ftimDlpLG6xWqd54vebpp/797s5aHRO1MHdt9Hj95ct3TS3HBKLRj6VJSCMXLOizsL3ogYU81w6B4UHnMkWThIdq2kDvRHzphResZx4GNTszq7W5Bc+bmTKaT59SJsp18fnGBBIdmxKKGkbI9MIMTdUjuM9UZqMtBPQ6VxBQd3bm5+cGBvhHiMURmOjiyGBxtJuHexUTXdkD7cm63bvhEXjWBb/SZR7uxUA//+IieWeH3WOuHe0d+Xn5QVY78yDxovvupzrM+9qFZUPDGrjl+FkLbFOHLnN8d+LEmBEjvd08kA5gsGEP36t9lyqQqq1qaG9ry8nIDAsI4lIHnJg8eTKrweDw4S8CrEw0ug++35nlBGBf3R5hcChvFQSUhYVb+egKKHTi3RjqqLfVqsLTLQctTAlyTaKsUZxleI85wU5UbAJ3zOaervbu7k6ydt3dzvRIm7krL1fm4xMQHBoWFBoSExo0JlRUJPB9YXY/DguAmSwuLuYdQ7ApAk+vt7ZtYx+zg2eefdbTw4MXKUcIRejtLa/XsEoOoVQqa2tra2pqTpwYcIJCYddhIbG88/Y7PIe5W94MFgU+eOOG11gNpuMJSRmQz13dedk5Yf6BXOr4CXzKy/sskEP59tsmWXs3WGDMm/mz5zZSV2IHm9ZvgIMj+R3nWQimbySS/F9Iko/QF3MW76S77zFdeBrlDSPFpuFFjaNuaj7/C/P6tgFfB94gae8gx8RoQwk6enpuzcstDAq9P1K6NjZllyT7RGJJ/fCCC5UPOjNXt2/fzljKPnOGJzCceVnZLc39nAirr6+Pi43lLYeiPzGdkORb0n4KOjpcbN60SRKfIPDy9vLwDAoIfH5tH30nYZc6Go1G2nf3jrxZaJifjx9CY27kS2EymaoXLoKxBW+41MEcWrpkCavUOwyHrc4MUIEpQucmjxq9bt26y5cvM7os9AZDXV3dpIm3IQ5AB/Foh1+93dyXP7iMKqOvYHQ6Tc2KomnG6EwOdeT6OJlKKm852/+BJsZs9Zj1hqYzZ417PtOu3tgw56Gzo0vqRxS3jhjXIynplJa0S4rbQ1Prq53aRWlpacnPzgmxcjRcgYF/jQnzHYBS4dmnn/FyuzqxqaAfMIXQhxNLy/bs2s0LfeAWjn7xxazpMzCfLctIGGLof7SffKWQNckcwC51mpqaUpNTeOtUEGRMCF9iIqOmT7vrhbXP1+7cue2tt1b889Gc7Gz4cthMXqwD6rzzztUTtZZXW3T/A9Yth6DxqFTg7Z0QHz++tOyeBQseuO/+qVOmpCQn+/v5+zMnQHi8gcAiJo8erVGRdRqA1tJ8/PuLUrkp/uoZHSP5LqYClShN8Ty7bgFNKhZ0NDW1nj5rqtuvXPNqw9ylDfJycKU+MoucMBSmNklkJmbXHUE3Qm/ynU7ClCsPEC/pGHR5EDabtyHKFTQc08agt3Gu0hoYoILcPJCAd/qdCmYmJCMl9a7yaYsXVUNmVlTk5+TCWvszIRfX2SEamTFjwBmubepQ9i1b+iCiB+txQq2gNtwq2EoXEvCBlzRRgfkdmZgEA0aL5cJgNBbk5dlMyqjAtAT5+iH1hReDo0SbeeERFTwOTaS+H3989QgVpULjxjeUwgxTQrGFOhBtYqExNudi0ljV27s6u8gfAbTqdG0nzppq9ymfeUUxa2mjrPzyiKL6yHRNaKpOlKGNyTXGFxg4pzUsopMyq0QR6VdmLuaSzwHQ6uTk5GCrCUkFvb1q1SpW1QkcP/YNMtMQ9IytPkR3odPQdRgdCMYLw2Ft6SEgWVlpGVuo07BNHRomXzx/IT46JiQwyN7o9iuew9xeeek/KIpnCemvZ06fHimRokmDLh9C7fNG5tyuZScKpeOTZu4SXXi6TnqVOhjshhFykySvIzJHEVOgKatsnL7ofHG5Mn6sSpSqEo7WiVObojINcQWGhKImJGUS+oVftoWhjhzUqZ+5xEnqAKtXM38oY9UQOA7EHw0NzFFXJ0D78P333vf39fs9Y4QH8T7zK21sljmGXYdFUfvODkx665jUGUFqdvuEiWb7SSbw48nvU0aNts7VnZRg/4AAgQ/vj1Qob1q1KnXW+ObobG0ix+pI5HpJsTZRpk/M10vyVTE5JmFmS2SWTpIDR6aTkmXDxhFyLTghYfzR1S8btCGs1YlMV1Q4a3WABmUDCSL7dinGD53wz4fJ4aEBBRzAjnd2hAaHwHKgkIESCProQ1Fo+LGvj6GoAVXtkDpMQVtr3gB14Fl4tdoTvA2soqeb21h5cSM9Lm4PTPn1ly/fMfE2xD2oxcmWQw1JFiLKxPiEug/JFiZ3KQiFwg01Hzh6ZXi2QZJL6NI72OCEQVJsTCgh35AilZniQSOSrpsSCg0SuQ5CCFGolcpgbLR4RFJkTCCHwhDTkCuJ4NPV0pgvypCrwlOU9zv7l510QeWxFSt4R6DIQoM44sK587hLT8Q6BSgyuocPHUJYgzJF/R1t4ApNSuKiYz5mTrwMlLL9WB2Kr7/8alzJWG9ENgIfjJklwqLJFDeliqSHLrwFlZWVTp4bBOBoXl63bqQ0EYYK/jiS8zd7PIkSioVMRoCIsnLu3AsX7H5jgf6NHfURGaBFU/zVwaZiWeahS8zUJZHzpswVEMWiQIVZhoa5KjEQwQfCMLKtkVjYFp13SZin2Wf7pLY9IHmMjY319/UlKQUzhNf/7e/LlrHp4eCgVqsXV1eHh4d7eHjQvzimw8TvQOYiBhEJh6en5/jx40+dOsUWMUA4RR2gs6Pz7W3by24tRYaFpAmCupFnYqRD/CEBMEvIHeB0y265dW+d3aNe1rCQHZZ81dPPZGVkIl3y8fBEIhDsF8AUTiRA4IuL8J6SuPiqeZXHvvqKPmVvrihe3GgMTie+qfdLdAYnxLRISowSuYlEPzKtNE8bn6dDwiVMV4VmNIgL6l/a2OH8EmwvPv3ss4S4eC83D3QaJuTMGRW/50snLJ1w8vvvFy1aNCIxEWXSkjljFBjo40fHThwmRPa6s/fbWywx4oDgHHU4Jf/444+bN21Csjf5zjtlBYWFefkFefklcvmsmbOeW/PcN8e+YfUGbgApmpubD3x+4Nmnn5lVMbNEXozCIbL8gil3Tn74oeU7d+ysv+zUl/fotu00hmboJOSgBY8NzgvMjzGhoCk2RxedrhKnNIQnayIKFSnjL02cp170+JUXN2qPk/a2o7G01oGgvr7+jZqa59euPXSQPZV7raBWqXbv2r3i0UfLp06VFRYW5hdQmXTbbYsWLsTw/fDDD6zq74Bz1EHHUOkL8n0iHR3tbe34wF5iMDjS2EA3sXaowtGuli0g1jEe/7o+Nk+XUMi1OiSU4XzhLbxPr5OiF+GqZMjDSYYVlaMVZjQK0xqjclQjb7x0S4Vi0WPqV7fqDx5tu3C5s6MNLUT8T0iDVxtAePJHw2w20z6k30ZwDeGsw7Lg/20fcYGBbW9tuzR1oVqUapLm66WFzJ8JM3GMBJ/JcUGDtBCpNQSxsC6+wBSVrRelK4VpyqgsxahxipumN9z7SMO6zYZPD7Werze32vpqN2aTAh3yO/vkmnfpHzNGA6bOnwJdzARr/u5ko3ScXpyFeIX5PpSixiSEt3I9opZYmTEqtzEy5Yo45XJ0lnJEibpkurbyEcWLmwwff9b867n2lhY6AH/MMPwZ8dekDtn7ZFyc7tAXF3MmKcKSTcJ0Y1S6HkYoOK1BnHVhZLGyeIp69jLNqg1Nez9t+fmX9varX18H4kE6uno6u8k+KHvVhb74a1KH2fpm/3dE7UqFYn1N/cyljbfM1kxfrHnqFdP7+5tPn25v0lGLAmoQqjEfGME/8oWCneSwO6I2l92xjb8mdQgTmP95EbU9FJ1dnfjNQgT6mQi51BuzkF9AOTbOx09OAS70wV+VOi781+GijguDhIs6LgwSLuq4MEi4qOPCIOGijguDhIs6LgwKPT3/ByJEwNUVEgxIAAAAAElFTkSuQmCC" alt="Solive" style="height:42px;width:auto"></div>
-      <h2>Painel de Gestão</h2>
-      <p class="sub">Acesso restrito à equipa pós-venda<br>Solive</p>
+      <h2 data-i18n="login.title">Painel de Gestão</h2>
+      <p class="sub" data-i18n-html="login.sub">Acesso restrito à equipa pós-venda<br>Solive</p>
       <div style="text-align:left;margin-bottom:1rem">
         <label class="lbl">Email</label>
         <input type="email" id="login-email" placeholder="email@groupe-legendre.com" onkeydown="if(event.key==='Enter')doLogin()">
@@ -580,9 +565,9 @@ hr.div{border:none;border-top:0.5px solid var(--ink-20);margin:1.25rem 0}
         <input type="password" id="login-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
       </div>
       <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="doLogin()" id="login-btn">
-        <i class="ti ti-login"></i> Entrar
+        <i class="ti ti-login"></i> <span data-i18n="btn.login">Entrar</span>
       </button>
-      <p style="margin-top:1rem;font-size:12px;color:var(--ink-70)">Conta de gestor? Contacte o administrador.</p>
+      <p style="margin-top:1rem;font-size:12px;color:var(--ink-70)" data-i18n="login.help">Conta de gestor? Contacte o administrador.</p>
     </div>
   </div>
 </div>
@@ -597,57 +582,61 @@ hr.div{border:none;border-top:0.5px solid var(--ink-20);margin:1.25rem 0}
   <div class="mgr-header">
     <div class="mgr-header-row">
       <div>
-        <div style="font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--mint);margin-bottom:8px;position:relative">Gestão interna</div>
-        <h1>Ocorrências pós-venda</h1>
-        <p>Todos os empreendimentos Solive</p>
+        <div style="font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--mint);margin-bottom:8px;position:relative" data-i18n="mgr.eyebrow">Gestão interna</div>
+        <h1 data-i18n="mgr.title">Ocorrências pós-venda</h1>
+        <p data-i18n="mgr.sub">Todos os empreendimentos Solive</p>
       </div>
       <div style="position:relative">
-        <button class="btn btn-mint btn-sm" onclick="exportCSV()"><i class="ti ti-download"></i> Exportar Excel</button>
+        <button class="btn btn-mint btn-sm" onclick="exportCSV()"><i class="ti ti-download"></i> <span data-i18n="btn.export">Exportar Excel</span></button>
       </div>
     </div>
   </div>
 
   <div class="stats-strip">
     <div class="stats-grid" id="stats-grid">
-      <div class="stat"><div class="lbl">Total</div><div class="val" id="s-total">—</div><div class="sub">ocorrências</div></div>
-      <div class="stat"><div class="lbl">Novas</div><div class="val" id="s-nova" style="color:var(--danger)">—</div><div class="sub">por tratar</div></div>
-      <div class="stat"><div class="lbl">Em análise</div><div class="val" id="s-analise" style="color:var(--warn)">—</div><div class="sub">em curso</div></div>
-      <div class="stat"><div class="lbl">Agendadas</div><div class="val" id="s-agendada" style="color:var(--info)">—</div><div class="sub">marcadas</div></div>
-      <div class="stat"><div class="lbl">Resolvidas</div><div class="val" id="s-resolvida" style="color:var(--success)">—</div><div class="sub">fechadas</div></div>
-      <div class="stat"><div class="lbl">Em atraso</div><div class="val" id="s-atraso" style="color:var(--danger)">—</div><div class="sub">fora do prazo</div></div>
+      <div class="stat"><div class="lbl" data-i18n="stat.total">Total</div><div class="val" id="s-total">—</div><div class="sub" data-i18n="stat.total.sub">ocorrências</div></div>
+      <div class="stat"><div class="lbl" data-i18n="stat.new">Novas</div><div class="val" id="s-nova" style="color:var(--danger)">—</div><div class="sub" data-i18n="stat.new.sub">por tratar</div></div>
+      <div class="stat"><div class="lbl" data-i18n="stat.analysis">Em análise</div><div class="val" id="s-analise" style="color:var(--warn)">—</div><div class="sub" data-i18n="stat.analysis.sub">em curso</div></div>
+      <div class="stat"><div class="lbl" data-i18n="stat.scheduled">Agendadas</div><div class="val" id="s-agendada" style="color:var(--info)">—</div><div class="sub" data-i18n="stat.scheduled.sub">marcadas</div></div>
+      <div class="stat"><div class="lbl" data-i18n="stat.resolved">Resolvidas</div><div class="val" id="s-resolvida" style="color:var(--success)">—</div><div class="sub" data-i18n="stat.resolved.sub">fechadas</div></div>
+      <div class="stat"><div class="lbl" data-i18n="stat.overdue">Em atraso</div><div class="val" id="s-atraso" style="color:var(--danger)">—</div><div class="sub" data-i18n="stat.overdue.sub">fora do prazo</div></div>
     </div>
   </div>
 
   <div class="mgr-body">
     <div class="filter-bar">
-      <span class="filter-label">Empreendimento</span>
-      <select id="project-filter" onchange="filters.project=this.value;renderIssues()" style="width:auto;padding:6px 32px 6px 10px;font-size:12px">
-        <option value="all">Todos os empreendimentos</option>
+      <span class="filter-label" data-i18n="filter.project">Empreendimento</span>
+      <select id="project-filter" onchange="onProjectFilterChange(this.value)" style="width:auto;padding:6px 32px 6px 10px;font-size:12px">
+        <option value="all" data-i18n="filter.allprojects">Todos os empreendimentos</option>
       </select>
-      <span class="filter-label" style="margin-left:10px">Subempreiteiro</span>
+      <span class="filter-label" style="margin-left:10px" data-i18n="filter.sub">Subempreiteiro</span>
       <select id="sub-filter" onchange="filters.sub=this.value;renderIssues()" style="width:auto;padding:6px 32px 6px 10px;font-size:12px">
-        <option value="all">Todos</option>
+        <option value="all" data-i18n="filter.all">Todos</option>
+      </select>
+      <span class="filter-label" style="margin-left:10px" data-i18n="filter.unit">Fração / Zona</span>
+      <select id="unit-filter" onchange="filters.unit=this.value;renderIssues()" style="width:auto;padding:6px 32px 6px 10px;font-size:12px">
+        <option value="all" data-i18n="filter.allf">Todas</option>
       </select>
     </div>
     <div class="filter-bar" id="status-chips">
-      <span class="filter-label">Estado</span>
-      <button class="chip active" data-v="all" onclick="setChip('status',this)">Todas</button>
-      <button class="chip" data-v="nova" onclick="setChip('status',this)">Novas</button>
-      <button class="chip" data-v="em_analise" onclick="setChip('status',this)">Em análise</button>
-      <button class="chip" data-v="agendada" onclick="setChip('status',this)">Agendadas</button>
-      <button class="chip" data-v="resolvida" onclick="setChip('status',this)">Resolvidas</button>
-      <button class="chip" data-v="rejeitada" onclick="setChip('status',this)">Rejeitadas</button>
+      <span class="filter-label" data-i18n="filter.status">Estado</span>
+      <button class="chip active" data-v="all" onclick="setChip('status',this)" data-i18n="chip.all">Todas</button>
+      <button class="chip" data-v="nova" onclick="setChip('status',this)" data-i18n="chip.nova">Novas</button>
+      <button class="chip" data-v="em_analise" onclick="setChip('status',this)" data-i18n="chip.em_analise">Em análise</button>
+      <button class="chip" data-v="agendada" onclick="setChip('status',this)" data-i18n="chip.agendada">Agendadas</button>
+      <button class="chip" data-v="resolvida" onclick="setChip('status',this)" data-i18n="chip.resolvida">Resolvidas</button>
+      <button class="chip" data-v="rejeitada" onclick="setChip('status',this)" data-i18n="chip.rejeitada">Rejeitadas</button>
     </div>
     <div class="filter-bar" id="prio-chips">
-      <span class="filter-label">Prioridade</span>
-      <button class="chip active" data-v="all" onclick="setChip('priority',this)">Todas</button>
-      <button class="chip" data-v="alta" onclick="setChip('priority',this)"><span class="dot dot-h"></span>Alta</button>
-      <button class="chip" data-v="media" onclick="setChip('priority',this)"><span class="dot dot-m"></span>Média</button>
-      <button class="chip" data-v="baixa" onclick="setChip('priority',this)"><span class="dot dot-l"></span>Baixa</button>
+      <span class="filter-label" data-i18n="filter.priority">Prioridade</span>
+      <button class="chip active" data-v="all" onclick="setChip('priority',this)" data-i18n="chip.all">Todas</button>
+      <button class="chip" data-v="alta" onclick="setChip('priority',this)"><span class="dot dot-h"></span><span data-i18n="prio.alta">Alta</span></button>
+      <button class="chip" data-v="media" onclick="setChip('priority',this)"><span class="dot dot-m"></span><span data-i18n="prio.media">Média</span></button>
+      <button class="chip" data-v="baixa" onclick="setChip('priority',this)"><span class="dot dot-l"></span><span data-i18n="prio.baixa">Baixa</span></button>
     </div>
     <div class="search-box">
       <i class="ti ti-search"></i>
-      <input type="text" id="m-search" placeholder="Pesquisar por fração, nome, categoria..." oninput="renderIssues()">
+      <input type="text" id="m-search" placeholder="Pesquisar por fração, nome, categoria..." data-i18n-ph="search.ph" oninput="renderIssues()">
     </div>
 
     <div id="issue-list"></div>
@@ -659,12 +648,12 @@ hr.div{border:none;border-top:0.5px solid var(--ink-20);margin:1.25rem 0}
   <div class="mgr-header">
     <div class="mgr-header-row">
       <div>
-        <div style="font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--mint);margin-bottom:8px;position:relative">Visão transversal</div>
-        <h1>Análise de ocorrências</h1>
-        <p>Todos os empreendimentos Solive</p>
+        <div style="font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--mint);margin-bottom:8px;position:relative" data-i18n="an.eyebrow">Visão transversal</div>
+        <h1 data-i18n="an.title">Análise de ocorrências</h1>
+        <p data-i18n="mgr.sub">Todos os empreendimentos Solive</p>
       </div>
       <div style="position:relative">
-        <button class="btn btn-mint btn-sm" onclick="exportAnalytics()"><i class="ti ti-download"></i> Exportar Excel</button>
+        <button class="btn btn-mint btn-sm" onclick="exportAnalytics()"><i class="ti ti-download"></i> <span data-i18n="btn.export">Exportar Excel</span></button>
       </div>
     </div>
   </div>
@@ -672,35 +661,35 @@ hr.div{border:none;border-top:0.5px solid var(--ink-20);margin:1.25rem 0}
     <!-- MONITORIZAÇÃO SEMANAL -->
     <div class="an-card" style="margin-bottom:1rem">
       <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px">
-        <h3 style="margin:0"><i class="ti ti-activity-heartbeat" style="vertical-align:-2px"></i> Monitorização de desempenho</h3>
+        <h3 style="margin:0"><i class="ti ti-activity-heartbeat" style="vertical-align:-2px"></i> <span data-i18n="mon.title">Monitorização de desempenho</span></h3>
         <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
           <select id="mon-period" onchange="onMonPeriodChange()" style="width:auto;padding:6px 32px 6px 10px;font-size:12px">
-            <option value="calendar">Semana (seg–dom)</option>
-            <option value="rolling">Últimos 7 dias</option>
-            <option value="custom">Período personalizado</option>
+            <option value="calendar" data-i18n="mon.calendar">Semana (seg–dom)</option>
+            <option value="rolling" data-i18n="mon.rolling">Últimos 7 dias</option>
+            <option value="custom" data-i18n="mon.custom">Período personalizado</option>
           </select>
           <span id="mon-dates" style="display:none;gap:6px;align-items:center">
             <input type="date" id="mon-start" onchange="renderMonitor()" style="padding:5px 8px;font-size:12px;width:auto">
-            <span style="color:var(--ink-60);font-size:12px">a</span>
+            <span style="color:var(--ink-60);font-size:12px" data-i18n="mon.to">a</span>
             <input type="date" id="mon-end" onchange="renderMonitor()" style="padding:5px 8px;font-size:12px;width:auto">
           </span>
           <select id="mon-project" onchange="renderMonitor()" style="width:auto;padding:6px 32px 6px 10px;font-size:12px">
-            <option value="all">Todos os empreendimentos</option>
+            <option value="all" data-i18n="filter.allprojects">Todos os empreendimentos</option>
           </select>
         </div>
       </div>
       <div id="mon-cards" class="mon-grid"></div>
       <div id="mon-verdict" style="margin-top:12px"></div>
-      <div id="trend-wrap" style="margin-top:16px"><h3 style="font-size:12px">Tendência das últimas 8 semanas</h3><canvas id="chart-trend" style="max-height:220px"></canvas></div>
+      <div id="trend-wrap" style="margin-top:16px"><h3 style="font-size:12px" data-i18n="mon.trend">Tendência das últimas 8 semanas</h3><canvas id="chart-trend" style="max-height:220px"></canvas></div>
     </div>
 
     <div class="an-grid">
-      <div class="an-card"><h3>Ocorrências por categoria (todos os projectos)</h3><canvas id="chart-cat"></canvas></div>
-      <div class="an-card"><h3>Ocorrências por empreendimento</h3><canvas id="chart-proj"></canvas></div>
-      <div class="an-card"><h3>Ocorrências por estado</h3><canvas id="chart-status"></canvas></div>
-      <div class="an-card"><h3>Top categorias recorrentes</h3><div id="top-cats"></div></div>
+      <div class="an-card"><h3 data-i18n="an.bycat">Ocorrências por categoria (todos os projectos)</h3><canvas id="chart-cat"></canvas></div>
+      <div class="an-card"><h3 data-i18n="an.byproj">Ocorrências por empreendimento</h3><canvas id="chart-proj"></canvas></div>
+      <div class="an-card"><h3 data-i18n="an.bystatus">Ocorrências por estado</h3><canvas id="chart-status"></canvas></div>
+      <div class="an-card"><h3 data-i18n="an.topcats">Top categorias recorrentes</h3><div id="top-cats"></div></div>
     </div>
-    <div class="an-card" style="margin-top:1rem"><h3>Desempenho por subempreiteiro</h3><div id="kpi-subs" style="overflow-x:auto"></div></div>
+    <div class="an-card" style="margin-top:1rem"><h3 data-i18n="an.subperf">Desempenho por subempreiteiro</h3><div id="kpi-subs" style="overflow-x:auto"></div></div>
   </div>
 </div>
 
@@ -709,12 +698,12 @@ hr.div{border:none;border-top:0.5px solid var(--ink-20);margin:1.25rem 0}
   <div class="mgr-header">
     <div class="mgr-header-row">
       <div>
-        <div style="font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--mint);margin-bottom:8px;position:relative">Configuração</div>
-        <h1>Empreendimentos</h1>
-        <p>Criar e gerir projectos</p>
+        <div style="font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--mint);margin-bottom:8px;position:relative" data-i18n="pj.eyebrow">Configuração</div>
+        <h1 data-i18n="pj.title">Empreendimentos</h1>
+        <p data-i18n="pj.sub">Criar e gerir projectos</p>
       </div>
       <div style="position:relative">
-        <button class="btn btn-mint btn-sm" onclick="openProjectEditor()"><i class="ti ti-plus"></i> Novo empreendimento</button>
+        <button class="btn btn-mint btn-sm" onclick="openProjectEditor()"><i class="ti ti-plus"></i> <span data-i18n="pj.new">Novo empreendimento</span></button>
       </div>
     </div>
   </div>
@@ -728,20 +717,20 @@ hr.div{border:none;border-top:0.5px solid var(--ink-20);margin:1.25rem 0}
   <div class="modal" style="max-width:640px">
     <h2 id="project-modal-title">Novo empreendimento</h2>
     <input type="hidden" id="pe-id">
-    <label class="lbl">Nome do empreendimento *</label>
+    <label class="lbl" data-i18n="pj.name">Nome do empreendimento *</label>
     <input type="text" id="pe-name" placeholder="Ex: L'Urbain" style="margin-bottom:1rem">
 
-    <label class="lbl">Frações</label>
-    <p style="font-size:12px;color:var(--ink-60);margin-bottom:6px">Uma por linha, no formato: <strong>Código; Tipologia; Piso</strong> &nbsp;(ex: <code>A7; T3; 2º Piso</code>)</p>
+    <label class="lbl" data-i18n="pj.unitslbl">Frações</label>
+    <p style="font-size:12px;color:var(--ink-60);margin-bottom:6px" data-i18n-html="pj.unitshelp">Uma por linha, no formato: <strong>Código; Tipologia; Piso</strong> &nbsp;(ex: <code>A7; T3; 2º Piso</code>)</p>
     <textarea id="pe-units" rows="8" placeholder="A1; T3; R/C&#10;A2; T2; R/C&#10;A3; T1; 1º Piso" style="margin-bottom:1rem;font-family:monospace;font-size:13px"></textarea>
 
-    <label class="lbl">Zonas comuns</label>
-    <p style="font-size:12px;color:var(--ink-60);margin-bottom:6px">Uma por linha (ex: <code>Hall de entrada</code>)</p>
+    <label class="lbl" data-i18n="pj.commonslbl">Zonas comuns</label>
+    <p style="font-size:12px;color:var(--ink-60);margin-bottom:6px" data-i18n-html="pj.commonshelp">Uma por linha (ex: <code>Hall de entrada</code>)</p>
     <textarea id="pe-commons" rows="5" placeholder="Hall de entrada&#10;Garagem&#10;Cobertura / Terraço" style="margin-bottom:1rem;font-size:13px"></textarea>
 
     <div class="modal-btns">
-      <button class="btn btn-secondary" onclick="closeModal('project-modal')">Cancelar</button>
-      <button class="btn btn-mint" onclick="saveProject()"><i class="ti ti-check"></i> Guardar</button>
+      <button class="btn btn-secondary" onclick="closeModal('project-modal')" data-i18n="btn.cancel">Cancelar</button>
+      <button class="btn btn-mint" onclick="saveProject()"><i class="ti ti-check"></i> <span data-i18n="btn.save">Guardar</span></button>
     </div>
   </div>
 </div>
@@ -749,17 +738,17 @@ hr.div{border:none;border-top:0.5px solid var(--ink-20);margin:1.25rem 0}
 <!-- PRIORITY MODAL -->
 <div class="modal-wrap" id="prio-modal">
   <div class="modal" style="max-width:460px">
-    <h2>Atribuir grau de urgência</h2>
-    <p style="font-size:13px;color:var(--ink-60);margin-bottom:6px">Para passar a ocorrência a <strong>Em análise</strong> é obrigatório atribuir o grau de urgência oficial. O cliente será informado do grau atribuído.</p>
-    <p style="font-size:12px;color:var(--ink-60);margin-bottom:14px">Perceção do cliente: <strong id="prio-perception">—</strong></p>
+    <h2 data-i18n="pm.title">Atribuir grau de urgência</h2>
+    <p style="font-size:13px;color:var(--ink-60);margin-bottom:6px" data-i18n-html="pm.p1">Para passar a ocorrência a <strong>Em análise</strong> é obrigatório atribuir o grau de urgência oficial. O cliente será informado do grau atribuído.</p>
+    <p style="font-size:12px;color:var(--ink-60);margin-bottom:14px"><span data-i18n="pm.perc">Perceção do cliente:</span> <strong id="prio-perception">—</strong></p>
     <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:1rem">
-      <label class="as-sub-opt"><input type="radio" name="prio-official" value="alta"><span class="dot dot-h"></span> Alta — risco imediato ou danos em progressão</label>
-      <label class="as-sub-opt"><input type="radio" name="prio-official" value="media"><span class="dot dot-m"></span> Média — sem urgência imediata</label>
-      <label class="as-sub-opt"><input type="radio" name="prio-official" value="baixa"><span class="dot dot-l"></span> Baixa — estética / acabamento</label>
+      <label class="as-sub-opt"><input type="radio" name="prio-official" value="alta"><span class="dot dot-h"></span> <span data-i18n="prio.alta.full">Alta — risco imediato ou danos em progressão</span></label>
+      <label class="as-sub-opt"><input type="radio" name="prio-official" value="media"><span class="dot dot-m"></span> <span data-i18n="prio.media.full">Média — sem urgência imediata</span></label>
+      <label class="as-sub-opt"><input type="radio" name="prio-official" value="baixa"><span class="dot dot-l"></span> <span data-i18n="prio.baixa.full">Baixa — estética / acabamento</span></label>
     </div>
     <div class="modal-btns">
-      <button class="btn btn-secondary" onclick="cancelPrioModal()">Cancelar</button>
-      <button class="btn btn-mint" onclick="confirmPrio()"><i class="ti ti-check"></i> Confirmar e notificar</button>
+      <button class="btn btn-secondary" onclick="cancelPrioModal()" data-i18n="btn.cancel">Cancelar</button>
+      <button class="btn btn-mint" onclick="confirmPrio()"><i class="ti ti-check"></i> <span data-i18n="pm.confirm">Confirmar e notificar</span></button>
     </div>
   </div>
 </div>
@@ -767,15 +756,15 @@ hr.div{border:none;border-top:0.5px solid var(--ink-20);margin:1.25rem 0}
 <!-- PHOTO MARKER MODAL -->
 <div class="modal-wrap" id="marker-modal">
   <div class="modal" style="max-width:560px;text-align:center">
-    <h2 style="text-align:left">Marcar local do problema</h2>
-    <p class="marker-hint" style="text-align:left">Toque no ponto exato da patologia. Para assinalar uma <strong>área</strong>, toque em vários pontos a delimitar o contorno (mínimo 3).</p>
+    <h2 style="text-align:left" data-i18n="mk.title">Marcar local do problema</h2>
+    <p class="marker-hint" style="text-align:left" data-i18n-html="mk.hint">Toque no ponto exato da patologia. Para assinalar uma <strong>área</strong>, toque em vários pontos a delimitar o contorno (mínimo 3).</p>
     <input type="hidden" id="mk-index">
     <div id="mk-stage-wrap"></div>
     <div class="modal-btns">
-      <button class="btn btn-secondary" onclick="undoMarkerPoint()"><i class="ti ti-arrow-back-up"></i> Desfazer ponto</button>
-      <button class="btn btn-secondary" onclick="clearMarker()">Limpar</button>
-      <button class="btn btn-secondary" onclick="closeModal('marker-modal')">Cancelar</button>
-      <button class="btn btn-mint" onclick="saveMarker()"><i class="ti ti-check"></i> Confirmar</button>
+      <button class="btn btn-secondary" onclick="undoMarkerPoint()"><i class="ti ti-arrow-back-up"></i> <span data-i18n="mk.undo">Desfazer ponto</span></button>
+      <button class="btn btn-secondary" onclick="clearMarker()" data-i18n="mk.clear">Limpar</button>
+      <button class="btn btn-secondary" onclick="closeModal('marker-modal')" data-i18n="btn.cancel">Cancelar</button>
+      <button class="btn btn-mint" onclick="saveMarker()"><i class="ti ti-check"></i> <span data-i18n="btn.confirm">Confirmar</span></button>
     </div>
   </div>
 </div>
@@ -785,12 +774,12 @@ hr.div{border:none;border-top:0.5px solid var(--ink-20);margin:1.25rem 0}
   <div class="mgr-header">
     <div class="mgr-header-row">
       <div>
-        <div style="font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--mint);margin-bottom:8px;position:relative;font-weight:700">Configuração</div>
-        <h1>Subempreiteiros</h1>
-        <p>Criar e gerir a lista de subempreiteiros</p>
+        <div style="font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--mint);margin-bottom:8px;position:relative;font-weight:700" data-i18n="pj.eyebrow">Configuração</div>
+        <h1 data-i18n="sb.title">Subempreiteiros</h1>
+        <p data-i18n="sb.sub">Criar e gerir a lista de subempreiteiros</p>
       </div>
       <div style="position:relative">
-        <button class="btn btn-mint btn-sm" onclick="openSubEditor()"><i class="ti ti-plus"></i> Novo subempreiteiro</button>
+        <button class="btn btn-mint btn-sm" onclick="openSubEditor()"><i class="ti ti-plus"></i> <span data-i18n="sb.new">Novo subempreiteiro</span></button>
       </div>
     </div>
   </div>
@@ -802,17 +791,17 @@ hr.div{border:none;border-top:0.5px solid var(--ink-20);margin:1.25rem 0}
   <div class="modal" style="max-width:520px">
     <h2 id="sub-modal-title">Novo subempreiteiro</h2>
     <input type="hidden" id="se-id">
-    <label class="lbl">Nome / Empresa *</label>
+    <label class="lbl" data-i18n="sb.name">Nome / Empresa *</label>
     <input type="text" id="se-name" placeholder="Ex: Climatec, Lda." style="margin-bottom:1rem">
-    <label class="lbl">Especialidade</label>
+    <label class="lbl" data-i18n="sb.spec">Especialidade</label>
     <input type="text" id="se-specialty" placeholder="Ex: AVAC / Climatização" style="margin-bottom:1rem">
     <div class="fg">
-      <div><label class="lbl">Email</label><input type="email" id="se-email" placeholder="email@empresa.pt"></div>
-      <div><label class="lbl">Telefone</label><input type="tel" id="se-phone" placeholder="+351 ..."></div>
+      <div><label class="lbl" data-i18n="lbl.emailonly">Email</label><input type="email" id="se-email" placeholder="email@empresa.pt"></div>
+      <div><label class="lbl" data-i18n="lbl.phoneonly">Telefone</label><input type="tel" id="se-phone" placeholder="+351 ..."></div>
     </div>
     <div class="modal-btns">
-      <button class="btn btn-secondary" onclick="closeModal('sub-modal')">Cancelar</button>
-      <button class="btn btn-mint" onclick="saveSub()"><i class="ti ti-check"></i> Guardar</button>
+      <button class="btn btn-secondary" onclick="closeModal('sub-modal')" data-i18n="btn.cancel">Cancelar</button>
+      <button class="btn btn-mint" onclick="saveSub()"><i class="ti ti-check"></i> <span data-i18n="btn.save">Guardar</span></button>
     </div>
   </div>
 </div>
@@ -820,18 +809,18 @@ hr.div{border:none;border-top:0.5px solid var(--ink-20);margin:1.25rem 0}
 <!-- ASSIGN MODAL -->
 <div class="modal-wrap" id="assign-modal">
   <div class="modal" style="max-width:560px">
-    <h2>Atribuir a subempreiteiro</h2>
+    <h2 data-i18n="as.title">Atribuir a subempreiteiro</h2>
     <input type="hidden" id="as-issue-id">
-    <p style="font-size:13px;color:var(--ink-60);margin-bottom:1rem">Selecione o(s) subempreiteiro(s) e as fotografias a incluir. Os dados pessoais do cliente não são partilhados.</p>
-    <label class="lbl">Subempreiteiro(s) *</label>
+    <p style="font-size:13px;color:var(--ink-60);margin-bottom:1rem" data-i18n="as.p">Selecione o(s) subempreiteiro(s) e as fotografias a incluir. Os dados pessoais do cliente não são partilhados.</p>
+    <label class="lbl" data-i18n="as.subs">Subempreiteiro(s) *</label>
     <div id="as-subs-list" style="margin-bottom:1.25rem;display:flex;flex-direction:column;gap:6px"></div>
-    <label class="lbl">Fotografias a incluir</label>
+    <label class="lbl" data-i18n="as.photos">Fotografias a incluir</label>
     <div id="as-photos" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:1.25rem"></div>
-    <label class="lbl">Nota para o subempreiteiro (opcional)</label>
-    <textarea id="as-note" rows="3" placeholder="Instruções adicionais..." style="margin-bottom:1rem"></textarea>
+    <label class="lbl" data-i18n="as.notelbl">Nota para o subempreiteiro (opcional)</label>
+    <textarea id="as-note" rows="3" placeholder="Instruções adicionais..." data-i18n-ph="as.noteph" style="margin-bottom:1rem"></textarea>
     <div class="modal-btns">
-      <button class="btn btn-secondary" onclick="closeModal('assign-modal')">Cancelar</button>
-      <button class="btn btn-mint" onclick="confirmAssign()"><i class="ti ti-send"></i> Atribuir e notificar</button>
+      <button class="btn btn-secondary" onclick="closeModal('assign-modal')" data-i18n="btn.cancel">Cancelar</button>
+      <button class="btn btn-mint" onclick="confirmAssign()"><i class="ti ti-send"></i> <span data-i18n="as.confirm">Atribuir e notificar</span></button>
     </div>
   </div>
 </div>
@@ -864,10 +853,269 @@ let projects = [];
 let subcontractors = [];
 let clientPhotos = []; // base64 for preview; actual uploads go to Supabase Storage
 let clientPhotoFiles = [];
-let filters = { status: 'all', priority: 'all', project: 'all', sub: 'all' };
+let filters = { status: 'all', priority: 'all', project: 'all', sub: 'all', unit: 'all' };
 let activeNoteId = null;
 let currentUser = null;
 let usingLocalFallback = false;
+
+// ══════════════════════════════════════════════════════
+//  I18N — PT / EN
+// ══════════════════════════════════════════════════════
+let LANG = localStorage.getItem('sv_lang') || 'pt';
+
+const I18N = {
+pt: {
+  'nav.subtype':'Assistência Pós-Venda',
+  'nav.report':'Reportar ocorrência','nav.panel':'Painel de gestão','nav.analytics':'Análise','nav.projects':'Projectos','nav.subs':'Subempreiteiros','nav.logout':'Sair',
+  'track.title':'Acompanhamento da ocorrência','track.sub':'Solive — Assistência Pós-Venda','track.new':'Reportar nova ocorrência',
+  'track.notfound':'Ocorrência não encontrada. Verifique o link.','track.noupdates':'Ainda não existem atualizações registadas.',
+  'track.details':'Detalhes da ocorrência','track.project':'Empreendimento','track.unit':'Fração','track.category':'Categoria','track.location':'Localização','track.date':'Data de registo',
+  'track.history':'Histórico de acompanhamento','track.resolved':'Ocorrência resolvida','track.resolvedate':'Data de resolução',
+  'track.contested':'Resolução contestada — reaberta','track.contestedp':'A ocorrência foi reaberta e está novamente a ser tratada pela equipa.','track.reason':'Razão indicada:',
+  'val.concl.auto':'Conclusão aceite automaticamente','val.concl.client':'Conclusão confirmada pelo cliente',
+  'val.confirmq':'Confirma que a ocorrência está resolvida?','val.note':'A sua confirmação fica registada. Se não responder em 5 dias úteis, será considerada aceite.',
+  'val.yes':'Confirmo que está resolvido','val.no':'Não está resolvido','val.comment':'Comentário (opcional)','val.commentph':'Pode deixar uma observação...',
+  'val.confirm':'Confirmar conclusão','val.whynot':'Indique a razão pela qual não considera resolvido *','val.whynotph':'Descreva o que ainda está por resolver...','val.submit':'Submeter e reabrir ocorrência',
+  'hero.eyebrow':'Serviço pós-venda','hero.title':'Reporte uma<br>ocorrência','hero.p':'Descreva a patologia identificada na sua fração ou numa área comum. A nossa equipa analisará e dará seguimento brevemente.',
+  'success.strong':'Ocorrência submetida com sucesso.','success.sub':'A nossa equipa irá contactá-lo brevemente.',
+  'sec.id':'Identificação','sec.yourdata':'Os seus dados','lbl.project':'Empreendimento *','opt.selectproject':'Selecionar empreendimento...',
+  'lbl.name':'Nome completo *','ph.name':'Ex: João Silva','lbl.email':'Email de contacto *','lbl.phone':'Telefone','lbl.unit':'Fração / Unidade *','opt.selectfirst':'Selecione primeiro o empreendimento',
+  'sec.detail':'Detalhe','sec.desc':'Descrição da ocorrência','lbl.cat':'Categoria da patologia *','opt.select':'Selecionar...','lbl.loc':'Localização na fração',
+  'lbl.zone':'Zona específica (opcional)','ph.zone':'Ex: parede à direita da janela, junto ao teto / canto inferior esquerdo do pavimento...',
+  'lbl.desc':'Descrição detalhada *','ph.desc':'Descreva a patologia com o máximo de detalhe possível: quando foi detetada, dimensão aproximada, se agravou, se existe risco de danos em bens pessoais...',
+  'lbl.urgency':'Urgência percebida',
+  'prio.alta.full':'Alta — risco imediato ou danos em progressão','prio.media.full':'Média — sem urgência imediata','prio.baixa.full':'Baixa — estética / acabamento',
+  'sec.docs':'Documentação','sec.photos':'Fotografias','upload.click':'Clique para adicionar fotografias<br><span style="font-size:11px;opacity:0.65">JPG · PNG · HEIC — até 10 fotos por ocorrência</span>',
+  'sec.privacy':'Privacidade','submit.required':'* Campos obrigatórios','btn.submit':'Submeter ocorrência','btn.submitting':'A submeter...',
+  'photo.marked':'Marcada','photo.mark':'Marcar local','photo.open':'Abrir foto','photo.view':'Ver foto','photo.viewres':'Ver foto resolução','photo.n':'Foto',
+  'mk.title':'Marcar local do problema','mk.hint':'Toque no ponto exato da patologia. Para assinalar uma <strong>área</strong>, toque em vários pontos a delimitar o contorno (mínimo 3).',
+  'mk.undo':'Desfazer ponto','mk.clear':'Limpar','btn.cancel':'Cancelar','btn.confirm':'Confirmar',
+  'login.title':'Painel de Gestão','login.sub':'Acesso restrito à equipa pós-venda<br>Solive','login.email':'Email','login.pass':'Password','btn.login':'Entrar','login.loading':'A entrar...','login.help':'Conta de gestor? Contacte o administrador.',
+  'mgr.eyebrow':'Gestão interna','mgr.title':'Ocorrências pós-venda','mgr.sub':'Todos os empreendimentos Solive','btn.export':'Exportar Excel',
+  'stat.total':'Total','stat.total.sub':'ocorrências','stat.new':'Novas','stat.new.sub':'por tratar','stat.analysis':'Em análise','stat.analysis.sub':'em curso',
+  'stat.scheduled':'Agendadas','stat.scheduled.sub':'marcadas','stat.resolved':'Resolvidas','stat.resolved.sub':'fechadas','stat.overdue':'Em atraso','stat.overdue.sub':'fora do prazo',
+  'filter.project':'Empreendimento','filter.allprojects':'Todos os empreendimentos','filter.sub':'Subempreiteiro','filter.all':'Todos','filter.allf':'Todas','filter.unit':'Fração / Zona','filter.status':'Estado','chip.all':'Todas',
+  'status.nova':'Nova','status.em_analise':'Em análise','status.agendada':'Agendada','status.resolvida':'Resolvida','status.rejeitada':'Rejeitada',
+  'chip.nova':'Novas','chip.em_analise':'Em análise','chip.agendada':'Agendadas','chip.resolvida':'Resolvidas','chip.rejeitada':'Rejeitadas',
+  'filter.priority':'Prioridade','prio.alta':'Alta','prio.media':'Média','prio.baixa':'Baixa',
+  'search.ph':'Pesquisar por fração, nome, categoria...','empty.issues':'Nenhuma ocorrência encontrada.',
+  'card.overdue':'Em atraso','card.perception':'Perceção:','card.due':'Prazo:','card.duetitle':'Prazo-alvo','card.desc':'Descrição','card.note':'Nota interna','card.resolvedon':'Resolvida em','card.assignedto':'Atribuído a:',
+  'btn.note':'Nota','btn.assign':'Atribuir','btn.closeissue':'Fechar ocorrência',
+  'tl.ph':'Ex: Visita inicial do empreiteiro agendada para 20/06. Intervenção planeada para 27/06...','tl.notify':'Notificar cliente por email','btn.addevent':'Adicionar evento','tl.none':'Sem eventos registados.','tl.system':'Sistema',
+  'resolve.notes':'Descrição das medidas corretivas *','resolve.notesph':'Descreva o trabalho realizado, materiais usados, entidade executante...','resolve.hours':'Tempo de resolução (horas)','resolve.hoursph':'Ex: 4','resolve.photos':'Fotos das medidas corretivas','btn.confirmresolve':'Confirmar resolução',
+  'val.pendente':'Aguarda validação do cliente','val.aceite':'Aceite pelo cliente','val.aceite_tacito':'Aceite (tácito, 5 dias úteis)','val.recusado':'Contestada pelo cliente',
+  'note.title':'Nota interna','note.lbl':'Observação','note.ph':'Contacto com empreiteiro, data acordada, material necessário...','btn.savenote':'Guardar nota',
+  'pm.title':'Atribuir grau de urgência','pm.p1':'Para passar a ocorrência a <strong>Em análise</strong> é obrigatório atribuir o grau de urgência oficial. O cliente será informado do grau atribuído.','pm.perc':'Perceção do cliente:','pm.confirm':'Confirmar e notificar',
+  'as.title':'Atribuir a subempreiteiro','as.p':'Selecione o(s) subempreiteiro(s) e as fotografias a incluir. Os dados pessoais do cliente não são partilhados.',
+  'as.subs':'Subempreiteiro(s) *','as.photos':'Fotografias a incluir','as.notelbl':'Nota para o subempreiteiro (opcional)','as.noteph':'Instruções adicionais...','as.confirm':'Atribuir e notificar',
+  'as.nosubs':'Não há subempreiteiros. Crie primeiro na aba Subempreiteiros.','as.nophotos':'Sem fotografias nesta ocorrência.',
+  'an.eyebrow':'Visão transversal','an.title':'Análise de ocorrências',
+  'mon.title':'Monitorização de desempenho','mon.calendar':'Semana (seg–dom)','mon.rolling':'Últimos 7 dias','mon.custom':'Período personalizado','mon.to':'a','mon.selectdates':'Selecione as datas de início e fim.',
+  'mon.opened':'Abertas no período','mon.resolved':'Resolvidas no período','mon.backlog':'Backlog por resolver','mon.overdue':'em atraso','mon.avg':'Tempo médio resolução',
+  'mon.same':'= igual ao período anterior','mon.vs':'vs período anterior','mon.state':'Estado','mon.good':'Saudável','mon.warn':'Atenção','mon.bad':'Crítico','mon.ratio':'rácio resolvidas/abertas',
+  'mon.inweek':'na semana','mon.last7':'nos últimos 7 dias','mon.trend':'Tendência das últimas 8 semanas','mon.current':'Atual','mon.wk':'sem',
+  'chart.opened':'Abertas','chart.resolved':'Resolvidas',
+  'an.bycat':'Ocorrências por categoria (todos os projectos)','an.byproj':'Ocorrências por empreendimento','an.bystatus':'Ocorrências por estado','an.topcats':'Top categorias recorrentes','an.subperf':'Desempenho por subempreiteiro',
+  'an.nodata':'Sem dados.','an.nosubs':'Ainda não há subempreiteiros registados.',
+  'kpi.sub':'Subempreiteiro','kpi.spec':'Especialidade','kpi.assigned':'Atribuídas','kpi.resolved':'Resolvidas','kpi.rate':'Taxa resolução','kpi.avg':'Tempo médio*','kpi.note':'* Tempo médio desde a atribuição até à resolução.',
+  'pj.eyebrow':'Configuração','pj.title':'Empreendimentos','pj.sub':'Criar e gerir projectos','pj.new':'Novo empreendimento','pj.empty':'Ainda não existem empreendimentos. Crie o primeiro.',
+  'btn.edit':'Editar','btn.save':'Guardar','pj.units':'frações','pj.commons':'zonas comuns','pj.issues':'ocorrências',
+  'pj.modal.new':'Novo empreendimento','pj.modal.edit':'Editar empreendimento','pj.name':'Nome do empreendimento *','pj.unitslbl':'Frações',
+  'pj.unitshelp':'Uma por linha, no formato: <strong>Código; Tipologia; Piso</strong> &nbsp;(ex: <code>A7; T3; 2º Piso</code>)','pj.commonslbl':'Zonas comuns','pj.commonshelp':'Uma por linha (ex: <code>Hall de entrada</code>)',
+  'optg.units':'Frações','optg.commons':'Áreas Comuns',
+  'sb.title':'Subempreiteiros','sb.sub':'Criar e gerir a lista de subempreiteiros','sb.new':'Novo subempreiteiro','sb.empty':'Ainda não existem subempreiteiros. Crie o primeiro.','sb.assigned':'atribuídas',
+  'sb.modal.new':'Novo subempreiteiro','sb.modal.edit':'Editar subempreiteiro','sb.name':'Nome / Empresa *','sb.spec':'Especialidade','lbl.emailonly':'Email','lbl.phoneonly':'Telefone',
+  'privacy.title':'Política de Privacidade','privacy.close':'Fechar',
+  't.fill':'Preencha os campos obrigatórios (*), incluindo o empreendimento.','t.consent':'Deve aceitar o tratamento de dados pessoais para continuar.','t.submitok':'Ocorrência submetida com sucesso!','t.submiterr':'Erro ao submeter. Tente novamente.',
+  't.reason':'Por favor indique a razão.','t.valerr':'Erro ao registar. Tente novamente.','t.valalready':'Esta ocorrência já tinha sido validada.','t.valfail':'Não foi possível validar.','t.valok':'Obrigado! Conclusão confirmada.','t.valreopen':'Registado. A ocorrência foi reaberta.',
+  't.markedpoint':'Ponto marcado na fotografia.','t.markedarea':'Área marcada na fotografia.',
+  't.logincreds':'Preencha email e password.','t.loginfail':'Credenciais inválidas.',
+  't.eventtext':'Escreva o evento a registar.','t.eventok':'Evento adicionado. Cliente notificado.','t.eventfail':'Evento adicionado. (Falha ao notificar)','t.eventadded':'Evento adicionado.',
+  't.notesaved':'Nota guardada.','t.resolvenotes':'Descreva as medidas corretivas.','t.resolvedok':'Ocorrência fechada. Condomínio e cliente notificados por email.',
+  't.deleteconfirm':'Eliminar esta ocorrência? Esta ação não pode ser revertida.','t.deleted':'Ocorrência eliminada.','t.loaderr':'Erro ao carregar ocorrências.',
+  't.noexport':'Sem ocorrências para exportar.','t.exported':'Excel exportado.','t.nodata':'Sem dados para exportar.','t.anexported':'Análise exportada.',
+  't.projname':'Indique o nome do empreendimento.','t.projsaved':'Empreendimento guardado.','t.projhasissues':'Não é possível eliminar: o empreendimento tem ocorrências associadas.','t.projdelconfirm':'Eliminar este empreendimento?','t.projdeleted':'Empreendimento eliminado.',
+  't.subname':'Indique o nome do subempreiteiro.','t.subsaved':'Subempreiteiro guardado.','t.subhasissues':'Não é possível eliminar: tem ocorrências atribuídas.','t.subdelconfirm':'Eliminar este subempreiteiro?','t.subdeleted':'Subempreiteiro eliminado.',
+  't.pickone':'Selecione pelo menos um subempreiteiro.','t.assignok':'Atribuído. {n} subempreiteiro(s) notificado(s).','t.assignnoemail':'Atribuído. (Sem emails — verifique os contactos)',
+  't.priopick':'Selecione o grau de urgência.','t.prioset':'Em análise. Urgência {p} atribuída. Notificações enviadas.',
+  't.pdfloading':'Biblioteca PDF a carregar, tente novamente.','t.pdfgen':'A gerar PDF...','t.pdfok':'PDF gerado.',
+  'pdf.header':'Assistência Pós-Venda — Relatório de Ocorrência','pdf.statusl':'Estado:','pdf.urgency':'Urgência:','pdf.perc':'perceção cliente:','pdf.openedl':'Aberta:','pdf.unassigned':'Por atribuir',
+  'pdf.project':'Empreendimento:','pdf.unit':'Fração / Unidade:','pdf.location':'Localização:','pdf.client':'Cliente:','pdf.contact':'Contacto:','pdf.due':'Prazo-alvo:','pdf.overdue':'(EM ATRASO)',
+  'pdf.desc':'Descrição','pdf.photos':'Fotografias da ocorrência','pdf.history':'Histórico de acompanhamento','pdf.system':'(Sistema)',
+  'pdf.resolution':'Resolução','pdf.resolvedate':'Data de resolução:','pdf.time':'Tempo:','pdf.measures':'Medidas:','pdf.resphotos':'Fotografias da resolução',
+  'pdf.validation':'Validação do cliente','pdf.date':'Data:','pdf.comment':'Comentário:','pdf.footer':'Solive — Assistência Pós-Venda','pdf.genon':'Gerado em'
+},
+en: {
+  'nav.subtype':'After-Sales Service',
+  'nav.report':'Report an issue','nav.panel':'Management panel','nav.analytics':'Analytics','nav.projects':'Projects','nav.subs':'Subcontractors','nav.logout':'Log out',
+  'track.title':'Issue tracking','track.sub':'Solive — After-Sales Service','track.new':'Report a new issue',
+  'track.notfound':'Issue not found. Please check the link.','track.noupdates':'No updates recorded yet.',
+  'track.details':'Issue details','track.project':'Development','track.unit':'Unit','track.category':'Category','track.location':'Location','track.date':'Date submitted',
+  'track.history':'Follow-up history','track.resolved':'Issue resolved','track.resolvedate':'Resolution date',
+  'track.contested':'Resolution contested — reopened','track.contestedp':'The issue has been reopened and is being handled by the team again.','track.reason':'Reason given:',
+  'val.concl.auto':'Completion automatically accepted','val.concl.client':'Completion confirmed by the client',
+  'val.confirmq':'Do you confirm the issue is resolved?','val.note':'Your confirmation will be recorded. If you do not reply within 5 working days, it will be considered accepted.',
+  'val.yes':'I confirm it is resolved','val.no':'It is not resolved','val.comment':'Comment (optional)','val.commentph':'You may leave a remark...',
+  'val.confirm':'Confirm completion','val.whynot':'Please state why you do not consider it resolved *','val.whynotph':'Describe what remains unresolved...','val.submit':'Submit and reopen issue',
+  'hero.eyebrow':'After-sales service','hero.title':'Report an<br>issue','hero.p':'Describe the defect identified in your unit or in a common area. Our team will review it and follow up shortly.',
+  'success.strong':'Issue submitted successfully.','success.sub':'Our team will contact you shortly.',
+  'sec.id':'Identification','sec.yourdata':'Your details','lbl.project':'Development *','opt.selectproject':'Select development...',
+  'lbl.name':'Full name *','ph.name':'e.g. John Smith','lbl.email':'Contact email *','lbl.phone':'Phone','lbl.unit':'Unit *','opt.selectfirst':'Select the development first',
+  'sec.detail':'Details','sec.desc':'Issue description','lbl.cat':'Defect category *','opt.select':'Select...','lbl.loc':'Location within the unit',
+  'lbl.zone':'Specific spot (optional)','ph.zone':'e.g. wall to the right of the window, near the ceiling / bottom-left corner of the floor...',
+  'lbl.desc':'Detailed description *','ph.desc':'Describe the defect in as much detail as possible: when it was detected, approximate size, whether it has worsened, whether there is a risk of damage to personal belongings...',
+  'lbl.urgency':'Perceived urgency',
+  'prio.alta.full':'High — immediate risk or worsening damage','prio.media.full':'Medium — no immediate urgency','prio.baixa.full':'Low — cosmetic / finishing',
+  'sec.docs':'Documentation','sec.photos':'Photos','upload.click':'Click to add photos<br><span style="font-size:11px;opacity:0.65">JPG · PNG · HEIC — up to 10 photos per issue</span>',
+  'sec.privacy':'Privacy','submit.required':'* Required fields','btn.submit':'Submit issue','btn.submitting':'Submitting...',
+  'photo.marked':'Marked','photo.mark':'Mark spot','photo.open':'Open photo','photo.view':'View photo','photo.viewres':'View resolution photo','photo.n':'Photo',
+  'mk.title':'Mark the problem location','mk.hint':'Tap the exact spot of the defect. To mark an <strong>area</strong>, tap several points outlining its contour (minimum 3).',
+  'mk.undo':'Undo point','mk.clear':'Clear','btn.cancel':'Cancel','btn.confirm':'Confirm',
+  'login.title':'Management Panel','login.sub':'Restricted access — Solive<br>after-sales team','login.email':'Email','login.pass':'Password','btn.login':'Log in','login.loading':'Logging in...','login.help':'Manager account? Contact the administrator.',
+  'mgr.eyebrow':'Internal management','mgr.title':'After-sales issues','mgr.sub':'All Solive developments','btn.export':'Export Excel',
+  'stat.total':'Total','stat.total.sub':'issues','stat.new':'New','stat.new.sub':'to handle','stat.analysis':'Under review','stat.analysis.sub':'in progress',
+  'stat.scheduled':'Scheduled','stat.scheduled.sub':'booked','stat.resolved':'Resolved','stat.resolved.sub':'closed','stat.overdue':'Overdue','stat.overdue.sub':'past due',
+  'filter.project':'Development','filter.allprojects':'All developments','filter.sub':'Subcontractor','filter.all':'All','filter.allf':'All','filter.unit':'Unit / Zone','filter.status':'Status','chip.all':'All',
+  'status.nova':'New','status.em_analise':'Under review','status.agendada':'Scheduled','status.resolvida':'Resolved','status.rejeitada':'Rejected',
+  'chip.nova':'New','chip.em_analise':'Under review','chip.agendada':'Scheduled','chip.resolvida':'Resolved','chip.rejeitada':'Rejected',
+  'filter.priority':'Priority','prio.alta':'High','prio.media':'Medium','prio.baixa':'Low',
+  'search.ph':'Search by unit, name, category...','empty.issues':'No issues found.',
+  'card.overdue':'Overdue','card.perception':'Perceived:','card.due':'Due:','card.duetitle':'Target deadline','card.desc':'Description','card.note':'Internal note','card.resolvedon':'Resolved on','card.assignedto':'Assigned to:',
+  'btn.note':'Note','btn.assign':'Assign','btn.closeissue':'Close issue',
+  'tl.ph':'e.g. Initial contractor visit scheduled for 20/06. Works planned for 27/06...','tl.notify':'Notify client by email','btn.addevent':'Add event','tl.none':'No events recorded.','tl.system':'System',
+  'resolve.notes':'Description of corrective measures *','resolve.notesph':'Describe the work carried out, materials used, executing party...','resolve.hours':'Resolution time (hours)','resolve.hoursph':'e.g. 4','resolve.photos':'Photos of corrective measures','btn.confirmresolve':'Confirm resolution',
+  'val.pendente':'Awaiting client validation','val.aceite':'Accepted by the client','val.aceite_tacito':'Accepted (tacit, 5 working days)','val.recusado':'Contested by the client',
+  'note.title':'Internal note','note.lbl':'Remark','note.ph':'Contact with contractor, agreed date, materials required...','btn.savenote':'Save note',
+  'pm.title':'Assign urgency level','pm.p1':'To move the issue to <strong>Under review</strong> you must assign the official urgency level. The client will be informed of the assigned level.','pm.perc':'Client perception:','pm.confirm':'Confirm and notify',
+  'as.title':'Assign to subcontractor','as.p':'Select the subcontractor(s) and the photos to include. The client\u2019s personal data is not shared.',
+  'as.subs':'Subcontractor(s) *','as.photos':'Photos to include','as.notelbl':'Note for the subcontractor (optional)','as.noteph':'Additional instructions...','as.confirm':'Assign and notify',
+  'as.nosubs':'No subcontractors yet. Create one first in the Subcontractors tab.','as.nophotos':'No photos in this issue.',
+  'an.eyebrow':'Cross-portfolio view','an.title':'Issue analytics',
+  'mon.title':'Performance monitoring','mon.calendar':'Week (Mon–Sun)','mon.rolling':'Last 7 days','mon.custom':'Custom period','mon.to':'to','mon.selectdates':'Select start and end dates.',
+  'mon.opened':'Opened in period','mon.resolved':'Resolved in period','mon.backlog':'Unresolved backlog','mon.overdue':'overdue','mon.avg':'Avg. resolution time',
+  'mon.same':'= same as previous period','mon.vs':'vs previous period','mon.state':'Status','mon.good':'Healthy','mon.warn':'Attention','mon.bad':'Critical','mon.ratio':'resolved/opened ratio',
+  'mon.inweek':'this week','mon.last7':'in the last 7 days','mon.trend':'Trend over the last 8 weeks','mon.current':'Now','mon.wk':'wk',
+  'chart.opened':'Opened','chart.resolved':'Resolved',
+  'an.bycat':'Issues by category (all projects)','an.byproj':'Issues by development','an.bystatus':'Issues by status','an.topcats':'Top recurring categories','an.subperf':'Subcontractor performance',
+  'an.nodata':'No data.','an.nosubs':'No subcontractors registered yet.',
+  'kpi.sub':'Subcontractor','kpi.spec':'Specialty','kpi.assigned':'Assigned','kpi.resolved':'Resolved','kpi.rate':'Resolution rate','kpi.avg':'Avg. time*','kpi.note':'* Average time from assignment to resolution.',
+  'pj.eyebrow':'Settings','pj.title':'Developments','pj.sub':'Create and manage projects','pj.new':'New development','pj.empty':'No developments yet. Create the first one.',
+  'btn.edit':'Edit','btn.save':'Save','pj.units':'units','pj.commons':'common areas','pj.issues':'issues',
+  'pj.modal.new':'New development','pj.modal.edit':'Edit development','pj.name':'Development name *','pj.unitslbl':'Units',
+  'pj.unitshelp':'One per line, in the format: <strong>Code; Type; Floor</strong> &nbsp;(e.g. <code>A7; T3; 2º Piso</code>)','pj.commonslbl':'Common areas','pj.commonshelp':'One per line (e.g. <code>Hall de entrada</code>)',
+  'optg.units':'Units','optg.commons':'Common Areas',
+  'sb.title':'Subcontractors','sb.sub':'Create and manage the subcontractor list','sb.new':'New subcontractor','sb.empty':'No subcontractors yet. Create the first one.','sb.assigned':'assigned',
+  'sb.modal.new':'New subcontractor','sb.modal.edit':'Edit subcontractor','sb.name':'Name / Company *','sb.spec':'Specialty','lbl.emailonly':'Email','lbl.phoneonly':'Phone',
+  'privacy.title':'Privacy Policy','privacy.close':'Close',
+  't.fill':'Fill in the required fields (*), including the development.','t.consent':'You must accept the personal data processing to continue.','t.submitok':'Issue submitted successfully!','t.submiterr':'Error submitting. Please try again.',
+  't.reason':'Please state the reason.','t.valerr':'Error saving. Please try again.','t.valalready':'This issue had already been validated.','t.valfail':'Validation was not possible.','t.valok':'Thank you! Completion confirmed.','t.valreopen':'Recorded. The issue has been reopened.',
+  't.markedpoint':'Point marked on the photo.','t.markedarea':'Area marked on the photo.',
+  't.logincreds':'Enter email and password.','t.loginfail':'Invalid credentials.',
+  't.eventtext':'Write the event to record.','t.eventok':'Event added. Client notified.','t.eventfail':'Event added. (Failed to notify)','t.eventadded':'Event added.',
+  't.notesaved':'Note saved.','t.resolvenotes':'Describe the corrective measures.','t.resolvedok':'Issue closed. Condominium and client notified by email.',
+  't.deleteconfirm':'Delete this issue? This action cannot be undone.','t.deleted':'Issue deleted.','t.loaderr':'Error loading issues.',
+  't.noexport':'No issues to export.','t.exported':'Excel exported.','t.nodata':'No data to export.','t.anexported':'Analytics exported.',
+  't.projname':'Enter the development name.','t.projsaved':'Development saved.','t.projhasissues':'Cannot delete: the development has associated issues.','t.projdelconfirm':'Delete this development?','t.projdeleted':'Development deleted.',
+  't.subname':'Enter the subcontractor name.','t.subsaved':'Subcontractor saved.','t.subhasissues':'Cannot delete: it has assigned issues.','t.subdelconfirm':'Delete this subcontractor?','t.subdeleted':'Subcontractor deleted.',
+  't.pickone':'Select at least one subcontractor.','t.assignok':'Assigned. {n} subcontractor(s) notified.','t.assignnoemail':'Assigned. (No emails — check the contacts)',
+  't.priopick':'Select the urgency level.','t.prioset':'Under review. {p} urgency assigned. Notifications sent.',
+  't.pdfloading':'PDF library still loading, please try again.','t.pdfgen':'Generating PDF...','t.pdfok':'PDF generated.',
+  'pdf.header':'After-Sales Service — Issue Report','pdf.statusl':'Status:','pdf.urgency':'Urgency:','pdf.perc':'client perception:','pdf.openedl':'Opened:','pdf.unassigned':'Not assigned',
+  'pdf.project':'Development:','pdf.unit':'Unit:','pdf.location':'Location:','pdf.client':'Client:','pdf.contact':'Contact:','pdf.due':'Target deadline:','pdf.overdue':'(OVERDUE)',
+  'pdf.desc':'Description','pdf.photos':'Issue photos','pdf.history':'Follow-up history','pdf.system':'(System)',
+  'pdf.resolution':'Resolution','pdf.resolvedate':'Resolution date:','pdf.time':'Time:','pdf.measures':'Measures:','pdf.resphotos':'Resolution photos',
+  'pdf.validation':'Client validation','pdf.date':'Date:','pdf.comment':'Comment:','pdf.footer':'Solive — After-Sales Service','pdf.genon':'Generated on'
+}
+};
+
+function t(k) {
+  return (I18N[LANG] && I18N[LANG][k]) || I18N.pt[k] || k;
+}
+function statusLabel(s) { return t('status.' + s) !== ('status.' + s) ? t('status.' + s) : s; }
+function prioLabel(p) { return p ? t('prio.' + p) : '\u2014'; }
+function dateLocale() { return LANG === 'en' ? 'en-GB' : 'pt-PT'; }
+
+// Categorias e localizações: valor guardado na BD é SEMPRE o canónico PT;
+// só o texto apresentado é traduzido.
+const CATEGORIES = ['Infiltrações / Humidade','Fissuras / Fendas','Revestimentos — Pintura','Revestimentos — Cerâmica / Pedra','Revestimentos — Madeiras / Soalho','Caixilharia / Vidros','Instalações elétricas','Instalações de água / Saneamento','AVAC / Ventilação / Climatização','Isolamento térmico / Acústico','Equipamentos (elevador, portão, intercomunicador)','Estrutura / Betão / Argamassa','Impermeabilização','Outro'];
+const CAT_EN = {'Infiltrações / Humidade':'Water infiltration / Damp','Fissuras / Fendas':'Cracks / Fissures','Revestimentos — Pintura':'Finishes — Painting','Revestimentos — Cerâmica / Pedra':'Finishes — Ceramic / Stone','Revestimentos — Madeiras / Soalho':'Finishes — Wood / Flooring','Caixilharia / Vidros':'Window frames / Glazing','Instalações elétricas':'Electrical installations','Instalações de água / Saneamento':'Plumbing / Drainage','AVAC / Ventilação / Climatização':'HVAC / Ventilation / Air conditioning','Isolamento térmico / Acústico':'Thermal / Acoustic insulation','Equipamentos (elevador, portão, intercomunicador)':'Equipment (lift, gate, intercom)','Estrutura / Betão / Argamassa':'Structure / Concrete / Mortar','Impermeabilização':'Waterproofing','Outro':'Other'};
+const LOCATIONS = ['Sala de estar / Jantar','Cozinha','Quarto 1 (Suite)','Quarto 2','Quarto 3','Casa de banho 1','Casa de banho 2','Varanda / Terraço privativo','Hall de entrada','Corredor','Zona técnica / Lavandaria','Toda a fração','Área comum','Outro / Não aplicável'];
+const LOC_EN = {'Sala de estar / Jantar':'Living / Dining room','Cozinha':'Kitchen','Quarto 1 (Suite)':'Bedroom 1 (En-suite)','Quarto 2':'Bedroom 2','Quarto 3':'Bedroom 3','Casa de banho 1':'Bathroom 1','Casa de banho 2':'Bathroom 2','Varanda / Terraço privativo':'Balcony / Private terrace','Hall de entrada':'Entrance hall','Corredor':'Hallway','Zona técnica / Lavandaria':'Utility room / Laundry','Toda a fração':'Entire unit','Área comum':'Common area','Outro / Não aplicável':'Other / Not applicable'};
+
+function catLabel(c) { if (!c) return '\u2014'; return LANG === 'en' ? (CAT_EN[c] || c) : c; }
+function locLabel(l) {
+  if (!l) return '';
+  if (LANG !== 'en') return l;
+  if (LOC_EN[l]) return LOC_EN[l];
+  // localização combinada "Divisão — zona livre": traduz só a divisão se conhecida
+  const sep = ' — ';
+  const idx = l.indexOf(sep);
+  if (idx > -1) {
+    const head = l.slice(0, idx);
+    if (LOC_EN[head]) return LOC_EN[head] + sep + l.slice(idx + sep.length);
+  }
+  return l;
+}
+
+// Preenche os selects de categoria e localização preservando a seleção atual
+function populateCatLoc() {
+  const catSel = document.getElementById('c-cat');
+  if (catSel) {
+    const cur = catSel.value;
+    catSel.innerHTML = '<option value="">' + t('opt.select') + '</option>' +
+      CATEGORIES.map(c => `<option value="${c}">${catLabel(c)}</option>`).join('');
+    catSel.value = cur;
+  }
+  const locSel = document.getElementById('c-loc');
+  if (locSel) {
+    const cur = locSel.value;
+    locSel.innerHTML = '<option value="">' + t('opt.select') + '</option>' +
+      LOCATIONS.map(l => `<option value="${l}">${locLabel(l)}</option>`).join('');
+    locSel.value = cur;
+  }
+}
+
+// Aplica o idioma a todo o HTML estático
+function applyLang() {
+  document.documentElement.lang = LANG;
+  document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
+  document.querySelectorAll('[data-i18n-html]').forEach(el => { el.innerHTML = t(el.dataset.i18nHtml); });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el => { el.placeholder = t(el.dataset.i18nPh); });
+  // blocos longos duplicados (RGPD / Política de Privacidade)
+  document.querySelectorAll('.i18n-pt').forEach(el => { el.style.display = LANG === 'pt' ? '' : 'none'; });
+  document.querySelectorAll('.i18n-en').forEach(el => { el.style.display = LANG === 'en' ? '' : 'none'; });
+  // botões do seletor
+  const bp = document.getElementById('lang-pt'), be = document.getElementById('lang-en');
+  if (bp) bp.classList.toggle('active', LANG === 'pt');
+  if (be) be.classList.toggle('active', LANG === 'en');
+  populateCatLoc();
+}
+
+let currentTrackId = null;
+function setLang(l) {
+  if (l === LANG) return;
+  LANG = l;
+  localStorage.setItem('sv_lang', l);
+  applyLang();
+  // repõe selects dependentes de dados preservando seleções
+  const projSel = document.getElementById('c-project');
+  const curProj = projSel ? projSel.value : '';
+  const unitSel = document.getElementById('c-unit');
+  const curUnit = unitSel ? unitSel.value : '';
+  populateProjectSelector();
+  if (projSel) projSel.value = curProj;
+  onProjectChange();
+  if (unitSel) unitSel.value = curUnit;
+  // re-renderiza a vista ativa (conteúdo gerado por JS)
+  const active = document.querySelector('.page.active');
+  const id = active ? active.id : '';
+  if (id === 'view-manager') { populateProjectFilter(); renderIssues(); }
+  else if (id === 'view-analise') { renderAnalytics(); }
+  else if (id === 'view-projectos') { renderProjectsList(); }
+  else if (id === 'view-subs') { renderSubsList(); }
+  else if (id === 'view-track' && currentTrackId) { showTracking(currentTrackId); }
+}
+
 
 // ══════════════════════════════════════════════════════
 //  TOGGLE CARD
@@ -888,13 +1136,13 @@ function toggleCard(id) {
 function renderTimeline(issue) {
   const events = issue.events || [];
   if (!events.length) {
-    return '<p style="font-size:12px;color:var(--ink-60);font-style:italic">Sem eventos registados.</p>';
+    return '<p style="font-size:12px;color:var(--ink-60);font-style:italic">' + t('tl.none') + '</p>';
   }
   return events.map(ev => `
     <div class="tl-event">
       <div class="tl-dot" style="${ev.auto?'background:var(--gray)':''}"></div>
       <div class="tl-content">
-        <div class="tl-date">${fmtDate(ev.date)}${ev.auto?' · <span style=\"color:var(--ink-60)\">Sistema</span>':''}</div>
+        <div class="tl-date">${fmtDate(ev.date)}${ev.auto?' · <span style=\"color:var(--ink-60)\">'+t('tl.system')+'</span>':''}</div>
         <div class="tl-text">${ev.text}</div>
       </div>
     </div>`).join('');
@@ -956,8 +1204,8 @@ async function drawPhotoGrid(doc, urls, startY, M, W) {
 async function generateIssuePDF(id) {
   const issue = issues.find(x => String(x.id) === String(id));
   if (!issue) return;
-  if (!window.jspdf) { toast('Biblioteca PDF a carregar, tente novamente.', 'error'); return; }
-  toast('A gerar PDF...');
+  if (!window.jspdf) { toast(t('t.pdfloading'), 'error'); return; }
+  toast(t('t.pdfgen'));
 
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({ unit: 'mm', format: 'a4' });
@@ -965,28 +1213,26 @@ async function generateIssuePDF(id) {
   let y = 16;
 
   const navy = [20, 58, 103], red = [230, 35, 54], grey = [120, 130, 145];
-  const statusLbls = {nova:'Nova',em_analise:'Em análise',agendada:'Agendada',resolvida:'Resolvida',rejeitada:'Rejeitada'};
-  const prioLbls = {alta:'Alta',media:'Média',baixa:'Baixa'};
 
   // Cabeçalho
   doc.setFillColor(...navy); doc.rect(0, 0, W, 26, 'F');
   doc.setTextColor(255,255,255); doc.setFont('helvetica','bold'); doc.setFontSize(16);
   doc.text('SOLIVE', M, 13);
   doc.setFont('helvetica','normal'); doc.setFontSize(9);
-  doc.text('Assistência Pós-Venda — Relatório de Ocorrência', M, 20);
+  doc.text(t('pdf.header'), M, 20);
   doc.setFont('helvetica','bold'); doc.setFontSize(13); doc.setTextColor(...red);
   doc.text(issueRef(issue), W - M, 15, { align: 'right' });
   y = 36;
 
   // Título
   doc.setTextColor(...navy); doc.setFont('helvetica','bold'); doc.setFontSize(14);
-  const titulo = issue.category + (issue.location ? ' — ' + issue.location : '');
+  const titulo = catLabel(issue.category) + (issue.location ? ' — ' + locLabel(issue.location) : '');
   doc.text(doc.splitTextToSize(titulo, W - 2*M), M, y);
   y += 9;
 
   // Linha de estado
   doc.setFontSize(10); doc.setFont('helvetica','normal'); doc.setTextColor(...grey);
-  doc.text(`Estado: ${statusLbls[issue.status]||issue.status}   |   Urgência: ${prioLbls[issue.priority_official]||'Por atribuir'} (perceção cliente: ${prioLbls[issue.priority]||'—'})   |   Aberta: ${fmtDate(issue.created_at)}`, M, y);
+  doc.text(`${t('pdf.statusl')} ${statusLabel(issue.status)}   |   ${t('pdf.urgency')} ${issue.priority_official ? prioLabel(issue.priority_official) : t('pdf.unassigned')} (${t('pdf.perc')} ${issue.priority ? prioLabel(issue.priority) : '—'})   |   ${t('pdf.openedl')} ${fmtDate(issue.created_at)}`, M, y);
   y += 4;
   doc.setDrawColor(...red); doc.setLineWidth(0.8); doc.line(M, y, W-M, y); y += 8;
 
@@ -999,17 +1245,17 @@ async function generateIssuePDF(id) {
     doc.text(lines, M + 42, y);
     y += Math.max(5.5, lines.length * 4.6);
   }
-  row('Empreendimento:', projectName(issue.project_id));
-  row('Fração / Unidade:', issue.unit);
-  row('Localização:', issue.location || '—');
-  row('Cliente:', issue.client_name);
-  row('Contacto:', [issue.client_email, issue.client_phone].filter(Boolean).join('  ·  '));
-  row('Prazo-alvo:', dueDate(issue).toLocaleDateString('pt-PT') + (isOverdue(issue) ? '  (EM ATRASO)' : ''));
+  row(t('pdf.project'), projectName(issue.project_id));
+  row(t('pdf.unit'), issue.unit);
+  row(t('pdf.location'), issue.location ? locLabel(issue.location) : '—');
+  row(t('pdf.client'), issue.client_name);
+  row(t('pdf.contact'), [issue.client_email, issue.client_phone].filter(Boolean).join('  ·  '));
+  row(t('pdf.due'), dueDate(issue) ? (dueDate(issue).toLocaleDateString(dateLocale()) + (isOverdue(issue) ? '  ' + t('pdf.overdue') : '')) : '—');
   y += 2;
 
   // Descrição
   doc.setFont('helvetica','bold'); doc.setTextColor(...navy); doc.setFontSize(10);
-  doc.text('Descrição', M, y); y += 5;
+  doc.text(t('pdf.desc'), M, y); y += 5;
   doc.setFont('helvetica','normal'); doc.setTextColor(40,40,40); doc.setFontSize(9.5);
   const descLines = doc.splitTextToSize(issue.description || '—', W - 2*M);
   doc.text(descLines, M, y); y += descLines.length * 4.6 + 4;
@@ -1019,7 +1265,7 @@ async function generateIssuePDF(id) {
   if (issuePhotos.length) {
     if (y > 235) { doc.addPage(); y = 20; }
     doc.setFont('helvetica','bold'); doc.setTextColor(...navy); doc.setFontSize(10);
-    doc.text('Fotografias da ocorrência', M, y); y += 5;
+    doc.text(t('pdf.photos'), M, y); y += 5;
     y = await drawPhotoGrid(doc, issuePhotos, y, M, W);
     y += 2;
   }
@@ -1028,12 +1274,12 @@ async function generateIssuePDF(id) {
   if ((issue.events||[]).length) {
     if (y > 240) { doc.addPage(); y = 20; }
     doc.setFont('helvetica','bold'); doc.setTextColor(...navy); doc.setFontSize(10);
-    doc.text('Histórico de acompanhamento', M, y); y += 5;
+    doc.text(t('pdf.history'), M, y); y += 5;
     doc.setFontSize(9); 
     issue.events.forEach(ev => {
       if (y > 270) { doc.addPage(); y = 20; }
       doc.setFont('helvetica','bold'); doc.setTextColor(...grey);
-      doc.text('• ' + fmtDate(ev.date) + (ev.auto ? ' (Sistema)' : ''), M, y); y += 4.4;
+      doc.text('• ' + fmtDate(ev.date) + (ev.auto ? ' ' + t('pdf.system') : ''), M, y); y += 4.4;
       doc.setFont('helvetica','normal'); doc.setTextColor(40,40,40);
       const evLines = doc.splitTextToSize(ev.text, W - 2*M - 4);
       doc.text(evLines, M + 4, y); y += evLines.length * 4.4 + 2;
@@ -1046,19 +1292,19 @@ async function generateIssuePDF(id) {
     if (y > 250) { doc.addPage(); y = 20; }
     doc.setFillColor(228, 244, 236); doc.rect(M, y-4, W-2*M, 7, 'F');
     doc.setFont('helvetica','bold'); doc.setTextColor(26,107,69); doc.setFontSize(10);
-    doc.text('Resolução', M+2, y+1); y += 8;
+    doc.text(t('pdf.resolution'), M+2, y+1); y += 8;
     doc.setFont('helvetica','normal'); doc.setTextColor(40,40,40); doc.setFontSize(9.5);
-    row('Data de resolução:', fmtDate(issue.resolved_at));
-    if (issue.duration_hours) row('Tempo:', fmtDuration(issue.duration_hours));
+    row(t('pdf.resolvedate'), fmtDate(issue.resolved_at));
+    if (issue.duration_hours) row(t('pdf.time'), fmtDuration(issue.duration_hours));
     if (issue.resolve_notes) {
-      const rLines = doc.splitTextToSize('Medidas: ' + issue.resolve_notes, W - 2*M);
+      const rLines = doc.splitTextToSize(t('pdf.measures') + ' ' + issue.resolve_notes, W - 2*M);
       doc.text(rLines, M, y); y += rLines.length * 4.6 + 3;
     }
     const resPhotos = (issue.resolve_photo_urls || []);
     if (resPhotos.length) {
       if (y > 235) { doc.addPage(); y = 20; }
       doc.setFont('helvetica','bold'); doc.setTextColor(26,107,69); doc.setFontSize(10);
-      doc.text('Fotografias da resolução', M, y); y += 5;
+      doc.text(t('pdf.resphotos'), M, y); y += 5;
       y = await drawPhotoGrid(doc, resPhotos, y, M, W);
       y += 2;
     }
@@ -1067,14 +1313,13 @@ async function generateIssuePDF(id) {
   // Validação do cliente
   if (issue.validation_status) {
     if (y > 260) { doc.addPage(); y = 20; }
-    const vMap = { pendente:'Aguarda validação do cliente', aceite:'Aceite pelo cliente', aceite_tacito:'Aceite (tácito, 5 dias úteis)', recusado:'Contestada pelo cliente' };
     doc.setFont('helvetica','bold'); doc.setTextColor(...navy); doc.setFontSize(10);
-    doc.text('Validação do cliente', M, y); y += 5;
+    doc.text(t('pdf.validation'), M, y); y += 5;
     doc.setFont('helvetica','normal'); doc.setTextColor(40,40,40); doc.setFontSize(9.5);
-    doc.text('Estado: ' + (vMap[issue.validation_status]||issue.validation_status), M, y); y += 5;
-    if (issue.validation_at) { doc.text('Data: ' + fmtDate(issue.validation_at), M, y); y += 5; }
+    doc.text(t('pdf.statusl') + ' ' + (t('val.' + issue.validation_status) !== ('val.' + issue.validation_status) ? t('val.' + issue.validation_status) : issue.validation_status), M, y); y += 5;
+    if (issue.validation_at) { doc.text(t('pdf.date') + ' ' + fmtDate(issue.validation_at), M, y); y += 5; }
     if (issue.validation_comment) {
-      const vLines = doc.splitTextToSize('Comentário: ' + issue.validation_comment, W - 2*M);
+      const vLines = doc.splitTextToSize(t('pdf.comment') + ' ' + issue.validation_comment, W - 2*M);
       doc.text(vLines, M, y); y += vLines.length * 4.6;
     }
   }
@@ -1085,12 +1330,12 @@ async function generateIssuePDF(id) {
     doc.setPage(p);
     doc.setDrawColor && doc.setDrawColor(...grey);
     doc.setFontSize(8); doc.setTextColor(...grey); doc.setFont('helvetica','normal');
-    doc.text('Solive — Assistência Pós-Venda  ·  ' + issueRef(issue) + '  ·  Gerado em ' + new Date().toLocaleDateString('pt-PT'), M, 290);
+    doc.text(t('pdf.footer') + '  ·  ' + issueRef(issue) + '  ·  ' + t('pdf.genon') + ' ' + new Date().toLocaleDateString(dateLocale()), M, 290);
     doc.text(p + '/' + pages, W - M, 290, { align: 'right' });
   }
 
   doc.save(issueRef(issue) + '.pdf');
-  toast('PDF gerado.', 'success');
+  toast(t('t.pdfok'), 'success');
 }
 
 // ── AUDIT TRAIL automático (regista evento no histórico, silencioso) ──
@@ -1114,7 +1359,7 @@ async function addEvent(id) {
   const notifyEl = document.getElementById('tl-notify-' + id);
   const text = textEl.value.trim();
   const notify = notifyEl.checked;
-  if (!text) { toast('Escreva o evento a registar.', 'error'); return; }
+  if (!text) { toast(t('t.eventtext'), 'error'); return; }
 
   const issue = issues.find(x => x.id == id);
   if (!issue) return;
@@ -1137,19 +1382,19 @@ async function addEvent(id) {
       await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TPL_RESOLVED, {
         to_email:    issue.client_email,
         client:      issue.client_name,
-        subject_line:'Atualização sobre a sua ocorrência',
-        message_body:'Há uma nova atualização sobre a ocorrência que reportou:\n\n"' + text + '"\n\nConsulte o histórico completo da sua ocorrência no link abaixo.',
+        subject_line:'Atualização sobre a sua ocorrência | Update on your issue',
+        message_body:'Há uma nova atualização sobre a ocorrência que reportou:\n\n"' + text + '"\n\nConsulte o histórico completo da sua ocorrência no link abaixo.\n\n— — — English — — —\n\nThere is a new update on the issue you reported:\n\n"' + text + '"\n\nSee the full history of your issue via the link below.',
         unit:        issue.unit,
         category:    issue.category,
-        extra_info:  'Acompanhe a sua ocorrência aqui: ' + trackUrl
+        extra_info:  'Acompanhe a sua ocorrência aqui | Track your issue here:\n' + trackUrl
       });
-      toast('Evento adicionado. Cliente notificado.', 'success');
+      toast(t('t.eventok'), 'success');
     } catch(e) {
       console.warn('EmailJS error (event):', e);
-      toast('Evento adicionado. (Falha ao notificar)', 'error');
+      toast(t('t.eventfail'), 'error');
     }
   } else {
-    toast('Evento adicionado.', 'success');
+    toast(t('t.eventadded'), 'success');
   }
 
   textEl.value = '';
@@ -1204,6 +1449,7 @@ async function boot() {
 //  PUBLIC TRACKING
 // ══════════════════════════════════════════════════════
 async function showTracking(id) {
+  currentTrackId = id;
   await loadProjects();
   // hide nav tabs + other views
   document.querySelectorAll('.page, #view-login').forEach(el => el.classList.remove('active'));
@@ -1224,7 +1470,7 @@ async function showTracking(id) {
 
   if (!issue) {
     statusEl.innerHTML = '';
-    content.innerHTML = '<div class="track-card"><p style="text-align:center;color:var(--ink-60)">Ocorrência não encontrada. Verifique o link.</p></div>';
+    content.innerHTML = '<div class="track-card"><p style="text-align:center;color:var(--ink-60)">' + t('track.notfound') + '</p></div>';
     return;
   }
 
@@ -1240,7 +1486,7 @@ async function showTracking(id) {
             <div class="tl-text">${ev.text}</div>
           </div>
         </div>`).join('')
-    : '<p style="font-size:13px;color:var(--ink-60);font-style:italic">Ainda não existem atualizações registadas.</p>';
+    : '<p style="font-size:13px;color:var(--ink-60);font-style:italic">' + t('track.noupdates') + '</p>';
 
   let resolvedHtml = '';
   if (issue.status === 'resolvida' || issue.validation_status === 'aceite' || issue.validation_status === 'aceite_tacito') {
@@ -1249,7 +1495,7 @@ async function showTracking(id) {
     if (vs === 'aceite' || vs === 'aceite_tacito') {
       validationBlock = `
         <div style="margin-top:14px;padding:12px 14px;background:var(--success-lt);border-radius:8px;border:0.5px solid rgba(26,107,69,0.25)">
-          <div style="font-size:13px;color:var(--success);font-weight:700"><i class="ti ti-circle-check" style="vertical-align:-2px"></i> Conclusão ${vs === 'aceite_tacito' ? 'aceite automaticamente' : 'confirmada pelo cliente'}</div>
+          <div style="font-size:13px;color:var(--success);font-weight:700"><i class="ti ti-circle-check" style="vertical-align:-2px"></i> ${vs === 'aceite_tacito' ? t('val.concl.auto') : t('val.concl.client')}</div>
           ${issue.validation_comment ? `<div style="font-size:13px;color:var(--success);margin-top:6px">"${issue.validation_comment}"</div>` : ''}
           <div style="font-size:11px;color:var(--ink-60);margin-top:6px">${fmtDate(issue.validation_at)}</div>
         </div>`;
@@ -1257,53 +1503,53 @@ async function showTracking(id) {
       // pendente → mostra botões de validação
       validationBlock = `
         <div style="margin-top:14px;padding:14px;background:var(--cream);border-radius:8px;border:1px solid var(--ink-20)">
-          <div style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:4px">Confirma que a ocorrência está resolvida?</div>
-          <p style="font-size:12px;color:var(--ink-60);margin-bottom:12px">A sua confirmação fica registada. Se não responder em 5 dias úteis, será considerada aceite.</p>
+          <div style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:4px">${t('val.confirmq')}</div>
+          <p style="font-size:12px;color:var(--ink-60);margin-bottom:12px">${t('val.note')}</p>
           <div id="val-buttons" style="display:flex;gap:8px;flex-wrap:wrap">
-            <button class="btn btn-mint btn-sm" onclick="validateAccept(${issue.id})"><i class="ti ti-check"></i> Confirmo que está resolvido</button>
-            <button class="btn btn-secondary btn-sm" onclick="showRefuseBox()"><i class="ti ti-x"></i> Não está resolvido</button>
+            <button class="btn btn-mint btn-sm" onclick="validateAccept(${issue.id})"><i class="ti ti-check"></i> ${t('val.yes')}</button>
+            <button class="btn btn-secondary btn-sm" onclick="showRefuseBox()"><i class="ti ti-x"></i> ${t('val.no')}</button>
           </div>
           <div id="val-accept-box" style="display:none;margin-top:12px">
-            <label class="lbl">Comentário (opcional)</label>
-            <textarea id="val-accept-comment" rows="2" placeholder="Pode deixar uma observação..."></textarea>
-            <button class="btn btn-mint btn-sm" style="margin-top:8px" onclick="submitValidation(${issue.id}, true)"><i class="ti ti-check"></i> Confirmar conclusão</button>
+            <label class="lbl">${t('val.comment')}</label>
+            <textarea id="val-accept-comment" rows="2" placeholder="${t('val.commentph')}"></textarea>
+            <button class="btn btn-mint btn-sm" style="margin-top:8px" onclick="submitValidation(${issue.id}, true)"><i class="ti ti-check"></i> ${t('val.confirm')}</button>
           </div>
           <div id="val-refuse-box" style="display:none;margin-top:12px">
-            <label class="lbl">Indique a razão pela qual não considera resolvido *</label>
-            <textarea id="val-refuse-comment" rows="3" placeholder="Descreva o que ainda está por resolver..."></textarea>
-            <button class="btn btn-danger btn-sm" style="margin-top:8px" onclick="submitValidation(${issue.id}, false)"><i class="ti ti-send"></i> Submeter e reabrir ocorrência</button>
+            <label class="lbl">${t('val.whynot')}</label>
+            <textarea id="val-refuse-comment" rows="3" placeholder="${t('val.whynotph')}"></textarea>
+            <button class="btn btn-danger btn-sm" style="margin-top:8px" onclick="submitValidation(${issue.id}, false)"><i class="ti ti-send"></i> ${t('val.submit')}</button>
           </div>
         </div>`;
     }
     resolvedHtml = `
       <div class="track-card" style="border-left:3px solid var(--mint)">
-        <h3><i class="ti ti-circle-check" style="vertical-align:-2px"></i> Ocorrência resolvida</h3>
-        <div class="track-detail-row"><span class="lbl-t">Data de resolução</span><span>${fmtDate(issue.resolved_at)}</span></div>
+        <h3><i class="ti ti-circle-check" style="vertical-align:-2px"></i> ${t('track.resolved')}</h3>
+        <div class="track-detail-row"><span class="lbl-t">${t('track.resolvedate')}</span><span>${fmtDate(issue.resolved_at)}</span></div>
         ${issue.resolve_notes ? `<div style="margin-top:8px;font-size:14px">${issue.resolve_notes}</div>` : ''}
         ${validationBlock}
       </div>`;
   } else if (issue.validation_status === 'recusado') {
     resolvedHtml = `
       <div class="track-card" style="border-left:3px solid var(--warn)">
-        <h3><i class="ti ti-alert-triangle" style="vertical-align:-2px"></i> Resolução contestada — reaberta</h3>
-        <p style="font-size:13px;color:var(--ink-60)">A ocorrência foi reaberta e está novamente a ser tratada pela equipa.</p>
-        ${issue.validation_comment ? `<div style="margin-top:8px;font-size:14px">Razão indicada: "${issue.validation_comment}"</div>` : ''}
+        <h3><i class="ti ti-alert-triangle" style="vertical-align:-2px"></i> ${t('track.contested')}</h3>
+        <p style="font-size:13px;color:var(--ink-60)">${t('track.contestedp')}</p>
+        ${issue.validation_comment ? `<div style="margin-top:8px;font-size:14px">${t('track.reason')} "${issue.validation_comment}"</div>` : ''}
       </div>`;
   }
 
   content.innerHTML = `
     <div class="track-card">
-      <h3>Detalhes da ocorrência</h3>
-      <div class="track-detail-row"><span class="lbl-t">Empreendimento</span><span>${projectName(issue.project_id)}</span></div>
-      <div class="track-detail-row"><span class="lbl-t">Fração</span><span>${issue.unit}</span></div>
-      <div class="track-detail-row"><span class="lbl-t">Categoria</span><span>${issue.category}</span></div>
-      ${issue.location ? `<div class="track-detail-row"><span class="lbl-t">Localização</span><span>${issue.location}</span></div>` : ''}
-      <div class="track-detail-row"><span class="lbl-t">Data de registo</span><span>${fmtDate(issue.created_at)}</span></div>
+      <h3>${t('track.details')}</h3>
+      <div class="track-detail-row"><span class="lbl-t">${t('track.project')}</span><span>${projectName(issue.project_id)}</span></div>
+      <div class="track-detail-row"><span class="lbl-t">${t('track.unit')}</span><span>${issue.unit}</span></div>
+      <div class="track-detail-row"><span class="lbl-t">${t('track.category')}</span><span>${catLabel(issue.category)}</span></div>
+      ${issue.location ? `<div class="track-detail-row"><span class="lbl-t">${t('track.location')}</span><span>${locLabel(issue.location)}</span></div>` : ''}
+      <div class="track-detail-row"><span class="lbl-t">${t('track.date')}</span><span>${fmtDate(issue.created_at)}</span></div>
       <div style="margin-top:12px;font-size:14px;color:var(--ink-60)">${issue.description || ''}</div>
     </div>
 
     <div class="track-card">
-      <h3>Histórico de acompanhamento</h3>
+      <h3>${t('track.history')}</h3>
       ${timelineHtml}
     </div>
 
@@ -1326,7 +1572,7 @@ async function submitValidation(id, accept) {
     comment = document.getElementById('val-accept-comment').value.trim();
   } else {
     comment = document.getElementById('val-refuse-comment').value.trim();
-    if (!comment) { toast('Por favor indique a razão.', 'error'); return; }
+    if (!comment) { toast(t('t.reason'), 'error'); return; }
   }
 
   if (usingLocalFallback) {
@@ -1341,9 +1587,9 @@ async function submitValidation(id, accept) {
     }
   } else {
     const { data, error } = await sb.rpc('validate_issue', { p_id: Number(id), p_accept: accept, p_comment: comment });
-    if (error) { console.warn('validate_issue error:', error); toast('Erro ao registar. Tente novamente.', 'error'); return; }
-    if (data === 'already') { toast('Esta ocorrência já tinha sido validada.', 'error'); }
-    else if (data === 'not_resolved' || data === 'not_found') { toast('Não foi possível validar.', 'error'); }
+    if (error) { console.warn('validate_issue error:', error); toast(t('t.valerr'), 'error'); return; }
+    if (data === 'already') { toast(t('t.valalready'), 'error'); }
+    else if (data === 'not_resolved' || data === 'not_found') { toast(t('t.valfail'), 'error'); }
     // notify Ana on refusal
     if (!accept && (data === 'reopened')) {
       try {
@@ -1362,7 +1608,7 @@ async function submitValidation(id, accept) {
 
   // refresh tracking view
   showTracking(id);
-  toast(accept ? 'Obrigado! Conclusão confirmada.' : 'Registado. A ocorrência foi reaberta.', 'success');
+  toast(accept ? t('t.valok') : t('t.valreopen'), 'success');
 }
 
 function goToClientForm() {
@@ -1468,11 +1714,11 @@ function weekMetrics(list, win) {
 function deltaHtml(cur, prev, invert) {
   if (prev === null || prev === undefined) return '<span class="k-flat">—</span>';
   const diff = cur - prev;
-  if (diff === 0) return '<span class="k-flat">= igual ao período anterior</span>';
+  if (diff === 0) return '<span class="k-flat">' + t('mon.same') + '</span>';
   const better = invert ? diff < 0 : diff > 0;
   const arrow = diff > 0 ? '↑' : '↓';
   const cls = better ? 'k-up' : 'k-down';
-  return `<span class="${cls}">${arrow} ${Math.abs(diff)} vs período anterior</span>`;
+  return `<span class="${cls}">${arrow} ${Math.abs(diff)} ${t('mon.vs')}</span>`;
 }
 
 function renderMonitor() {
@@ -1480,7 +1726,7 @@ function renderMonitor() {
   const list = monFilteredIssues();
   const win = periodWindow(mode, 0);
   if (!win) {  // custom sem datas válidas
-    document.getElementById('mon-cards').innerHTML = '<p style="font-size:13px;color:var(--ink-60);grid-column:1/-1">Selecione as datas de início e fim.</p>';
+    document.getElementById('mon-cards').innerHTML = '<p style="font-size:13px;color:var(--ink-60);grid-column:1/-1">' + t('mon.selectdates') + '</p>';
     document.getElementById('mon-verdict').innerHTML = '';
     return;
   }
@@ -1488,31 +1734,31 @@ function renderMonitor() {
   const prev = weekMetrics(list, periodWindow(mode, 1));
 
   const periodLbl = mode === 'custom'
-    ? `${win.start.toLocaleDateString('pt-PT')} a ${win.end.toLocaleDateString('pt-PT')}`
-    : (mode === 'rolling' ? 'nos últimos 7 dias' : 'na semana');
+    ? `${win.start.toLocaleDateString(dateLocale())} ${t('mon.to')} ${win.end.toLocaleDateString(dateLocale())}`
+    : (mode === 'rolling' ? t('mon.last7') : t('mon.inweek'));
 
   const ratio = cur.opened ? Math.round(cur.resolved / cur.opened * 100) : (cur.resolved ? 100 : 0);
   const avgStr = cur.avgH === null ? '—' : (cur.avgH < 24 ? Math.round(cur.avgH) + 'h' : Math.round(cur.avgH/24) + 'd');
   const prevAvgStr = prev.avgH === null ? null : prev.avgH;
 
   document.getElementById('mon-cards').innerHTML = `
-    <div class="mon-kpi"><div class="k-lbl">Abertas no período</div><div class="k-val">${cur.opened}</div><div class="k-delta">${deltaHtml(cur.opened, prev.opened, true)}</div></div>
-    <div class="mon-kpi"><div class="k-lbl">Resolvidas no período</div><div class="k-val" style="color:var(--success)">${cur.resolved}</div><div class="k-delta">${deltaHtml(cur.resolved, prev.resolved, false)}</div></div>
-    <div class="mon-kpi"><div class="k-lbl">Backlog por resolver</div><div class="k-val">${cur.backlog}</div><div class="k-delta">${cur.overdueBacklog} em atraso</div></div>
-    <div class="mon-kpi"><div class="k-lbl">Tempo médio resolução</div><div class="k-val">${avgStr}</div><div class="k-delta">${prevAvgStr===null?'<span class=k-flat>—</span>':deltaHtml(Math.round(cur.avgH), Math.round(prevAvgStr), true)}</div></div>
+    <div class="mon-kpi"><div class="k-lbl">${t('mon.opened')}</div><div class="k-val">${cur.opened}</div><div class="k-delta">${deltaHtml(cur.opened, prev.opened, true)}</div></div>
+    <div class="mon-kpi"><div class="k-lbl">${t('mon.resolved')}</div><div class="k-val" style="color:var(--success)">${cur.resolved}</div><div class="k-delta">${deltaHtml(cur.resolved, prev.resolved, false)}</div></div>
+    <div class="mon-kpi"><div class="k-lbl">${t('mon.backlog')}</div><div class="k-val">${cur.backlog}</div><div class="k-delta">${cur.overdueBacklog} ${t('mon.overdue')}</div></div>
+    <div class="mon-kpi"><div class="k-lbl">${t('mon.avg')}</div><div class="k-val">${avgStr}</div><div class="k-delta">${prevAvgStr===null?'<span class=k-flat>—</span>':deltaHtml(Math.round(cur.avgH), Math.round(prevAvgStr), true)}</div></div>
   `;
 
   // etiqueta de estado (sem texto interpretativo)
   let vClass, vLabel, vIcon;
   const netFlow = cur.resolved - cur.opened;
   if (netFlow >= 0 && cur.overdueBacklog === 0) {
-    vClass = 'v-good'; vIcon = 'ti-circle-check'; vLabel = 'Saudável';
+    vClass = 'v-good'; vIcon = 'ti-circle-check'; vLabel = t('mon.good');
   } else if (netFlow < -2 || cur.overdueBacklog > 5) {
-    vClass = 'v-bad'; vIcon = 'ti-alert-triangle'; vLabel = 'Crítico';
+    vClass = 'v-bad'; vIcon = 'ti-alert-triangle'; vLabel = t('mon.bad');
   } else {
-    vClass = 'v-warn'; vIcon = 'ti-alert-circle'; vLabel = 'Atenção';
+    vClass = 'v-warn'; vIcon = 'ti-alert-circle'; vLabel = t('mon.warn');
   }
-  document.getElementById('mon-verdict').innerHTML = `<div class="mon-verdict ${vClass}"><i class="ti ${vIcon}" style="font-size:16px"></i> Estado (${periodLbl}): ${vLabel} · rácio resolvidas/abertas ${ratio}%</div>`;
+  document.getElementById('mon-verdict').innerHTML = `<div class="mon-verdict ${vClass}"><i class="ti ${vIcon}" style="font-size:16px"></i> ${t('mon.state')} (${periodLbl}): ${vLabel} · ${t('mon.ratio')} ${ratio}%</div>`;
 
   // tendência: 8 semanas (só nos modos semanais); escondida no modo custom
   const trendWrap = document.getElementById('trend-wrap');
@@ -1523,7 +1769,7 @@ function renderMonitor() {
     const labels = [], opened = [], resolved = [];
     for (let w = 7; w >= 0; w--) {
       const m = weekMetrics(list, periodWindow(mode, w));
-      labels.push(w === 0 ? 'Atual' : '-' + w + 'sem');
+      labels.push(w === 0 ? t('mon.current') : '-' + w + t('mon.wk'));
       opened.push(m.opened); resolved.push(m.resolved);
     }
     const ctx = document.getElementById('chart-trend');
@@ -1532,8 +1778,8 @@ function renderMonitor() {
       charts['trend'] = new Chart(ctx, {
         type: 'bar',
         data: { labels, datasets: [
-          { label: 'Abertas', data: opened, backgroundColor: '#E67E22' },
-          { label: 'Resolvidas', data: resolved, backgroundColor: '#1A6B45' }
+          { label: t('chart.opened'), data: opened, backgroundColor: '#E67E22' },
+          { label: t('chart.resolved'), data: resolved, backgroundColor: '#1A6B45' }
         ]},
         options: { responsive: true, plugins: { legend: { position: 'bottom', labels:{font:{family:'Roboto'},boxWidth:12} } },
           scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } }
@@ -1555,7 +1801,7 @@ async function renderAnalytics() {
   const monProjSel = document.getElementById('mon-project');
   if (monProjSel) {
     const cur = monProjSel.value || 'all';
-    monProjSel.innerHTML = '<option value="all">Todos os empreendimentos</option>' +
+    monProjSel.innerHTML = '<option value="all">' + t('filter.allprojects') + '</option>' +
       projects.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
     monProjSel.value = cur;
   }
@@ -1567,7 +1813,7 @@ async function renderAnalytics() {
   const byCat = {};
   issues.forEach(i => { byCat[i.category] = (byCat[i.category]||0)+1; });
   const catSorted = Object.entries(byCat).sort((a,b)=>b[1]-a[1]);
-  drawChart('chart-cat', 'bar', catSorted.map(x=>x[0]), catSorted.map(x=>x[1]), palette);
+  drawChart('chart-cat', 'bar', catSorted.map(x=>catLabel(x[0])), catSorted.map(x=>x[1]), palette);
 
   // By project
   const byProj = {};
@@ -1576,9 +1822,8 @@ async function renderAnalytics() {
   drawChart('chart-proj', 'doughnut', projEntries.map(x=>x[0]), projEntries.map(x=>x[1]), palette);
 
   // By status
-  const statusLbl = {nova:'Nova',em_analise:'Em análise',agendada:'Agendada',resolvida:'Resolvida',rejeitada:'Rejeitada'};
   const byStatus = {};
-  issues.forEach(i => { const s = statusLbl[i.status]||i.status; byStatus[s]=(byStatus[s]||0)+1; });
+  issues.forEach(i => { const s = statusLabel(i.status); byStatus[s]=(byStatus[s]||0)+1; });
   const statusEntries = Object.entries(byStatus);
   drawChart('chart-status', 'doughnut', statusEntries.map(x=>x[0]), statusEntries.map(x=>x[1]), palette);
 
@@ -1586,16 +1831,16 @@ async function renderAnalytics() {
   const total = issues.length || 1;
   const topHtml = catSorted.slice(0,8).map(([cat,n]) => `
     <div class="top-cat-row" style="display:block">
-      <div style="display:flex;justify-content:space-between"><span>${cat}</span><strong>${n}</strong></div>
+      <div style="display:flex;justify-content:space-between"><span>${catLabel(cat)}</span><strong>${n}</strong></div>
       <div class="top-cat-bar" style="width:${(n/catSorted[0][1]*100)}%"></div>
     </div>`).join('');
-  document.getElementById('top-cats').innerHTML = topHtml || '<p style="color:var(--ink-60)">Sem dados.</p>';
+  document.getElementById('top-cats').innerHTML = topHtml || '<p style="color:var(--ink-60)">' + t('an.nodata') + '</p>';
 
   // ── KPIs por subempreiteiro ──
   await loadSubs();
   const kpiEl = document.getElementById('kpi-subs');
   if (!subcontractors.length) {
-    kpiEl.innerHTML = '<p style="color:var(--ink-60);font-size:13px">Ainda não há subempreiteiros registados.</p>';
+    kpiEl.innerHTML = '<p style="color:var(--ink-60);font-size:13px">' + t('an.nosubs') + '</p>';
   } else {
     const rows = subcontractors.map(s => {
       const assigned = issues.filter(i => (i.assigned_ids||[]).map(String).includes(String(s.id)));
@@ -1614,11 +1859,11 @@ async function renderAnalytics() {
     kpiEl.innerHTML = `
       <table class="kpi-table">
         <thead><tr>
-          <th>Subempreiteiro</th><th>Especialidade</th>
-          <th style="text-align:center">Atribuídas</th>
-          <th style="text-align:center">Resolvidas</th>
-          <th style="text-align:center">Taxa resolução</th>
-          <th style="text-align:center">Tempo médio*</th>
+          <th>${t('kpi.sub')}</th><th>${t('kpi.spec')}</th>
+          <th style="text-align:center">${t('kpi.assigned')}</th>
+          <th style="text-align:center">${t('kpi.resolved')}</th>
+          <th style="text-align:center">${t('kpi.rate')}</th>
+          <th style="text-align:center">${t('kpi.avg')}</th>
         </tr></thead>
         <tbody>
           ${rows.map(r => `<tr>
@@ -1631,7 +1876,7 @@ async function renderAnalytics() {
           </tr>`).join('')}
         </tbody>
       </table>
-      <p style="font-size:11px;color:var(--ink-60);margin-top:10px">* Tempo médio desde a atribuição até à resolução.</p>`;
+      <p style="font-size:11px;color:var(--ink-60);margin-top:10px">${t('kpi.note')}</p>`;
   }
 }
 
@@ -1651,7 +1896,7 @@ function drawChart(id, type, labels, data, palette) {
 }
 
 function exportAnalytics() {
-  if (!issues.length) { toast('Sem dados para exportar.', 'error'); return; }
+  if (!issues.length) { toast(t('t.nodata'), 'error'); return; }
   const byCatProj = {};
   issues.forEach(i => {
     const key = projectName(i.project_id) + '|||' + i.category;
@@ -1667,7 +1912,7 @@ function exportAnalytics() {
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, 'Análise');
   XLSX.writeFile(wb, `solive_analise_${new Date().toISOString().slice(0,10)}.xlsx`);
-  toast('Análise exportada.');
+  toast(t('t.anexported'));
 }
 
 // ══════════════════════════════════════════════════════
@@ -1677,7 +1922,7 @@ function renderProjectsList() {
   loadProjects().then(() => {
     const container = document.getElementById('projects-list');
     if (!projects.length) {
-      container.innerHTML = '<div class="empty"><i class="ti ti-building-skyscraper"></i><p>Ainda não existem empreendimentos. Crie o primeiro.</p></div>';
+      container.innerHTML = '<div class="empty"><i class="ti ti-building-skyscraper"></i><p>' + t('pj.empty') + '</p></div>';
       return;
     }
     container.innerHTML = projects.map(p => {
@@ -1687,14 +1932,14 @@ function renderProjectsList() {
         <div class="proj-card-head">
           <h3>${p.name}</h3>
           <div style="display:flex;gap:8px">
-            <button class="btn btn-secondary btn-sm" onclick="openProjectEditor('${p.id}')"><i class="ti ti-pencil"></i> Editar</button>
+            <button class="btn btn-secondary btn-sm" onclick="openProjectEditor('${p.id}')"><i class="ti ti-pencil"></i> ${t('btn.edit')}</button>
             <button class="btn btn-danger btn-sm" onclick="deleteProject('${p.id}')"><i class="ti ti-trash"></i></button>
           </div>
         </div>
         <div class="proj-card-stats">
-          <span><i class="ti ti-home" style="font-size:13px;vertical-align:-2px"></i> ${(p.units||[]).length} frações</span>
-          <span><i class="ti ti-stairs" style="font-size:13px;vertical-align:-2px"></i> ${(p.commons||[]).length} zonas comuns</span>
-          <span><i class="ti ti-clipboard-list" style="font-size:13px;vertical-align:-2px"></i> ${nIssues} ocorrências</span>
+          <span><i class="ti ti-home" style="font-size:13px;vertical-align:-2px"></i> ${(p.units||[]).length} ${t('pj.units')}</span>
+          <span><i class="ti ti-stairs" style="font-size:13px;vertical-align:-2px"></i> ${(p.commons||[]).length} ${t('pj.commons')}</span>
+          <span><i class="ti ti-clipboard-list" style="font-size:13px;vertical-align:-2px"></i> ${nIssues} ${t('pj.issues')}</span>
         </div>
       </div>`;
     }).join('');
@@ -1703,7 +1948,7 @@ function renderProjectsList() {
 
 function openProjectEditor(id) {
   document.getElementById('pe-id').value = id || '';
-  document.getElementById('project-modal-title').textContent = id ? 'Editar empreendimento' : 'Novo empreendimento';
+  document.getElementById('project-modal-title').textContent = id ? t('pj.modal.edit') : t('pj.modal.new');
   if (id) {
     const p = projects.find(x => String(x.id) === String(id));
     document.getElementById('pe-name').value = p.name || '';
@@ -1729,7 +1974,7 @@ async function saveProject() {
   const name = document.getElementById('pe-name').value.trim();
   const units = parseUnits(document.getElementById('pe-units').value);
   const commons = document.getElementById('pe-commons').value.split('\n').map(s=>s.trim()).filter(Boolean);
-  if (!name) { toast('Indique o nome do empreendimento.', 'error'); return; }
+  if (!name) { toast(t('t.projname'), 'error'); return; }
 
   const record = { name, units, commons, active: true };
 
@@ -1747,13 +1992,13 @@ async function saveProject() {
   await loadProjects();
   populateProjectSelector();
   renderProjectsList();
-  toast('Empreendimento guardado.', 'success');
+  toast(t('t.projsaved'), 'success');
 }
 
 async function deleteProject(id) {
   const nIssues = issues.filter(i => String(i.project_id) === String(id)).length;
-  if (nIssues > 0) { toast('Não é possível eliminar: o empreendimento tem ocorrências associadas.', 'error'); return; }
-  if (!confirm('Eliminar este empreendimento?')) return;
+  if (nIssues > 0) { toast(t('t.projhasissues'), 'error'); return; }
+  if (!confirm(t('t.projdelconfirm'))) return;
   if (usingLocalFallback) {
     const local = JSON.parse(localStorage.getItem('pa_projects') || '[]').filter(x=>String(x.id)!==String(id));
     localStorage.setItem('pa_projects', JSON.stringify(local));
@@ -1763,7 +2008,7 @@ async function deleteProject(id) {
   await loadProjects();
   populateProjectSelector();
   renderProjectsList();
-  toast('Empreendimento eliminado.');
+  toast(t('t.projdeleted'));
 }
 
 // ══════════════════════════════════════════════════════
@@ -1785,7 +2030,7 @@ function renderSubsList() {
   loadSubs().then(() => {
     const container = document.getElementById('subs-list');
     if (!subcontractors.length) {
-      container.innerHTML = '<div class="empty"><i class="ti ti-users"></i><p>Ainda nao existem subempreiteiros. Crie o primeiro.</p></div>';
+      container.innerHTML = '<div class="empty"><i class="ti ti-users"></i><p>' + t('sb.empty') + '</p></div>';
       return;
     }
     container.innerHTML = subcontractors.map(s => {
@@ -1798,11 +2043,11 @@ function renderSubsList() {
           <div class="sub-meta">
             ${s.email ? `<span><i class="ti ti-mail" style="font-size:13px"></i> ${s.email}</span>` : ''}
             ${s.phone ? `<span><i class="ti ti-phone" style="font-size:13px"></i> ${s.phone}</span>` : ''}
-            <span><i class="ti ti-clipboard-list" style="font-size:13px"></i> ${nAssigned} atribu\u00eddas</span>
+            <span><i class="ti ti-clipboard-list" style="font-size:13px"></i> ${nAssigned} ${t('sb.assigned')}</span>
           </div>
         </div>
         <div style="display:flex;gap:8px">
-          <button class="btn btn-secondary btn-sm" onclick="openSubEditor('${s.id}')"><i class="ti ti-pencil"></i> Editar</button>
+          <button class="btn btn-secondary btn-sm" onclick="openSubEditor('${s.id}')"><i class="ti ti-pencil"></i> ${t('btn.edit')}</button>
           <button class="btn btn-danger btn-sm" onclick="deleteSub('${s.id}')"><i class="ti ti-trash"></i></button>
         </div>
       </div>`;
@@ -1811,7 +2056,7 @@ function renderSubsList() {
 }
 function openSubEditor(id) {
   document.getElementById('se-id').value = id || '';
-  document.getElementById('sub-modal-title').textContent = id ? 'Editar subempreiteiro' : 'Novo subempreiteiro';
+  document.getElementById('sub-modal-title').textContent = id ? t('sb.modal.edit') : t('sb.modal.new');
   const s = id ? subcontractors.find(x => String(x.id) === String(id)) : null;
   document.getElementById('se-name').value = s?.name || '';
   document.getElementById('se-specialty').value = s?.specialty || '';
@@ -1822,7 +2067,7 @@ function openSubEditor(id) {
 async function saveSub() {
   const id = document.getElementById('se-id').value;
   const name = document.getElementById('se-name').value.trim();
-  if (!name) { toast('Indique o nome do subempreiteiro.', 'error'); return; }
+  if (!name) { toast(t('t.subname'), 'error'); return; }
   const record = { name, specialty: document.getElementById('se-specialty').value.trim(), email: document.getElementById('se-email').value.trim(), phone: document.getElementById('se-phone').value.trim(), active: true };
   if (usingLocalFallback) {
     let local = JSON.parse(localStorage.getItem('pa_subs') || '[]');
@@ -1834,17 +2079,17 @@ async function saveSub() {
     else await sb.from('subcontractors').insert([record]);
   }
   closeModal('sub-modal'); await loadSubs(); renderSubsList();
-  toast('Subempreiteiro guardado.', 'success');
+  toast(t('t.subsaved'), 'success');
 }
 async function deleteSub(id) {
   const nAssigned = issues.filter(i => (i.assigned_ids||[]).map(String).includes(String(id))).length;
-  if (nAssigned > 0) { toast('Nao e possivel eliminar: tem ocorrencias atribuidas.', 'error'); return; }
-  if (!confirm('Eliminar este subempreiteiro?')) return;
+  if (nAssigned > 0) { toast(t('t.subhasissues'), 'error'); return; }
+  if (!confirm(t('t.subdelconfirm'))) return;
   if (usingLocalFallback) {
     const local = JSON.parse(localStorage.getItem('pa_subs') || '[]').filter(x=>String(x.id)!==String(id));
     localStorage.setItem('pa_subs', JSON.stringify(local));
   } else { await sb.from('subcontractors').delete().eq('id', id); }
-  await loadSubs(); renderSubsList(); toast('Subempreiteiro eliminado.');
+  await loadSubs(); renderSubsList(); toast(t('t.subdeleted'));
 }
 let assignPhotoSel = [];
 function openAssignModal(issueId) {
@@ -1855,7 +2100,7 @@ function openAssignModal(issueId) {
   const already = (issue.assigned_ids||[]).map(String);
   const subsList = document.getElementById('as-subs-list');
   if (!subcontractors.length) {
-    subsList.innerHTML = '<p style="font-size:13px;color:var(--ink-60)">Nao ha subempreiteiros. Crie primeiro na aba Subempreiteiros.</p>';
+    subsList.innerHTML = '<p style="font-size:13px;color:var(--ink-60)">' + t('as.nosubs') + '</p>';
   } else {
     subsList.innerHTML = subcontractors.map(s => `
       <label class="as-sub-opt">
@@ -1868,11 +2113,11 @@ function openAssignModal(issueId) {
   assignPhotoSel = photos.slice();
   const photosEl = document.getElementById('as-photos');
   if (!photos.length) {
-    photosEl.innerHTML = '<p style="font-size:13px;color:var(--ink-60)">Sem fotografias nesta ocorrencia.</p>';
+    photosEl.innerHTML = '<p style="font-size:13px;color:var(--ink-60)">' + t('as.nophotos') + '</p>';
   } else {
     photosEl.innerHTML = photos.map((url,idx) => `
       <div class="as-photo sel" data-url="${url}" onclick="toggleAssignPhoto(this)">
-        <img src="${url}" onerror="this.parentElement.innerHTML='<div style=&quot;font-size:9px;padding:4px;text-align:center;color:#888&quot;>Foto ${idx+1}</div>'">
+        <img src="${url}" onerror="this.parentElement.innerHTML='<div style=&quot;font-size:9px;padding:4px;text-align:center;color:#888&quot;>${t('photo.n')} ${idx+1}</div>'">
         <div class="as-dim"></div>
         <div class="as-check"><i class="ti ti-check"></i></div>
       </div>`).join('');
@@ -1890,7 +2135,7 @@ async function confirmAssign() {
   const issue = issues.find(x => String(x.id) === String(issueId));
   if (!issue) return;
   const checked = Array.from(document.querySelectorAll('#as-subs-list input:checked')).map(i => Number(i.value));
-  if (!checked.length) { toast('Selecione pelo menos um subempreiteiro.', 'error'); return; }
+  if (!checked.length) { toast(t('t.pickone'), 'error'); return; }
   const note = document.getElementById('as-note').value.trim();
   const update = { assigned_ids: checked };
   if (!issue.assigned_at) update.assigned_at = new Date().toISOString();
@@ -1918,7 +2163,7 @@ async function confirmAssign() {
   const subNames = checked.map(sid => subName(sid)).join(', ');
   await logAudit(issueId, 'Atribuído a: ' + subNames);
   closeModal('assign-modal'); await loadIssues();
-  toast(notified ? `Atribuido. ${notified} subempreiteiro(s) notificado(s).` : 'Atribuido. (Sem emails - verifique os contactos)', 'success');
+  toast(notified ? t('t.assignok').replace('{n}', notified) : t('t.assignnoemail'), 'success');
 }
 
 async function loadProjects() {
@@ -1942,7 +2187,7 @@ function populateProjectSelector() {
   const sel = document.getElementById('c-project');
   if (!sel) return;
   const active = projects.filter(p => p.active !== false);
-  sel.innerHTML = '<option value="">Selecionar empreendimento...</option>' +
+  sel.innerHTML = '<option value="">' + t('opt.selectproject') + '</option>' +
     active.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
 }
 
@@ -1951,19 +2196,19 @@ function onProjectChange() {
   const unitSel = document.getElementById('c-unit');
   const project = projects.find(p => String(p.id) === String(pid));
   if (!project) {
-    unitSel.innerHTML = '<option value="">Selecione primeiro o empreendimento</option>';
+    unitSel.innerHTML = '<option value="">' + t('opt.selectfirst') + '</option>';
     return;
   }
-  let html = '<option value="">Selecionar...</option>';
+  let html = '<option value="">' + t('opt.select') + '</option>';
   const units = project.units || [];
   if (units.length) {
-    html += '<optgroup label="Frações">';
+    html += '<optgroup label="' + t('optg.units') + '">';
     html += units.map(u => `<option>${unitLabel(u)}</option>`).join('');
     html += '</optgroup>';
   }
   const commons = project.commons || [];
   if (commons.length) {
-    html += '<optgroup label="Áreas Comuns">';
+    html += '<optgroup label="' + t('optg.commons') + '">';
     html += commons.map(z => `<option>AC — ${z}</option>`).join('');
     html += '</optgroup>';
   }
@@ -2020,12 +2265,12 @@ async function doLogin() {
   if (usingLocalFallback) { currentUser = { email: 'demo' }; updateNavUser(); showView('manager'); return; }
   const email = document.getElementById('login-email').value.trim();
   const pass = document.getElementById('login-pass').value;
-  if (!email || !pass) { toast('Preencha email e password.', 'error'); return; }
+  if (!email || !pass) { toast(t('t.logincreds'), 'error'); return; }
   const btn = document.getElementById('login-btn');
-  btn.disabled = true; btn.innerHTML = '<i class="ti ti-loader"></i> A entrar...';
+  btn.disabled = true; btn.innerHTML = '<i class="ti ti-loader"></i> ' + t('login.loading');
   const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
-  btn.disabled = false; btn.innerHTML = '<i class="ti ti-login"></i> Entrar';
-  if (error) { toast('Credenciais inválidas.', 'error'); return; }
+  btn.disabled = false; btn.innerHTML = '<i class="ti ti-login"></i> <span data-i18n="btn.login">' + t('btn.login') + '</span>';
+  if (error) { toast(t('t.loginfail'), 'error'); return; }
   currentUser = data.user;
   updateNavUser();
   showView('manager');
@@ -2079,8 +2324,8 @@ function renderClientPhotoPreview() {
       <img src="${src}">
       <button class="rm-btn" onclick="removeClientPhoto(${i})"><i class="ti ti-x" style="font-size:10px"></i></button>
       ${clientPhotoMarked[i]
-        ? `<span class="marked-badge"><i class="ti ti-map-pin" style="font-size:10px"></i> Marcada</span>`
-        : `<button class="mark-btn" onclick="openMarker(${i})"><i class="ti ti-map-pin" style="font-size:10px"></i> Marcar local</button>`}
+        ? `<span class="marked-badge"><i class="ti ti-map-pin" style="font-size:10px"></i> ${t('photo.marked')}</span>`
+        : `<button class="mark-btn" onclick="openMarker(${i})"><i class="ti ti-map-pin" style="font-size:10px"></i> ${t('photo.mark')}</button>`}
     </div>`).join('');
 }
 
@@ -2190,7 +2435,7 @@ async function saveMarker() {
       renderClientPhotoPreview();
     });
     closeModal('marker-modal');
-    toast(markerPts.length === 1 ? 'Ponto marcado na fotografia.' : 'Área marcada na fotografia.', 'success');
+    toast(markerPts.length === 1 ? t('t.markedpoint') : t('t.markedarea'), 'success');
   };
   img.src = base;
 }
@@ -2213,14 +2458,14 @@ async function submitIssue() {
 
   const consent = document.getElementById('gdpr-consent').checked;
   if (!projectId || !name || !email || !unit || !cat || !desc) {
-    toast('Preencha os campos obrigatórios (*), incluindo o empreendimento.', 'error'); return;
+    toast(t('t.fill'), 'error'); return;
   }
   if (!consent) {
-    toast('Deve aceitar o tratamento de dados pessoais para continuar.', 'error'); return;
+    toast(t('t.consent'), 'error'); return;
   }
 
   const btn = document.getElementById('submit-btn');
-  btn.disabled = true; btn.innerHTML = '<i class="ti ti-loader"></i> A submeter...';
+  btn.disabled = true; btn.innerHTML = '<i class="ti ti-loader"></i> ' + t('btn.submitting');
 
   const issue = {
     project_id: projectId ? Number(projectId) : null,
@@ -2270,7 +2515,7 @@ async function submitIssue() {
       p_priority:     issue.priority,
       p_photo_urls:   photoUrls
     });
-    if (error) { console.warn('create_issue error:', error); toast('Erro ao submeter. Tente novamente.', 'error'); btn.disabled = false; btn.innerHTML = '<i class="ti ti-send"></i> Submeter ocorrência'; return; }
+    if (error) { console.warn('create_issue error:', error); toast(t('t.submiterr'), 'error'); btn.disabled = false; btn.innerHTML = '<i class="ti ti-send"></i> <span data-i18n="btn.submit">' + t('btn.submit') + '</span>'; return; }
     const data = { id: newId };
     // Email à Ana: nova ocorrência
     try {
@@ -2291,7 +2536,7 @@ async function submitIssue() {
     } catch(e) { console.warn('EmailJS error (new issue):', e); }
     onSubmitSuccess();
   }
-  btn.disabled = false; btn.innerHTML = '<i class="ti ti-send"></i> Submeter ocorrência';
+  btn.disabled = false; btn.innerHTML = '<i class="ti ti-send"></i> <span data-i18n="btn.submit">' + t('btn.submit') + '</span>';
 }
 
 function onSubmitSuccess() {
@@ -2300,14 +2545,14 @@ function onSubmitSuccess() {
   setTimeout(() => banner.style.display = 'none', 8000);
   ['c-name','c-email','c-phone','c-desc'].forEach(id => document.getElementById(id).value = '');
   ['c-project','c-unit','c-cat','c-loc','c-zone'].forEach(id => document.getElementById(id).value = '');
-  document.getElementById('c-unit').innerHTML = '<option value="">Selecione primeiro o empreendimento</option>';
+  document.getElementById('c-unit').innerHTML = '<option value="">' + t('opt.selectfirst') + '</option>';
   document.querySelector('input[name=prio][value=media]').checked = true;
   clientPhotos = []; clientPhotoFiles = []; clientPhotoMarked = []; markerBaseImg = {};
   renderClientPhotoPreview();
   document.getElementById('c-progress').style.display = 'none';
   document.getElementById('c-progress-bar').style.width = '0';
   window.scrollTo({ top: 0, behavior: 'smooth' });
-  toast('Ocorrência submetida com sucesso!', 'success');
+  toast(t('t.submitok'), 'success');
 }
 
 // ══════════════════════════════════════════════════════
@@ -2328,7 +2573,7 @@ async function loadIssues() {
     return;
   }
   const { data, error } = await sb.from('issues').select('*').order('created_at', { ascending: false });
-  if (error) { toast('Erro ao carregar ocorrências.', 'error'); return; }
+  if (error) { toast(t('t.loaderr'), 'error'); return; }
   issues = data || [];
   await applyTacitAcceptance();
   populateProjectFilter();
@@ -2380,17 +2625,41 @@ function populateProjectFilter() {
   const sel = document.getElementById('project-filter');
   if (sel) {
     const current = filters.project;
-    sel.innerHTML = '<option value="all">Todos os empreendimentos</option>' +
+    sel.innerHTML = '<option value="all">' + t('filter.allprojects') + '</option>' +
       projects.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
     sel.value = current;
   }
   const subSel = document.getElementById('sub-filter');
   if (subSel) {
     const cur = filters.sub;
-    subSel.innerHTML = '<option value="all">Todos</option>' +
+    subSel.innerHTML = '<option value="all">' + t('filter.all') + '</option>' +
       subcontractors.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
     subSel.value = cur;
   }
+  populateUnitFilter();
+}
+
+// Filtro de fração/zona: lista as frações/zonas com ocorrências,
+// restringida ao empreendimento selecionado (se houver)
+function populateUnitFilter() {
+  const unitSel = document.getElementById('unit-filter');
+  if (!unitSel) return;
+  const pool = filters.project === 'all'
+    ? issues
+    : issues.filter(i => String(i.project_id) === String(filters.project));
+  const units = [...new Set(pool.map(i => i.unit).filter(Boolean))]
+    .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+  if (!units.includes(filters.unit)) filters.unit = 'all';
+  unitSel.innerHTML = '<option value="all">' + t('filter.allf') + '</option>' +
+    units.map(u => `<option value="${u}">${u}</option>`).join('');
+  unitSel.value = filters.unit;
+}
+
+function onProjectFilterChange(v) {
+  filters.project = v;
+  filters.unit = 'all';
+  populateUnitFilter();
+  renderIssues();
 }
 
 // ══════════════════════════════════════════════════════
@@ -2421,28 +2690,28 @@ function renderIssues() {
     if (filters.priority !== 'all' && (i.priority_official || i.priority) !== filters.priority) return false;
     if (filters.project !== 'all' && String(i.project_id) !== String(filters.project)) return false;
     if (filters.sub !== 'all' && !(i.assigned_ids||[]).map(String).includes(String(filters.sub))) return false;
+    if (filters.unit !== 'all' && i.unit !== filters.unit) return false;
     if (q && !`${issueRef(i)}${i.unit}${i.client_name}${i.category}${i.description}${i.location}${projectName(i.project_id)}`.toLowerCase().includes(q)) return false;
     return true;
   });
 
   const container = document.getElementById('issue-list');
   if (!list.length) {
-    container.innerHTML = `<div class="empty"><i class="ti ti-clipboard-x"></i><p>Nenhuma ocorrência encontrada.</p></div>`;
+    container.innerHTML = `<div class="empty"><i class="ti ti-clipboard-x"></i><p>${t('empty.issues')}</p></div>`;
     return;
   }
   container.innerHTML = list.map(issue => renderIssueCard(issue)).join('');
 }
 
 function statusBadge(s) {
-  const map = { nova: ['badge-nova','Nova'], em_analise: ['badge-analise','Em análise'], agendada: ['badge-agendada','Agendada'], resolvida: ['badge-resolvida','Resolvida'], rejeitada: ['badge-rejeitada','Rejeitada'] };
-  const [cls, lbl] = map[s] || ['badge-rejeitada', s];
-  return `<span class="badge ${cls}">${lbl}</span>`;
+  const map = { nova: 'badge-nova', em_analise: 'badge-analise', agendada: 'badge-agendada', resolvida: 'badge-resolvida', rejeitada: 'badge-rejeitada' };
+  const cls = map[s] || 'badge-rejeitada';
+  return `<span class="badge ${cls}">${statusLabel(s)}</span>`;
 }
 
 function prioBadge(p) {
   const map = { alta: 'dot-h', media: 'dot-m', baixa: 'dot-l' };
-  const lbl = { alta: 'Alta', media: 'Média', baixa: 'Baixa' };
-  return `<span style="display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--ink-70)"><span class="dot ${map[p]||'dot-l'}"></span>${lbl[p]||p}</span>`;
+  return `<span style="display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--ink-70)"><span class="dot ${map[p]||'dot-l'}"></span>${prioLabel(p)}</span>`;
 }
 
 // ── REFERÊNCIA ÚNICA ──
@@ -2475,7 +2744,7 @@ function daysOverdue(issue) {
 
 function fmtDate(iso) {
   if (!iso) return '—';
-  return new Date(iso).toLocaleDateString('pt-PT', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+  return new Date(iso).toLocaleDateString(dateLocale(), { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
 }
 
 function fmtDuration(h) {
@@ -2486,18 +2755,18 @@ function fmtDuration(h) {
 
 function renderIssueCard(issue) {
   const photos = (issue.photo_urls || []).map(url =>
-    `<img class="issue-photo" src="${url}" onclick="openLightbox('${url}')" title="Ver foto" onerror="this.outerHTML='<a href=&quot;${url}&quot; target=_blank class=photo-fallback>Abrir foto</a>'">`
+    `<img class="issue-photo" src="${url}" onclick="openLightbox('${url}')" title="${t('photo.view')}" onerror="this.outerHTML='<a href=&quot;${url}&quot; target=_blank class=photo-fallback>${t('photo.open')}</a>'">`
   ).join('');
 
   const resolvePhotos = (issue.resolve_photo_urls || []).map(url =>
-    `<img class="issue-photo" src="${url}" onclick="openLightbox('${url}')" title="Ver foto resolução" onerror="this.outerHTML='<a href=&quot;${url}&quot; target=_blank class=photo-fallback>Abrir foto</a>'">`
+    `<img class="issue-photo" src="${url}" onclick="openLightbox('${url}')" title="${t('photo.viewres')}" onerror="this.outerHTML='<a href=&quot;${url}&quot; target=_blank class=photo-fallback>${t('photo.open')}</a>'">`
   ).join('');
 
   const valLabels = {
-    pendente: { t: 'Aguarda validação do cliente', c: 'var(--warn)', bg: 'var(--warn-lt)', ic: 'ti-clock-hour-4' },
-    aceite: { t: 'Aceite pelo cliente', c: 'var(--success)', bg: 'var(--success-lt)', ic: 'ti-circle-check' },
-    aceite_tacito: { t: 'Aceite (tácito, 5 dias úteis)', c: 'var(--success)', bg: 'var(--success-lt)', ic: 'ti-circle-check' },
-    recusado: { t: 'Contestada pelo cliente', c: 'var(--danger)', bg: 'var(--danger-lt)', ic: 'ti-alert-triangle' }
+    pendente: { t: t('val.pendente'), c: 'var(--warn)', bg: 'var(--warn-lt)', ic: 'ti-clock-hour-4' },
+    aceite: { t: t('val.aceite'), c: 'var(--success)', bg: 'var(--success-lt)', ic: 'ti-circle-check' },
+    aceite_tacito: { t: t('val.aceite_tacito'), c: 'var(--success)', bg: 'var(--success-lt)', ic: 'ti-circle-check' },
+    recusado: { t: t('val.recusado'), c: 'var(--danger)', bg: 'var(--danger-lt)', ic: 'ti-alert-triangle' }
   };
   const vinfo = issue.validation_status ? valLabels[issue.validation_status] : null;
   const validationBadge = vinfo ? `
@@ -2510,7 +2779,7 @@ function renderIssueCard(issue) {
   const resolvedInfo = issue.status === 'resolvida' ? `
     <div style="background:var(--success-lt);border:0.5px solid rgba(26,107,69,0.25);border-radius:8px;padding:10px 12px;margin-top:10px">
       <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:var(--success);margin-bottom:6px;font-weight:500">
-        <i class="ti ti-circle-check" style="font-size:14px;vertical-align:-2px"></i> Resolvida em ${fmtDate(issue.resolved_at)}
+        <i class="ti ti-circle-check" style="font-size:14px;vertical-align:-2px"></i> ${t('card.resolvedon')} ${fmtDate(issue.resolved_at)}
         ${issue.duration_hours ? `<span class="timer-badge" style="margin-left:8px"><i class="ti ti-clock"></i> ${fmtDuration(issue.duration_hours)}</span>` : ''}
       </div>
       ${issue.resolve_notes ? `<p style="font-size:13px;color:var(--success)">${issue.resolve_notes}</p>` : ''}
@@ -2524,10 +2793,10 @@ function renderIssueCard(issue) {
     <div class="issue-statusdot sd-${issue.status}"></div>
     <div class="issue-main">
       <div class="issue-top-row">
-        <div class="issue-title">${issue.category}${issue.location ? ' — ' + issue.location : ''}</div>
+        <div class="issue-title">${catLabel(issue.category)}${issue.location ? ' — ' + locLabel(issue.location) : ''}</div>
         <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
-          ${isOverdue(issue) ? `<span class="badge-overdue"><i class="ti ti-alert-triangle" style="font-size:11px"></i> Em atraso ${daysOverdue(issue)>0?('('+daysOverdue(issue)+'d)'):''}</span>` : ''}
-          ${statusBadge(issue.status)} ${issue.priority_official ? prioBadge(issue.priority_official) : `<span style="font-size:11px;color:var(--ink-60);font-style:italic">Perceção: ${({alta:'Alta',media:'Média',baixa:'Baixa'})[issue.priority]||'—'}</span>`}
+          ${isOverdue(issue) ? `<span class="badge-overdue"><i class="ti ti-alert-triangle" style="font-size:11px"></i> ${t('card.overdue')} ${daysOverdue(issue)>0?('('+daysOverdue(issue)+'d)'):''}</span>` : ''}
+          ${statusBadge(issue.status)} ${issue.priority_official ? prioBadge(issue.priority_official) : `<span style="font-size:11px;color:var(--ink-60);font-style:italic">${t('card.perception')} ${prioLabel(issue.priority)}</span>`}
         </div>
       </div>
       <div class="issue-meta">
@@ -2536,7 +2805,7 @@ function renderIssueCard(issue) {
         <span><i class="ti ti-building" style="font-size:13px"></i> ${issue.unit}</span>
         <span><i class="ti ti-user" style="font-size:13px"></i> ${issue.client_name}</span>
         <span><i class="ti ti-calendar" style="font-size:13px"></i> ${fmtDate(issue.created_at)}</span>
-        ${issue.status!=='resolvida'&&issue.status!=='rejeitada'&&dueDate(issue) ? `<span title="Prazo-alvo"><i class="ti ti-clock" style="font-size:13px"></i> Prazo: ${dueDate(issue).toLocaleDateString('pt-PT')}</span>` : ''}
+        ${issue.status!=='resolvida'&&issue.status!=='rejeitada'&&dueDate(issue) ? `<span title="${t('card.duetitle')}"><i class="ti ti-clock" style="font-size:13px"></i> ${t('card.due')} ${dueDate(issue).toLocaleDateString(dateLocale())}</span>` : ''}
         ${issue.photo_urls?.length ? `<span><i class="ti ti-photo" style="font-size:13px"></i> ${issue.photo_urls.length}</span>` : ''}
       </div>
     </div>
@@ -2547,57 +2816,57 @@ function renderIssueCard(issue) {
       ${issue.client_email ? `<span><i class="ti ti-mail" style="font-size:13px;vertical-align:-2px"></i> ${issue.client_email}</span>` : ''}
       ${issue.client_phone ? `<span><i class="ti ti-phone" style="font-size:13px;vertical-align:-2px"></i> ${issue.client_phone}</span>` : ''}
     </div>
-    <div class="issue-desc-label">Descrição</div>
+    <div class="issue-desc-label">${t('card.desc')}</div>
     <div class="issue-desc">${issue.description||''}</div>
     ${photos ? `<div class="issue-photos-row">${photos}</div>` : ''}
-    ${issue.notes ? `<div class="note-box"><strong><i class="ti ti-note"></i> Nota interna</strong>${issue.notes}</div>` : ''}
+    ${issue.notes ? `<div class="note-box"><strong><i class="ti ti-note"></i> ${t('card.note')}</strong>${issue.notes}</div>` : ''}
     ${resolvedInfo}
-    ${(issue.assigned_ids&&issue.assigned_ids.length) ? `<div class="assigned-chips"><span style="font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--ink-60);font-weight:700;align-self:center">Atribuído a:</span>${issue.assigned_ids.map(sid=>`<span class="assigned-chip"><i class="ti ti-user-cog" style="font-size:12px"></i> ${subName(sid)}</span>`).join('')}</div>` : ''}
+    ${(issue.assigned_ids&&issue.assigned_ids.length) ? `<div class="assigned-chips"><span style="font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--ink-60);font-weight:700;align-self:center">${t('card.assignedto')}</span>${issue.assigned_ids.map(sid=>`<span class="assigned-chip"><i class="ti ti-user-cog" style="font-size:12px"></i> ${subName(sid)}</span>`).join('')}</div>` : ''}
 
     <hr class="div">
     <div class="issue-actions">
       <select style="padding:6px 32px 6px 10px;font-size:12px;width:auto;flex:none;min-width:130px" onchange="changeStatus(${JSON.stringify(issue.id)},this.value)" onclick="event.stopPropagation()">
-        ${['nova','em_analise','agendada','resolvida','rejeitada'].map(s => `<option value="${s}"${issue.status===s?' selected':''}>${{nova:'Nova',em_analise:'Em análise',agendada:'Agendada',resolvida:'Resolvida',rejeitada:'Rejeitada'}[s]}</option>`).join('')}
+        ${['nova','em_analise','agendada','resolvida','rejeitada'].map(s => `<option value="${s}"${issue.status===s?' selected':''}>${statusLabel(s)}</option>`).join('')}
       </select>
-      <button class="btn btn-secondary btn-sm" onclick="openNote(${JSON.stringify(issue.id)})"><i class="ti ti-pencil"></i> Nota</button>
-      <button class="btn btn-secondary btn-sm" onclick="openAssignModal(${JSON.stringify(issue.id)})"><i class="ti ti-user-cog"></i> Atribuir</button>
+      <button class="btn btn-secondary btn-sm" onclick="openNote(${JSON.stringify(issue.id)})"><i class="ti ti-pencil"></i> ${t('btn.note')}</button>
+      <button class="btn btn-secondary btn-sm" onclick="openAssignModal(${JSON.stringify(issue.id)})"><i class="ti ti-user-cog"></i> ${t('btn.assign')}</button>
       <button class="btn btn-secondary btn-sm" onclick="generateIssuePDF(${JSON.stringify(issue.id)})"><i class="ti ti-file-text"></i> PDF</button>
-      ${issue.status !== 'resolvida' ? `<button class="btn btn-mint btn-sm" onclick="openResolvePanel(${JSON.stringify(issue.id)})"><i class="ti ti-circle-check"></i> Fechar ocorrência</button>` : ''}
+      ${issue.status !== 'resolvida' ? `<button class="btn btn-mint btn-sm" onclick="openResolvePanel(${JSON.stringify(issue.id)})"><i class="ti ti-circle-check"></i> ${t('btn.closeissue')}</button>` : ''}
       <button class="btn btn-danger btn-sm" onclick="deleteIssue(${JSON.stringify(issue.id)})"><i class="ti ti-trash"></i></button>
     </div>
 
     <div class="timeline-box">
-      <h4><i class="ti ti-timeline" style="font-size:13px;vertical-align:-2px"></i> Histórico de acompanhamento</h4>
+      <h4><i class="ti ti-timeline" style="font-size:13px;vertical-align:-2px"></i> ${t('track.history')}</h4>
       <div id="tl-list-${issue.id}">
         ${renderTimeline(issue)}
       </div>
       <div class="tl-add-row">
-        <textarea id="tl-text-${issue.id}" placeholder="Ex: Visita inicial do empreiteiro agendada para 20/06. Intervenção planeada para 27/06..." onclick="event.stopPropagation()"></textarea>
-        <label class="tl-notify"><input type="checkbox" id="tl-notify-${issue.id}" checked onclick="event.stopPropagation()"> Notificar cliente por email</label>
-        <button class="btn btn-mint btn-sm" style="align-self:flex-start" onclick="event.stopPropagation();addEvent(${JSON.stringify(issue.id)})"><i class="ti ti-plus"></i> Adicionar evento</button>
+        <textarea id="tl-text-${issue.id}" placeholder="${t('tl.ph')}" onclick="event.stopPropagation()"></textarea>
+        <label class="tl-notify"><input type="checkbox" id="tl-notify-${issue.id}" checked onclick="event.stopPropagation()"> ${t('tl.notify')}</label>
+        <button class="btn btn-mint btn-sm" style="align-self:flex-start" onclick="event.stopPropagation();addEvent(${JSON.stringify(issue.id)})"><i class="ti ti-plus"></i> ${t('btn.addevent')}</button>
       </div>
     </div>
 
     <div id="resolve-${issue.id}" style="display:none">
       <div class="resolve-box">
-        <h3><i class="ti ti-circle-check"></i> Fechar ocorrência</h3>
+        <h3><i class="ti ti-circle-check"></i> ${t('btn.closeissue')}</h3>
         <div class="fg" style="margin-bottom:10px">
           <div class="fg-full">
-            <label class="lbl">Descrição das medidas corretivas *</label>
-            <textarea id="rn-${issue.id}" rows="3" placeholder="Descreva o trabalho realizado, materiais usados, entidade executante..."></textarea>
+            <label class="lbl">${t('resolve.notes')}</label>
+            <textarea id="rn-${issue.id}" rows="3" placeholder="${t('resolve.notesph')}"></textarea>
           </div>
           <div>
-            <label class="lbl">Tempo de resolução (horas)</label>
-            <input type="number" id="rh-${issue.id}" placeholder="Ex: 4" min="0">
+            <label class="lbl">${t('resolve.hours')}</label>
+            <input type="number" id="rh-${issue.id}" placeholder="${t('resolve.hoursph')}" min="0">
           </div>
           <div>
-            <label class="lbl">Fotos das medidas corretivas</label>
+            <label class="lbl">${t('resolve.photos')}</label>
             <input type="file" id="rf-${issue.id}" accept="image/*" multiple style="padding:8px">
           </div>
         </div>
         <div style="display:flex;gap:8px">
-          <button class="btn btn-secondary btn-sm" onclick="closeResolvePanel(${JSON.stringify(issue.id)})">Cancelar</button>
-          <button class="btn btn-mint btn-sm" onclick="resolveIssue(${JSON.stringify(issue.id)})"><i class="ti ti-check"></i> Confirmar resolução</button>
+          <button class="btn btn-secondary btn-sm" onclick="closeResolvePanel(${JSON.stringify(issue.id)})">${t('btn.cancel')}</button>
+          <button class="btn btn-mint btn-sm" onclick="resolveIssue(${JSON.stringify(issue.id)})"><i class="ti ti-check"></i> ${t('btn.confirmresolve')}</button>
         </div>
       </div>
     </div>
@@ -2632,7 +2901,7 @@ let prioPendingId = null;
 function openPrioModal(id) {
   prioPendingId = id;
   const issue = issues.find(x => String(x.id) === String(id));
-  const perc = ({alta:'Alta',media:'Média',baixa:'Baixa'})[issue?.priority] || '—';
+  const perc = issue?.priority ? prioLabel(issue.priority) : '—';
   document.getElementById('prio-perception').textContent = perc;
   document.querySelectorAll('input[name=prio-official]').forEach(r => r.checked = false);
   document.getElementById('prio-modal').classList.add('open');
@@ -2644,10 +2913,12 @@ function cancelPrioModal() {
 }
 async function confirmPrio() {
   const sel = document.querySelector('input[name=prio-official]:checked');
-  if (!sel) { toast('Selecione o grau de urgência.', 'error'); return; }
+  if (!sel) { toast(t('t.priopick'), 'error'); return; }
   const prio = sel.value;
   const id = prioPendingId;
-  const prioLbl = ({alta:'Alta',media:'Média',baixa:'Baixa'})[prio];
+  const prioLblPT = ({alta:'Alta',media:'Média',baixa:'Baixa'})[prio];
+  const prioLblEN = ({alta:'High',media:'Medium',baixa:'Low'})[prio];
+  const prioLbl = prioLblPT;
   closeModal('prio-modal');
 
   if (usingLocalFallback) {
@@ -2681,15 +2952,15 @@ async function confirmPrio() {
         await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TPL_RESOLVED, {
           to_email:    issue.client_email,
           client:      issue.client_name,
-          subject_line:'A sua ocorrência está a ser tratada',
-          message_body:'Confirmamos que recebemos a sua ocorrência e que a nossa equipa já iniciou a sua análise. Após avaliação, foi-lhe atribuído o grau de urgência: ' + prioLbl + '. Entraremos em contacto assim que tivermos novidades.',
+          subject_line:'A sua ocorrência está a ser tratada | Your issue is being handled',
+          message_body:'Confirmamos que recebemos a sua ocorrência e que a nossa equipa já iniciou a sua análise. Após avaliação, foi-lhe atribuído o grau de urgência: ' + prioLblPT + '. Entraremos em contacto assim que tivermos novidades.\n\n— — — English — — —\n\nWe confirm that we have received your issue and that our team has started its review. Following assessment, it was assigned the urgency level: ' + prioLblEN + '. We will get in touch as soon as we have news.',
           unit:        issue.unit,
           category:    issue.category,
           extra_info:  ''
         });
       } catch(e) { console.warn('EmailJS error (em_analise client):', e); }
     }
-    toast('Em análise. Urgência ' + prioLbl + ' atribuída. Notificações enviadas.', 'success');
+    toast(t('t.prioset').replace('{p}', prioLabel(prio)), 'success');
   }
   prioPendingId = null;
   await loadIssues();
@@ -2719,7 +2990,7 @@ async function saveNote() {
   await sb.from('issues').update({ notes: note }).eq('id', activeNoteId);
   await logAudit(activeNoteId, 'Nota interna atualizada.');
   await loadIssues();
-  toast('Nota guardada.');
+  toast(t('t.notesaved'));
 }
 
 function openResolvePanel(id) {
@@ -2737,7 +3008,7 @@ async function resolveIssue(id) {
   const notes = document.getElementById(`rn-${id}`).value.trim();
   const hours = parseInt(document.getElementById(`rh-${id}`).value) || null;
   const files = document.getElementById(`rf-${id}`).files;
-  if (!notes) { toast('Descreva as medidas corretivas.', 'error'); return; }
+  if (!notes) { toast(t('t.resolvenotes'), 'error'); return; }
 
   const issue = issues.find(x => x.id == id);
   const resolvedAt = new Date().toISOString();
@@ -2795,22 +3066,22 @@ async function resolveIssue(id) {
         await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TPL_RESOLVED, {
           to_email:    issue.client_email,
           client:      issue.client_name,
-          subject_line:'A sua ocorrência foi resolvida — confirme a conclusão',
-          message_body:'Temos o prazer de informar que a ocorrência que reportou foi resolvida pela nossa equipa. Por favor confirme se considera o assunto resolvido, acedendo ao link abaixo. Caso não responda em 5 dias úteis, a resolução será considerada aceite.',
+          subject_line:'A sua ocorrência foi resolvida — confirme a conclusão | Your issue has been resolved — please confirm',
+          message_body:'Temos o prazer de informar que a ocorrência que reportou foi resolvida pela nossa equipa. Por favor confirme se considera o assunto resolvido, acedendo ao link abaixo. Caso não responda em 5 dias úteis, a resolução será considerada aceite.\n\n— — — English — — —\n\nWe are pleased to inform you that the issue you reported has been resolved by our team. Please confirm whether you consider the matter resolved via the link below. If you do not reply within 5 working days, the resolution will be considered accepted.',
           unit:        issue.unit,
           category:    issue.category,
-          extra_info:  'Medidas aplicadas: ' + update.resolve_notes + '\nData de resolução: ' + new Date().toLocaleDateString('pt-PT') + '\n\nValidar a conclusão aqui: ' + valUrl
+          extra_info:  'Medidas aplicadas | Measures applied: ' + update.resolve_notes + '\nData de resolução | Resolution date: ' + new Date().toLocaleDateString('pt-PT') + '\n\nValidar a conclusão aqui | Confirm completion here:\n' + valUrl
         });
       } catch(e) { console.warn('EmailJS error (resolved client):', e); }
     }
     await loadIssues();
   }
   await logAudit(id, 'Ocorrência resolvida e fechada.');
-  toast('Ocorrência fechada. Condomínio e cliente notificados por email.', 'success');
+  toast(t('t.resolvedok'), 'success');
 }
 
 async function deleteIssue(id) {
-  if (!confirm('Eliminar esta ocorrência? Esta ação não pode ser revertida.')) return;
+  if (!confirm(t('t.deleteconfirm'))) return;
   if (usingLocalFallback) {
     const local = JSON.parse(localStorage.getItem('pa_issues') || '[]').filter(x => x.id != id);
     localStorage.setItem('pa_issues', JSON.stringify(local));
@@ -2819,14 +3090,14 @@ async function deleteIssue(id) {
   }
   await sb.from('issues').delete().eq('id', id);
   await loadIssues();
-  toast('Ocorrência eliminada.');
+  toast(t('t.deleted'));
 }
 
 // ══════════════════════════════════════════════════════
 //  EXPORT CSV
 // ══════════════════════════════════════════════════════
 function exportCSV() {
-  if (!issues.length) { toast('Sem ocorrências para exportar.', 'error'); return; }
+  if (!issues.length) { toast(t('t.noexport'), 'error'); return; }
 
   const statusLabel = {nova:'Nova',em_analise:'Em análise',agendada:'Agendada',resolvida:'Resolvida',rejeitada:'Rejeitada'};
   const prioLabel = {alta:'Alta',media:'Média',baixa:'Baixa'};
@@ -2837,6 +3108,7 @@ function exportCSV() {
     if (filters.priority !== 'all' && (i.priority_official || i.priority) !== filters.priority) return false;
     if (filters.project !== 'all' && String(i.project_id) !== String(filters.project)) return false;
     if (filters.sub !== 'all' && !(i.assigned_ids||[]).map(String).includes(String(filters.sub))) return false;
+    if (filters.unit !== 'all' && i.unit !== filters.unit) return false;
     return true;
   });
 
@@ -2877,7 +3149,7 @@ function exportCSV() {
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, 'Ocorrências');
   XLSX.writeFile(wb, `solive_posVenda_${new Date().toISOString().slice(0,10)}.xlsx`);
-  toast('Excel exportado.');
+  toast(t('t.exported'));
 }
 
 // ══════════════════════════════════════════════════════
@@ -2907,15 +3179,17 @@ document.getElementById('note-modal').addEventListener('click', function(e) {
 // ══════════════════════════════════════════════════════
 //  START
 // ══════════════════════════════════════════════════════
+applyLang();
 boot();
 </script>
 
 <!-- PRIVACY POLICY MODAL -->
 <div class="modal-wrap" id="privacy-modal">
   <div class="modal privacy-modal">
-    <h2>Política de Privacidade</h2>
-    <p style="font-size:11px;color:var(--ink-60);margin-bottom:1.5rem;text-transform:uppercase;letter-spacing:0.08em">Última actualização: Maio de 2025</p>
+    <h2 data-i18n="privacy.title">Política de Privacidade</h2>
 
+    <div class="i18n-pt">
+    <p style="font-size:11px;color:var(--ink-60);margin-bottom:1.5rem;text-transform:uppercase;letter-spacing:0.08em">Última actualização: Maio de 2025</p>
     <div class="privacy-section">
       <h3>1. Responsável pelo tratamento</h3>
       <p><strong>Solive, S.A.</strong> — representada pela Groupe Legendre Portugal<br>
@@ -2956,9 +3230,54 @@ boot();
       <h3>7. Segurança</h3>
       <p>Dados armazenados na União Europeia (Irlanda), com acesso restrito e encriptação em trânsito e em repouso.</p>
     </div>
+    </div>
+
+    <div class="i18n-en" style="display:none">
+    <p style="font-size:11px;color:var(--ink-60);margin-bottom:1.5rem;text-transform:uppercase;letter-spacing:0.08em">Last updated: May 2025</p>
+    <div class="privacy-section">
+      <h3>1. Data controller</h3>
+      <p><strong>Solive, S.A.</strong> — represented by Groupe Legendre Portugal<br>
+      Contact: <a href="mailto:geral@solive.pt">geral@solive.pt</a></p>
+    </div>
+    <div class="privacy-section">
+      <h3>2. Data collected</h3>
+      <ul>
+        <li>Full name</li>
+        <li>Email address</li>
+        <li>Phone number (optional)</li>
+        <li>Unit identification</li>
+        <li>Issue description and photos</li>
+      </ul>
+    </div>
+    <div class="privacy-section">
+      <h3>3. Purpose and legal basis</h3>
+      <p>Processing exclusively for the management and resolution of after-sales issues, under the purchase and sale agreement (Art. 6(1)(b) GDPR).</p>
+    </div>
+    <div class="privacy-section">
+      <h3>4. Data retention</h3>
+      <p><strong>5 years</strong> after the issue is resolved, in line with the statutory construction warranty periods.</p>
+    </div>
+    <div class="privacy-section">
+      <h3>5. Data sharing</h3>
+      <p>Data is shared only with construction and maintenance service providers, exclusively for the resolution of the issues. It is not shared for commercial purposes.</p>
+    </div>
+    <div class="privacy-section">
+      <h3>6. Data subject rights</h3>
+      <ul>
+        <li>Access, rectification and erasure of data</li>
+        <li>Objection to processing</li>
+        <li>Complaint to the <strong>CNPD</strong> (cnpd.pt), the Portuguese supervisory authority</li>
+      </ul>
+      <p style="margin-top:8px">To exercise your rights: <a href="mailto:geral@solive.pt">geral@solive.pt</a></p>
+    </div>
+    <div class="privacy-section">
+      <h3>7. Security</h3>
+      <p>Data is stored in the European Union (Ireland), with restricted access and encryption in transit and at rest.</p>
+    </div>
+    </div>
 
     <div class="modal-btns">
-      <button class="btn btn-primary" onclick="closeModal('privacy-modal')">Fechar</button>
+      <button class="btn btn-primary" onclick="closeModal('privacy-modal')" data-i18n="privacy.close">Fechar</button>
     </div>
   </div>
 </div>
