@@ -346,6 +346,19 @@ hr.div{border:none;border-top:0.5px solid var(--ink-20);margin:1.25rem 0}
 .meta-ref{font-weight:700;color:var(--ink);background:var(--cream);padding:1px 7px;border-radius:4px}
 .badge-overdue{display:inline-flex;align-items:center;gap:4px;background:var(--danger);color:#fff;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;padding:3px 9px;border-radius:4px}
 .issue-card.card-overdue{border-left:3px solid var(--danger)}
+
+/* ── MONITORIZAÇÃO ── */
+.mon-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.mon-kpi{background:var(--cream);border:1px solid var(--ink-08);border-radius:var(--r);padding:12px 14px}
+.mon-kpi .k-lbl{font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:var(--ink-60);font-weight:700;margin-bottom:6px}
+.mon-kpi .k-val{font-size:26px;font-weight:700;color:var(--navy);line-height:1}
+.mon-kpi .k-delta{font-size:11px;margin-top:5px;font-weight:600}
+.k-up{color:var(--success)}.k-down{color:var(--danger)}.k-flat{color:var(--ink-60)}
+.mon-verdict{padding:12px 14px;border-radius:var(--r);font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px}
+.v-good{background:var(--success-lt);color:var(--success)}
+.v-warn{background:var(--warn-lt);color:var(--warn)}
+.v-bad{background:var(--danger-lt);color:var(--danger)}
+@media(max-width:700px){.mon-grid{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
 <body>
@@ -656,6 +669,31 @@ hr.div{border:none;border-top:0.5px solid var(--ink-20);margin:1.25rem 0}
     </div>
   </div>
   <div class="mgr-body">
+    <!-- MONITORIZAÇÃO SEMANAL -->
+    <div class="an-card" style="margin-bottom:1rem">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px">
+        <h3 style="margin:0"><i class="ti ti-activity-heartbeat" style="vertical-align:-2px"></i> Monitorização de desempenho</h3>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+          <select id="mon-period" onchange="onMonPeriodChange()" style="width:auto;padding:6px 32px 6px 10px;font-size:12px">
+            <option value="calendar">Semana (seg–dom)</option>
+            <option value="rolling">Últimos 7 dias</option>
+            <option value="custom">Período personalizado</option>
+          </select>
+          <span id="mon-dates" style="display:none;gap:6px;align-items:center">
+            <input type="date" id="mon-start" onchange="renderMonitor()" style="padding:5px 8px;font-size:12px;width:auto">
+            <span style="color:var(--ink-60);font-size:12px">a</span>
+            <input type="date" id="mon-end" onchange="renderMonitor()" style="padding:5px 8px;font-size:12px;width:auto">
+          </span>
+          <select id="mon-project" onchange="renderMonitor()" style="width:auto;padding:6px 32px 6px 10px;font-size:12px">
+            <option value="all">Todos os empreendimentos</option>
+          </select>
+        </div>
+      </div>
+      <div id="mon-cards" class="mon-grid"></div>
+      <div id="mon-verdict" style="margin-top:12px"></div>
+      <div id="trend-wrap" style="margin-top:16px"><h3 style="font-size:12px">Tendência das últimas 8 semanas</h3><canvas id="chart-trend" style="max-height:220px"></canvas></div>
+    </div>
+
     <div class="an-grid">
       <div class="an-card"><h3>Ocorrências por categoria (todos os projectos)</h3><canvas id="chart-cat"></canvas></div>
       <div class="an-card"><h3>Ocorrências por empreendimento</h3><canvas id="chart-proj"></canvas></div>
@@ -1351,6 +1389,159 @@ function trySubsView() {
 // ══════════════════════════════════════════════════════
 //  ANALYTICS
 // ══════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════
+//  MONITORIZAÇÃO DE DESEMPENHO (semanal)
+// ══════════════════════════════════════════════════════
+// devolve {start, end} do período; periodsAgo=0 atual, 1 anterior de igual duração
+function periodWindow(mode, periodsAgo) {
+  const now = new Date();
+  if (mode === 'custom') {
+    const sv = document.getElementById('mon-start')?.value;
+    const ev = document.getElementById('mon-end')?.value;
+    if (!sv || !ev) return null;
+    let start = new Date(sv); start.setHours(0,0,0,0);
+    let end = new Date(ev); end.setHours(23,59,59,999);
+    if (end < start) { const t = start; start = end; end = t; }
+    const durMs = end - start;
+    if (periodsAgo > 0) {
+      const ne = new Date(start.getTime() - 1);
+      const ns = new Date(ne.getTime() - durMs);
+      return { start: ns, end: ne };
+    }
+    return { start, end };
+  }
+  if (mode === 'rolling') {
+    const end = new Date(now); end.setHours(23,59,59,999);
+    end.setDate(end.getDate() - periodsAgo*7);
+    const start = new Date(end); start.setDate(start.getDate() - 6); start.setHours(0,0,0,0);
+    return { start, end };
+  }
+  // calendar: semana segunda-domingo
+  const d = new Date(now);
+  const day = (d.getDay() + 6) % 7;
+  const monday = new Date(d); monday.setDate(d.getDate() - day - periodsAgo*7); monday.setHours(0,0,0,0);
+  const sunday = new Date(monday); sunday.setDate(monday.getDate() + 6); sunday.setHours(23,59,59,999);
+  return { start: monday, end: sunday };
+}
+
+function onMonPeriodChange() {
+  const mode = document.getElementById('mon-period').value;
+  const dates = document.getElementById('mon-dates');
+  dates.style.display = (mode === 'custom') ? 'inline-flex' : 'none';
+  if (mode === 'custom') {
+    // pré-preencher com o mês atual, se vazio
+    const s = document.getElementById('mon-start'), e = document.getElementById('mon-end');
+    if (!s.value || !e.value) {
+      const now = new Date();
+      const first = new Date(now.getFullYear(), now.getMonth(), 1);
+      s.value = first.toISOString().slice(0,10);
+      e.value = now.toISOString().slice(0,10);
+    }
+  }
+  renderMonitor();
+}
+
+function monFilteredIssues() {
+  const pid = document.getElementById('mon-project')?.value || 'all';
+  return pid === 'all' ? issues : issues.filter(i => String(i.project_id) === String(pid));
+}
+
+// métricas de uma janela temporal
+function weekMetrics(list, win) {
+  const opened = list.filter(i => { const d = new Date(i.created_at); return d >= win.start && d <= win.end; });
+  const resolved = list.filter(i => i.resolved_at && new Date(i.resolved_at) >= win.start && new Date(i.resolved_at) <= win.end);
+  // tempo médio de resolução (h) das resolvidas nesta semana
+  let avgH = null;
+  const durs = resolved.map(i => (new Date(i.resolved_at) - new Date(i.created_at)) / 3600000).filter(h => h >= 0);
+  if (durs.length) avgH = durs.reduce((a,b)=>a+b,0) / durs.length;
+  // backlog no fim da semana: abertas até ao fim E ainda não resolvidas até ao fim
+  const backlog = list.filter(i => {
+    const c = new Date(i.created_at);
+    if (c > win.end) return false;
+    const r = i.resolved_at ? new Date(i.resolved_at) : null;
+    return !r || r > win.end;
+  });
+  const overdueBacklog = backlog.filter(i => isOverdue(i)).length;
+  return { opened: opened.length, resolved: resolved.length, avgH, backlog: backlog.length, overdueBacklog };
+}
+
+function deltaHtml(cur, prev, invert) {
+  if (prev === null || prev === undefined) return '<span class="k-flat">—</span>';
+  const diff = cur - prev;
+  if (diff === 0) return '<span class="k-flat">= igual ao período anterior</span>';
+  const better = invert ? diff < 0 : diff > 0;
+  const arrow = diff > 0 ? '↑' : '↓';
+  const cls = better ? 'k-up' : 'k-down';
+  return `<span class="${cls}">${arrow} ${Math.abs(diff)} vs período anterior</span>`;
+}
+
+function renderMonitor() {
+  const mode = document.getElementById('mon-period')?.value || 'calendar';
+  const list = monFilteredIssues();
+  const win = periodWindow(mode, 0);
+  if (!win) {  // custom sem datas válidas
+    document.getElementById('mon-cards').innerHTML = '<p style="font-size:13px;color:var(--ink-60);grid-column:1/-1">Selecione as datas de início e fim.</p>';
+    document.getElementById('mon-verdict').innerHTML = '';
+    return;
+  }
+  const cur = weekMetrics(list, win);
+  const prev = weekMetrics(list, periodWindow(mode, 1));
+
+  const periodLbl = mode === 'custom'
+    ? `${win.start.toLocaleDateString('pt-PT')} a ${win.end.toLocaleDateString('pt-PT')}`
+    : (mode === 'rolling' ? 'nos últimos 7 dias' : 'na semana');
+
+  const ratio = cur.opened ? Math.round(cur.resolved / cur.opened * 100) : (cur.resolved ? 100 : 0);
+  const avgStr = cur.avgH === null ? '—' : (cur.avgH < 24 ? Math.round(cur.avgH) + 'h' : Math.round(cur.avgH/24) + 'd');
+  const prevAvgStr = prev.avgH === null ? null : prev.avgH;
+
+  document.getElementById('mon-cards').innerHTML = `
+    <div class="mon-kpi"><div class="k-lbl">Abertas no período</div><div class="k-val">${cur.opened}</div><div class="k-delta">${deltaHtml(cur.opened, prev.opened, true)}</div></div>
+    <div class="mon-kpi"><div class="k-lbl">Resolvidas no período</div><div class="k-val" style="color:var(--success)">${cur.resolved}</div><div class="k-delta">${deltaHtml(cur.resolved, prev.resolved, false)}</div></div>
+    <div class="mon-kpi"><div class="k-lbl">Backlog por resolver</div><div class="k-val">${cur.backlog}</div><div class="k-delta">${cur.overdueBacklog} em atraso</div></div>
+    <div class="mon-kpi"><div class="k-lbl">Tempo médio resolução</div><div class="k-val">${avgStr}</div><div class="k-delta">${prevAvgStr===null?'<span class=k-flat>—</span>':deltaHtml(Math.round(cur.avgH), Math.round(prevAvgStr), true)}</div></div>
+  `;
+
+  // etiqueta de estado (sem texto interpretativo)
+  let vClass, vLabel, vIcon;
+  const netFlow = cur.resolved - cur.opened;
+  if (netFlow >= 0 && cur.overdueBacklog === 0) {
+    vClass = 'v-good'; vIcon = 'ti-circle-check'; vLabel = 'Saudável';
+  } else if (netFlow < -2 || cur.overdueBacklog > 5) {
+    vClass = 'v-bad'; vIcon = 'ti-alert-triangle'; vLabel = 'Crítico';
+  } else {
+    vClass = 'v-warn'; vIcon = 'ti-alert-circle'; vLabel = 'Atenção';
+  }
+  document.getElementById('mon-verdict').innerHTML = `<div class="mon-verdict ${vClass}"><i class="ti ${vIcon}" style="font-size:16px"></i> Estado (${periodLbl}): ${vLabel} · rácio resolvidas/abertas ${ratio}%</div>`;
+
+  // tendência: 8 semanas (só nos modos semanais); escondida no modo custom
+  const trendWrap = document.getElementById('trend-wrap');
+  if (mode === 'custom') {
+    if (trendWrap) trendWrap.style.display = 'none';
+  } else {
+    if (trendWrap) trendWrap.style.display = 'block';
+    const labels = [], opened = [], resolved = [];
+    for (let w = 7; w >= 0; w--) {
+      const m = weekMetrics(list, periodWindow(mode, w));
+      labels.push(w === 0 ? 'Atual' : '-' + w + 'sem');
+      opened.push(m.opened); resolved.push(m.resolved);
+    }
+    const ctx = document.getElementById('chart-trend');
+    if (ctx) {
+      if (charts['trend']) charts['trend'].destroy();
+      charts['trend'] = new Chart(ctx, {
+        type: 'bar',
+        data: { labels, datasets: [
+          { label: 'Abertas', data: opened, backgroundColor: '#E67E22' },
+          { label: 'Resolvidas', data: resolved, backgroundColor: '#1A6B45' }
+        ]},
+        options: { responsive: true, plugins: { legend: { position: 'bottom', labels:{font:{family:'Roboto'},boxWidth:12} } },
+          scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } }
+      });
+    }
+  }
+}
+
 let charts = {};
 async function renderAnalytics() {
   await loadProjects();
@@ -1359,6 +1550,16 @@ async function renderAnalytics() {
     const { data } = await sb.from('issues').select('*');
     issues = data || [];
   }
+
+  // popular seletor de empreendimento do monitor + render
+  const monProjSel = document.getElementById('mon-project');
+  if (monProjSel) {
+    const cur = monProjSel.value || 'all';
+    monProjSel.innerHTML = '<option value="all">Todos os empreendimentos</option>' +
+      projects.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+    monProjSel.value = cur;
+  }
+  renderMonitor();
 
   const palette = ['#0065C2','#40C98E','#E67E22','#9B59B6','#1ABC9C','#E74C3C','#34495E','#F1C40F','#16A085','#7F8C8D','#2980B9','#C0392B','#27AE60','#8E44AD'];
 
