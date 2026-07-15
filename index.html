@@ -366,6 +366,14 @@ hr.div{border:none;border-top:0.5px solid var(--ink-20);margin:1.25rem 0}
 .lang-toggle button.active{color:#fff;background:var(--navy)}
 .lang-toggle span{color:var(--ink-20);font-size:11px}
 .nav-user{margin-left:1rem}
+
+/* ── GALLERY (pública) ── */
+.gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px}
+.gallery-item{background:var(--white);border:1px solid var(--ink-20);border-radius:var(--rlg);overflow:hidden;box-shadow:0 1px 3px rgba(20,58,103,0.06)}
+.gallery-item img{width:100%;height:180px;object-fit:cover;display:block;cursor:pointer;background:var(--cream)}
+.gallery-dl{display:flex;align-items:center;justify-content:center;gap:6px;padding:9px;font-size:12px;color:var(--mint);text-decoration:none;font-weight:600;border-top:1px solid var(--ink-08)}
+.gallery-dl:hover{background:var(--mint-lt)}
+.gallery-fallback{display:flex;align-items:center;justify-content:center;height:180px;color:var(--mint);text-decoration:none;font-size:13px;background:var(--cream)}
 </style>
 </head>
 <body>
@@ -423,6 +431,16 @@ hr.div{border:none;border-top:0.5px solid var(--ink-20);margin:1.25rem 0}
   <div style="text-align:center;margin-top:1.5rem">
     <button class="btn btn-secondary btn-sm" onclick="goToClientForm()"><i class="ti ti-plus"></i> <span data-i18n="track.new">Reportar nova ocorrência</span></button>
   </div>
+</div>
+
+<!-- ═══════════════════════════════════════ GALLERY VIEW (pública) ═══════════════════════════════════════ -->
+<div class="page" id="view-gallery">
+  <div class="track-header">
+    <h1 data-i18n="gallery.title">Fotografias da ocorrência</h1>
+    <p><strong id="gallery-ref"></strong></p>
+    <p id="gallery-meta" style="color:var(--ink-60);font-size:14px"></p>
+  </div>
+  <div id="gallery-content" style="max-width:1000px;margin:1.5rem auto;padding:0 1rem"></div>
 </div>
 
 <!-- ═══════════════════════════════════════ CLIENT VIEW ═══════════════════════════════════════ -->
@@ -868,6 +886,7 @@ pt: {
   'nav.subtype':'Assistência Pós-Venda',
   'nav.report':'Reportar ocorrência','nav.panel':'Painel de gestão','nav.analytics':'Análise','nav.projects':'Projectos','nav.subs':'Subempreiteiros','nav.logout':'Sair',
   'track.title':'Acompanhamento da ocorrência','track.sub':'Solive — Assistência Pós-Venda','track.new':'Reportar nova ocorrência',
+  'gallery.title':'Fotografias da ocorrência','gallery.loading':'A carregar fotografias...','gallery.notfound':'Ocorrência não encontrada. Verifique o link.','gallery.nophotos':'Esta ocorrência não tem fotografias.','gallery.download':'Descarregar','gallery.open':'Abrir foto','gallery.excel':'Ver fotografias',
   'track.notfound':'Ocorrência não encontrada. Verifique o link.','track.noupdates':'Ainda não existem atualizações registadas.',
   'track.details':'Detalhes da ocorrência','track.project':'Empreendimento','track.unit':'Fração','track.category':'Categoria','track.location':'Localização','track.date':'Data de registo',
   'track.history':'Histórico de acompanhamento','track.resolved':'Ocorrência resolvida','track.resolvedate':'Data de resolução',
@@ -949,6 +968,7 @@ en: {
   'nav.subtype':'After-Sales Service',
   'nav.report':'Report an issue','nav.panel':'Management panel','nav.analytics':'Analytics','nav.projects':'Projects','nav.subs':'Subcontractors','nav.logout':'Log out',
   'track.title':'Issue tracking','track.sub':'Solive — After-Sales Service','track.new':'Report a new issue',
+  'gallery.title':'Issue photographs','gallery.loading':'Loading photographs...','gallery.notfound':'Issue not found. Please check the link.','gallery.nophotos':'This issue has no photographs.','gallery.download':'Download','gallery.open':'Open photo','gallery.excel':'View photographs',
   'track.notfound':'Issue not found. Please check the link.','track.noupdates':'No updates recorded yet.',
   'track.details':'Issue details','track.project':'Development','track.unit':'Unit','track.category':'Category','track.location':'Location','track.date':'Date submitted',
   'track.history':'Follow-up history','track.resolved':'Issue resolved','track.resolvedate':'Resolution date',
@@ -1443,6 +1463,49 @@ async function boot() {
   if (trackId) {
     showTracking(trackId);
   }
+  const fotosId = params.get('fotos');
+  if (fotosId) {
+    showGallery(fotosId);
+  }
+}
+
+// ══════════════════════════════════════════════════════
+//  PUBLIC GALLERY (fotos da ocorrência, sem login)
+// ══════════════════════════════════════════════════════
+async function showGallery(id) {
+  await loadProjects();
+  document.querySelectorAll('.page, #view-login').forEach(el => el.classList.remove('active'));
+  document.getElementById('view-gallery').classList.add('active');
+  document.querySelectorAll('.nav-tab').forEach(el => el.style.display = 'none');
+  const content = document.getElementById('gallery-content');
+  content.innerHTML = '<p style="text-align:center;color:var(--ink-60)">' + t('gallery.loading') + '</p>';
+  let issue = null;
+  if (usingLocalFallback) {
+    const local = JSON.parse(localStorage.getItem('pa_issues') || '[]');
+    issue = local.find(x => String(x.id) === String(id));
+  } else {
+    const { data } = await sb.rpc('get_issue_public', { p_id: Number(id) });
+    issue = Array.isArray(data) ? data[0] : data;
+  }
+  if (!issue) {
+    content.innerHTML = '<p style="text-align:center;color:var(--danger)">' + t('gallery.notfound') + '</p>';
+    return;
+  }
+  const photos = issue.photo_urls || [];
+  const ref = issueRef(issue);
+  document.getElementById('gallery-ref').textContent = ref;
+  document.getElementById('gallery-meta').textContent =
+    projectName(issue.project_id) + ' · ' + issue.unit + ' · ' + (t('cat.' + issue.category) !== 'cat.' + issue.category ? t('cat.' + issue.category) : issue.category);
+
+  if (!photos.length) {
+    content.innerHTML = '<p style="text-align:center;color:var(--ink-60)">' + t('gallery.nophotos') + '</p>';
+    return;
+  }
+  content.innerHTML = `<div class="gallery-grid">` + photos.map((url, idx) => `
+    <div class="gallery-item">
+      <img src="${url}" loading="lazy" onclick="openLightbox('${url}')" onerror="this.parentElement.innerHTML='<a href=&quot;${url}&quot; target=_blank class=gallery-fallback>${t('gallery.open')}</a>'">
+      <a href="${url}" download="${ref}_foto${idx+1}.jpg" target="_blank" class="gallery-dl"><i class="ti ti-download"></i> ${t('gallery.download')}</a>
+    </div>`).join('') + `</div>`;
 }
 
 // ══════════════════════════════════════════════════════
@@ -3127,6 +3190,7 @@ function exportCSV() {
     'Estado': statusLabel[i.status] || i.status || '',
     'Subempreiteiros': (i.assigned_ids||[]).map(sid => subName(sid)).join(', '),
     'Nº fotos': (i.photo_urls||[]).length,
+    'Link fotografias': (i.photo_urls||[]).length ? (window.location.origin + window.location.pathname + '?fotos=' + i.id) : '',
     'Descrição': (i.description||'').replace(/\r?\n/g, ' '),
     'Nota interna': (i.notes||'').replace(/\r?\n/g, ' '),
     'Data resolução': fmtDate(i.resolved_at),
@@ -3139,12 +3203,12 @@ function exportCSV() {
   // Column widths
   ws['!cols'] = [
     {wch:8},{wch:22},{wch:16},{wch:22},{wch:28},{wch:16},{wch:20},
-    {wch:30},{wch:20},{wch:10},{wch:14},{wch:26},{wch:8},
+    {wch:30},{wch:20},{wch:10},{wch:14},{wch:26},{wch:8},{wch:48},
     {wch:50},{wch:30},{wch:16},{wch:10},{wch:40}
   ];
 
   // Auto filter on header row
-  ws['!autofilter'] = { ref: XLSX.utils.encode_range({s:{r:0,c:0}, e:{r:0,c:17}}) };
+  ws['!autofilter'] = { ref: XLSX.utils.encode_range({s:{r:0,c:0}, e:{r:0,c:18}}) };
 
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, 'Ocorrências');
