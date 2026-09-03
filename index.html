@@ -1761,7 +1761,9 @@ function weekMetrics(list, win) {
   const resolved = list.filter(i => i.resolved_at && new Date(i.resolved_at) >= win.start && new Date(i.resolved_at) <= win.end);
   // tempo médio de resolução (h) das resolvidas nesta semana
   let avgH = null;
-  const durs = resolved.map(i => (new Date(i.resolved_at) - new Date(i.created_at)) / 3600000).filter(h => h >= 0);
+  // h > 0 exclui os registos da migracao inicial, em que resolved_at foi copiada de created_at
+  // (dariam 0h e puxavam a media para baixo artificialmente)
+  const durs = resolved.map(i => (new Date(i.resolved_at) - new Date(i.created_at)) / 3600000).filter(h => h > 0);
   if (durs.length) avgH = durs.reduce((a,b)=>a+b,0) / durs.length;
   // backlog no fim da semana: abertas até ao fim E ainda não resolvidas até ao fim
   const backlog = list.filter(i => {
@@ -2889,7 +2891,7 @@ function renderIssueCard(issue) {
     <hr class="div">
     <div class="issue-actions">
       <select style="padding:6px 32px 6px 10px;font-size:12px;width:auto;flex:none;min-width:130px" onchange="changeStatus(${JSON.stringify(issue.id)},this.value)" onclick="event.stopPropagation()">
-        ${['nova','em_analise','agendada','resolvida','rejeitada'].map(s => `<option value="${s}"${issue.status===s?' selected':''}>${statusLabel(s)}</option>`).join('')}
+        ${(issue.status==='resolvida'?['nova','em_analise','agendada','resolvida','rejeitada']:['nova','em_analise','agendada','rejeitada']).map(s => `<option value="${s}"${issue.status===s?' selected':''}>${statusLabel(s)}</option>`).join('')}
       </select>
       <button class="btn btn-secondary btn-sm" onclick="openNote(${JSON.stringify(issue.id)})"><i class="ti ti-pencil"></i> ${t('btn.note')}</button>
       <button class="btn btn-secondary btn-sm" onclick="openAssignModal(${JSON.stringify(issue.id)})"><i class="ti ti-user-cog"></i> ${t('btn.assign')}</button>
@@ -2946,16 +2948,34 @@ async function changeStatus(id, status) {
     openPrioModal(id);
     return;
   }
+  // A data de fecho (resolved_at) acompanha SEMPRE o estado:
+  // entra em 'resolvida' -> grava a data; sai de 'resolvida' -> limpa a data e a validacao do cliente.
+  // Sem isto, ocorrencias fechadas pelo dropdown ficam invisiveis para a Monitorizacao de Desempenho.
+  const curIssue = issues.find(x => String(x.id) === String(id));
+  const upd = { status };
+  let reopened = false;
+  if (status === 'resolvida') {
+    if (!curIssue || !curIssue.resolved_at) upd.resolved_at = new Date().toISOString();
+  } else if (curIssue && curIssue.resolved_at) {
+    upd.resolved_at = null;
+    upd.validation_status = null;
+    upd.validation_comment = null;
+    upd.validation_at = null;
+    reopened = true;
+  }
+
   if (usingLocalFallback) {
     const local = JSON.parse(localStorage.getItem('pa_issues') || '[]');
     const i = local.find(x => x.id == id);
-    if (i) { i.status = status; localStorage.setItem('pa_issues', JSON.stringify(local)); }
+    if (i) { Object.assign(i, upd); localStorage.setItem('pa_issues', JSON.stringify(local)); }
     loadLocalIssues(); renderStats(); renderIssues();
     return;
   }
-  await sb.from('issues').update({ status }).eq('id', id);
+  await sb.from('issues').update(upd).eq('id', id);
   const statusLbls = {nova:'Nova',em_analise:'Em análise',agendada:'Agendada',resolvida:'Resolvida',rejeitada:'Rejeitada'};
   await logAudit(id, 'Estado alterado para: ' + (statusLbls[status]||status));
+  if (upd.resolved_at) await logAudit(id, 'Data de resolução registada: ' + new Date(upd.resolved_at).toLocaleDateString('pt-PT'));
+  if (reopened) await logAudit(id, 'Ocorrência reaberta: data de resolução e validação do cliente anuladas.');
   await loadIssues();
 }
 
