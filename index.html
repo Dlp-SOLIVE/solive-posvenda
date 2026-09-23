@@ -10,35 +10,19 @@
 <script src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --mint:#E62336;          /* vermelho Legendre — acento principal */
-  --mint-dark:#C41B2C;     /* vermelho escuro (hover) */
-  --mint-lt:#FCE6E8;       /* vermelho muito claro (fundos) */
-  --navy:#143A67;          /* azul-marinho Legendre — superfícies escuras */
-  --navy-lt:#1B4B82;
-  --brown:#143A67;
-  --brown-lt:#EAF0F6;
-  --ink:#143A67;           /* texto escuro = azul-marinho */
-  --ink-60:rgba(20,58,103,0.62);
-  --ink-20:rgba(20,58,103,0.16);
-  --ink-08:rgba(20,58,103,0.07);
-  --white:#FFFFFF;
-  --cream:#F7F8FA;         /* fundo base muito claro */
-  --gray:#C4C4C4;          /* cinza Legendre */
-  --danger:#E62336;
-  --danger-lt:#FCE6E8;
-  --warn:#A05C10;
-  --warn-lt:#FDF0E0;
-  --success:#1A6B45;
-  --success-lt:#E4F4EC;
-  --info:#143A67;
-  --info-lt:#EAF0F6;
-  --r:6px;
-  --rlg:12px;
+  /* Solive Design System — nomes antigos mantidos para compatibilidade com o JS */
+  --mint:#EF2A42; --mint-dark:#C81F35; --mint-lt:#FBE1E5;
+  --navy:#201C1D; --navy-lt:#453F3E; --brown:#201C1D; --brown-lt:#F2EFED;
+  --ink:#201C1D; --ink-60:#79726F; --ink-70:#453F3E; --ink-20:#E6E1DF; --ink-08:#F2EFED;
+  --white:#FFFFFF; --cream:#F2EFED; --gray:#C9C2BF;
+  --danger:#C81F35; --danger-lt:#FBE1E5; --warn:#B9760A; --warn-lt:#FBEDD7;
+  --success:#1F8A5B; --success-lt:#E1F3EA; --info:#2C68A8; --info-lt:#E6EEF7;
+  --r:10px; --rlg:16px; --pill:999px;
 }
 
 /* ── WAVE SVG pattern (brochure motif) ── */
@@ -374,6 +358,160 @@ hr.div{border:none;border-top:0.5px solid var(--ink-20);margin:1.25rem 0}
 .gallery-dl{display:flex;align-items:center;justify-content:center;gap:6px;padding:9px;font-size:12px;color:var(--mint);text-decoration:none;font-weight:600;border-top:1px solid var(--ink-08)}
 .gallery-dl:hover{background:var(--mint-lt)}
 .gallery-fallback{display:flex;align-items:center;justify-content:center;height:180px;color:var(--mint);text-decoration:none;font-size:13px;background:var(--cream)}
+
+/* ══════════ SOLIVE DS — FASE 1 · marca e legibilidade ══════════ */
+body{font-family:'Inter',-apple-system,sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4,.btn,.nav-tab,.issue-title,.stat .val,.mon-kpi .k-val,.proj-card-head h3,.sub-card h3{font-family:'Plus Jakarta Sans','Inter',sans-serif}
+h1,h2{letter-spacing:-0.02em}
+a{color:var(--mint-dark)}
+.wave-bg,.hero::before,.mgr-header::before{background:none!important;content:none!important}
+.hero-accent{display:none!important}
+.hero,.mgr-header,.track-header,.success-banner,.note-box,.gdpr-box,.resolved-info,.config-note,.issue-card.card-overdue,.toast{border-left:none!important}
+.track-card[style*="border-left"]{border-left:1px solid var(--ink-20)!important}
+.note-box,.resolved-info{border-radius:var(--r);background:var(--cream)}
+.toast{border-radius:var(--r);box-shadow:0 8px 24px rgba(32,28,29,.12)}
+input:not([type=checkbox]):not([type=radio]),select,textarea{border-color:var(--gray);font-family:'Inter',sans-serif;font-size:15px}
+input:focus,select:focus,textarea:focus{border-color:var(--mint);box-shadow:0 0 0 3px var(--mint-lt)}
+label.lbl{font-size:14px;text-transform:none;letter-spacing:0;color:var(--ink);font-weight:500}
+.section-title,.hero-eyebrow{font-size:12px;letter-spacing:.06em;font-weight:600;color:var(--mint-dark)}
+.section h2{font-size:24px}
+.hero{padding:2.5rem 3rem 2rem}
+.hero h1{font-size:38px;color:var(--ink)}
+.btn{border-radius:var(--pill);font-weight:600;letter-spacing:0;font-size:14px;transition:background .12s,transform .12s,border-color .12s}
+.btn:hover:not(:disabled){transform:translateY(-1px)}
+.btn-primary{background:var(--ink);border-color:var(--ink)}
+.btn-primary:hover{background:var(--navy-lt)}
+.btn-secondary{border-color:var(--gray);background:var(--white);color:var(--ink)}
+.btn-secondary:hover{background:var(--cream)}
+.btn-danger{border-color:rgba(200,31,53,.3)}
+.btn-sm{padding:8px 16px;font-size:13px}
+.badge,.badge-overdue{border-radius:var(--pill);font-size:11px;font-weight:600;letter-spacing:.05em;padding:3px 10px}
+.dot-h{background:var(--danger)}.dot-m{background:var(--warn)}.dot-l{background:var(--success)}
+.chip{border-radius:var(--pill);font-size:13px;padding:7px 14px;color:var(--ink-60);border-color:var(--ink-20);font-weight:500}
+.chip.active{background:var(--mint-lt);color:var(--mint-dark);border-color:var(--mint);font-weight:600}
+.filter-label{font-size:13px;text-transform:none;letter-spacing:0}
+.nav{border-bottom:1px solid var(--ink-20);box-shadow:none;background:rgba(255,255,255,.94);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.nav-tab{font-size:14px;text-transform:none;letter-spacing:0;font-weight:600;color:var(--ink-60);border-bottom:2px solid transparent}
+.nav-tab.active{color:var(--ink);border-bottom-color:var(--mint)}
+.nav-logo .subtype{font-size:11px;letter-spacing:.06em;color:var(--ink-60)}
+.nav-user span{font-size:13px}
+.nav-user button{font-size:13px;text-transform:none;letter-spacing:0;padding:6px 14px;border-radius:var(--pill)}
+.lang-toggle{background:var(--cream);border-radius:var(--pill);padding:3px}
+.lang-toggle span{display:none}
+.lang-toggle button{font-size:13px;border-radius:var(--pill);padding:5px 12px}
+.lang-toggle button.active{background:var(--white);color:var(--ink);box-shadow:0 1px 2px rgba(32,28,29,.1)}
+.stat .lbl{font-size:13px;text-transform:none;letter-spacing:0}
+.stat .sub{font-size:12px}
+.issue-card{border-color:var(--ink-20);box-shadow:none}
+.issue-card:hover{box-shadow:0 8px 24px rgba(32,28,29,.08)}
+.issue-card.open{border-color:var(--ink);box-shadow:none}
+.issue-statusdot{display:none}
+.issue-title{color:var(--ink)}
+.issue-meta{font-size:13px}
+.issue-meta .meta-proj{color:var(--ink)}
+.issue-desc-label,.note-box strong,.timeline-box h4,.track-card h3,.an-card h3,.kpi-table th,.mon-kpi .k-lbl,.resolve-box h3,.privacy-section h3,.stat .lbl{font-size:13px;text-transform:none;letter-spacing:0}
+.modal{border-top:none;box-shadow:0 20px 48px rgba(32,28,29,.12)}
+.modal-wrap{background:rgba(32,28,29,.55)}
+.login-box{border-top:1px solid var(--ink-20);box-shadow:0 8px 24px rgba(32,28,29,.08)}
+.resolve-box{border:1px solid var(--ink-20)}
+.resolve-box h3{color:var(--ink)}
+.photo-grid{grid-template-columns:repeat(auto-fill,minmax(96px,1fr))}
+.photo-thumb .mark-btn,.photo-thumb .marked-badge{font-size:12px;padding:5px 9px;border-radius:var(--pill);font-family:'Inter',sans-serif}
+.photo-thumb .rm-btn{width:28px;height:28px}
+.consent-row input[type=checkbox]{width:20px;height:20px}
+.gdpr-box{background:var(--cream);border:none}
+.gdpr-box details summary{cursor:pointer;font-size:14px;font-weight:600;color:var(--ink);margin-bottom:8px}
+.page{max-width:1080px}
+#view-manager.page{max-width:1320px}
+.mgr-header{padding:1.5rem 3rem 1.25rem}
+.mgr-header h1{font-size:24px;margin-bottom:2px;color:var(--ink)}
+.mgr-header div[data-i18n$=".eyebrow"]{display:none}
+.track-header h1,.sub-card h3{color:var(--ink)}
+/* ══════════ FASE 2 · formulário do cliente ══════════ */
+.stepper{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:1.5rem 3rem .5rem;background:var(--white)}
+.step-i{display:flex;flex-direction:column;gap:8px;font-size:14px;color:var(--ink-60)}
+.step-i .bar{height:4px;border-radius:999px;background:var(--gray)}
+.step-i.done{color:var(--ink);font-weight:500;cursor:pointer}.step-i.done .bar{background:var(--ink)}
+.step-i.cur{color:var(--mint-dark);font-weight:600}.step-i.cur .bar{background:var(--mint)}
+#view-client [data-step]:not([data-step="1"]){display:none}
+.step-nav{padding:1.25rem 3rem;background:var(--cream);border-top:1px solid var(--ink-08);display:flex;gap:10px;align-items:center;justify-content:flex-end;flex-wrap:wrap}
+.step-nav .hint{margin-right:auto;color:var(--ink-60);font-size:13px}
+.f-err{border-color:var(--danger)!important}
+.err-msg{font-size:13px;color:var(--danger);margin-top:6px;display:flex;gap:5px;align-items:center}
+.photo-actions{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.photo-act{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:92px;border-radius:var(--r);border:1px solid var(--gray);background:var(--white);font-family:'Plus Jakarta Sans',sans-serif;font-weight:600;font-size:14px;color:var(--ink);cursor:pointer;transition:background .12s}
+.photo-act:hover{background:var(--cream)}
+.photo-act i{font-size:24px}
+.photo-act.primary{background:var(--ink);color:#fff;border-color:var(--ink)}
+.photo-act.primary:hover{background:var(--navy-lt)}
+.photo-hint{font-size:13px;color:var(--ink-60);margin-top:10px}
+#client-confirm{display:none;max-width:560px;margin:0 auto;padding:3rem 1.5rem 4rem}
+#client-confirm.show{display:block}
+#view-client.confirming > :not(#client-confirm){display:none!important}
+.cf-icon{width:60px;height:60px;border-radius:999px;background:var(--success-lt);color:var(--success);display:flex;align-items:center;justify-content:center;font-size:32px;margin-bottom:1.25rem}
+.cf-ref{background:var(--cream);border-radius:var(--rlg);padding:1.25rem 1.5rem;margin:1.5rem 0}
+.cf-ref .l{font-size:13px;color:var(--ink-60)}
+.cf-ref .v{font-family:'Plus Jakarta Sans',sans-serif;font-size:28px;font-weight:700}
+.cf-steps{display:flex;flex-direction:column;gap:12px;margin:1.75rem 0}
+.cf-steps div{display:flex;gap:12px;font-size:14px;align-items:flex-start}
+.cf-steps span{width:26px;height:26px;border-radius:999px;background:var(--cream);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0}
+/* ══════════ FASE 3 · painel de gestão ══════════ */
+.stat{cursor:pointer;transition:background .12s}
+.stat:hover{background:var(--cream)}
+.stat.sel{background:var(--mint-lt)}
+.stat.sel .lbl{color:var(--mint-dark);font-weight:600}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:var(--white);border:1px solid var(--ink-20);border-radius:var(--r);padding:10px;margin-bottom:1rem}
+.toolbar .search-box{flex:1 1 240px;margin:0}
+.toolbar select{width:auto;padding:8px 32px 8px 12px;font-size:13px;max-width:220px}
+.toolbar .prio-chips{display:flex;gap:6px;flex-wrap:wrap}
+.toolbar .fcount{font-size:13px;color:var(--ink-60);white-space:nowrap}
+.toolbar .fcount a{color:var(--mint-dark);font-weight:600;cursor:pointer}
+#detail-pane{display:none}
+.dp-head{padding:1.1rem 1.4rem;border-bottom:1px solid var(--ink-20);display:flex;flex-direction:column;gap:8px}
+.dp-head h3{font-size:20px;margin:0;line-height:1.25}
+.dp-empty{padding:3rem 2rem;text-align:center;color:var(--ink-60);font-size:14px}
+@media(min-width:1100px){
+  .mgr-split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:16px;align-items:start}
+  #detail-pane{display:block;position:sticky;top:80px;max-height:calc(100vh - 96px);overflow:auto;background:var(--white);border:1px solid var(--ink-20);border-radius:var(--rlg)}
+  #detail-pane .issue-detail{display:block!important;border-top:none;background:var(--white)}
+  .issue-chevron{display:none}
+  .issue-card.sel{border-color:var(--ink);background:var(--cream)}
+}
+.more{position:relative;margin-left:auto}
+.more>summary{list-style:none}
+.more>summary::-webkit-details-marker{display:none}
+.more-pop{position:absolute;right:0;top:calc(100% + 6px);background:var(--white);border:1px solid var(--ink-20);border-radius:var(--r);box-shadow:0 8px 24px rgba(32,28,29,.1);padding:12px;display:flex;flex-direction:column;gap:8px;min-width:230px;z-index:20}
+.more-pop label{font-size:12px;color:var(--ink-60)}
+.more-pop select{width:100%!important}
+.nav-burger{display:none;background:none;border:1px solid var(--ink-20);border-radius:var(--pill);width:44px;height:44px;align-items:center;justify-content:center;cursor:pointer;margin-left:8px;font-size:20px;color:var(--ink)}
+@media(max-width:860px){
+  .nav{padding:0 1rem;flex-wrap:wrap;height:auto;min-height:60px}
+  .nav-burger{display:inline-flex}
+  .nav-tab{display:none!important}
+  .nav.open .nav-tab:not([style*="display: none"]):not([style*="display:none"]){display:block!important;order:10;width:100%;height:48px;text-align:left;padding:0 .5rem;border-bottom:1px solid var(--ink-08)}
+  .nav-logo .subtype{display:none}
+  .stepper,.step-nav{padding-left:1.25rem;padding-right:1.25rem}
+  .btn{min-height:44px}
+  .chip{min-height:40px}
+  .toolbar select{flex:1 1 150px;max-width:none}
+}
+/* ══════════ FASE 4 · acompanhamento ══════════ */
+.trk-steps{display:flex;flex-direction:column}
+.trk-step{display:flex;gap:12px;min-height:46px}
+.trk-rail{display:flex;flex-direction:column;align-items:center;width:22px;flex-shrink:0}
+.trk-dot{width:22px;height:22px;border-radius:999px;border:1.5px solid var(--gray);background:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.trk-step.done .trk-dot{background:var(--ink);border-color:var(--ink);color:#fff;font-size:12px}
+.trk-step.cur .trk-dot{border:6px solid var(--mint)}
+.trk-line{flex:1;width:2px;background:var(--ink-20);margin:2px 0}
+.trk-lbl{flex:1;display:flex;justify-content:space-between;gap:10px;font-size:14px;padding-top:1px}
+.trk-step.cur .trk-lbl{font-weight:600}
+.trk-date{color:var(--ink-60);font-size:13px}
+.val-cta{background:var(--ink);color:#fff;border-radius:var(--rlg);padding:1.5rem;margin-bottom:1rem}
+.val-cta h3{color:#fff;font-size:18px;margin-bottom:6px}
+.val-cta p{color:#E6E1DF;font-size:13px;margin-bottom:14px}
+.val-cta .btn{width:100%;justify-content:center;min-height:48px}
+.val-cta .btn-secondary{background:#fff;color:var(--ink);border-color:#fff}
+.val-cta label.lbl{color:#fff;margin-top:4px}
 </style>
 </head>
 <body>
@@ -418,6 +556,7 @@ hr.div{border:none;border-top:0.5px solid var(--ink-20);margin:1.25rem 0}
     <span id="nav-username"></span>
     <button onclick="logout()" data-i18n="nav.logout">Sair</button>
   </div>
+  <button class="nav-burger" id="nav-burger" aria-label="Menu" onclick="document.querySelector('.nav').classList.toggle('open')"><i class="ti ti-menu-2"></i></button>
 </nav>
 
 <!-- ═══════════════════════════════════════ PUBLIC TRACKING VIEW ═══════════════════════════════════════ -->
@@ -457,7 +596,14 @@ hr.div{border:none;border-top:0.5px solid var(--ink-20);margin:1.25rem 0}
     <div style="color:var(--success)"><strong data-i18n="success.strong">Ocorrência submetida com sucesso.</strong><br><span style="font-size:13px" data-i18n="success.sub">A nossa equipa irá contactá-lo brevemente.</span></div>
   </div>
 
-  <div class="section">
+  <div id="client-confirm"></div>
+  <div class="stepper" id="c-stepper">
+    <div class="step-i cur" data-s="1" onclick="goStepIfDone(1)"><div class="bar"></div><span data-i18n="step.1">1 · Os seus dados</span></div>
+    <div class="step-i" data-s="2" onclick="goStepIfDone(2)"><div class="bar"></div><span data-i18n="step.2">2 · A ocorrência</span></div>
+    <div class="step-i" data-s="3" onclick="goStepIfDone(3)"><div class="bar"></div><span data-i18n="step.3">3 · Fotografias e envio</span></div>
+  </div>
+
+  <div class="section" data-step="1">
     <div class="section-title" data-i18n="sec.id">Identificação</div>
     <h2 data-i18n="sec.yourdata">Os seus dados</h2>
     <div class="fg">
@@ -488,7 +634,9 @@ hr.div{border:none;border-top:0.5px solid var(--ink-20);margin:1.25rem 0}
     </div>
   </div>
 
-  <div class="section">
+  <div class="step-nav" data-step="1"><span class="hint" data-i18n="submit.required">* Campos obrigatórios</span><button class="btn btn-mint" onclick="nextStep(1)"><span data-i18n="step.next">Continuar</span> <i class="ti ti-arrow-right"></i></button></div>
+
+  <div class="section" data-step="2">
     <div class="section-title" data-i18n="sec.detail">Detalhe</div>
     <h2 data-i18n="sec.desc">Descrição da ocorrência</h2>
     <div class="fg">
@@ -528,28 +676,31 @@ hr.div{border:none;border-top:0.5px solid var(--ink-20);margin:1.25rem 0}
     </div>
   </div>
 
-  <div class="section">
+  <div class="step-nav" data-step="2"><span class="hint" data-i18n="submit.required">* Campos obrigatórios</span><button class="btn btn-secondary" onclick="goStep(1)" data-i18n="step.back">Voltar</button><button class="btn btn-mint" onclick="nextStep(2)"><span data-i18n="step.next">Continuar</span> <i class="ti ti-arrow-right"></i></button></div>
+
+  <div class="section" data-step="3">
     <div class="section-title" data-i18n="sec.docs">Documentação</div>
     <h2 data-i18n="sec.photos">Fotografias</h2>
-    <div class="upload-zone" id="c-upload-zone">
-      <input type="file" id="c-photo-input" accept="image/*" multiple style="display:none" onchange="handleClientPhotos(event)">
-      <i class="ti ti-camera-plus"></i>
-      <p data-i18n-html="upload.click">Clique para adicionar fotografias<br><span style="font-size:11px;opacity:0.65">JPG · PNG · HEIC — até 10 fotos por ocorrência</span></p>
+    <div class="photo-actions">
+      <label class="photo-act primary"><input type="file" accept="image/*" capture="environment" style="display:none" onchange="handleClientPhotos(event)"><i class="ti ti-camera"></i><span data-i18n="up.camera">Tirar fotografia</span></label>
+      <label class="photo-act"><input type="file" id="c-photo-input" accept="image/*" multiple style="display:none" onchange="handleClientPhotos(event)"><i class="ti ti-photo"></i><span data-i18n="up.gallery">Escolher da galeria</span></label>
     </div>
+    <p class="photo-hint" data-i18n="up.hint">JPG · PNG · HEIC — até 10 fotografias. Depois pode assinalar o local exato em cada uma.</p>
+    <div id="c-upload-zone" style="display:none"></div>
     <div class="photo-grid" id="c-photo-preview"></div>
     <div class="upload-progress" id="c-progress"><div class="upload-progress-bar" id="c-progress-bar"></div></div>
   </div>
 
-  <div class="section">
+  <div class="section" data-step="3">
     <div class="section-title" data-i18n="sec.privacy">Privacidade</div>
     <div class="gdpr-box">
       <div class="i18n-pt">
-      <p><strong>Informação sobre tratamento de dados pessoais</strong></p>
-      <p>Os seus dados pessoais (nome, email, telefone e identificação da fração) são recolhidos e tratados pela <strong>Solive, S.A.</strong>, exclusivamente para gestão e resolução de ocorrências pós-venda do respetivo empreendimento, ao abrigo do contrato de compra e venda celebrado. Os dados são conservados durante 5 anos após resolução da ocorrência. Tem direito de acesso, rectificação e eliminação contactando <a href="mailto:geral@solive.pt">geral@solive.pt</a>. Para mais informações consulte a nossa <a onclick="document.getElementById('privacy-modal').classList.add('open')">Política de Privacidade</a>.</p>
+      <details><summary>Informação sobre tratamento de dados pessoais</summary>
+      <p>Os seus dados pessoais (nome, email, telefone e identificação da fração) são recolhidos e tratados pela <strong>Solive, S.A.</strong>, exclusivamente para gestão e resolução de ocorrências pós-venda do respetivo empreendimento, ao abrigo do contrato de compra e venda celebrado. Os dados são conservados durante 5 anos após resolução da ocorrência. Tem direito de acesso, rectificação e eliminação contactando <a href="mailto:geral@solive.pt">geral@solive.pt</a>. Para mais informações consulte a nossa <a onclick="document.getElementById('privacy-modal').classList.add('open')">Política de Privacidade</a>.</p></details>
       </div>
       <div class="i18n-en" style="display:none">
-      <p><strong>Information on personal data processing</strong></p>
-      <p>Your personal data (name, email, phone and unit identification) is collected and processed by <strong>Solive, S.A.</strong>, exclusively for the management and resolution of after-sales issues of the respective development, under the executed purchase and sale agreement. Data is kept for 5 years after the issue is resolved. You have the right of access, rectification and erasure by contacting <a href="mailto:geral@solive.pt">geral@solive.pt</a>. For more information see our <a onclick="document.getElementById('privacy-modal').classList.add('open')">Privacy Policy</a>.</p>
+      <details><summary>Information on personal data processing</summary>
+      <p>Your personal data (name, email, phone and unit identification) is collected and processed by <strong>Solive, S.A.</strong>, exclusively for the management and resolution of after-sales issues of the respective development, under the executed purchase and sale agreement. Data is kept for 5 years after the issue is resolved. You have the right of access, rectification and erasure by contacting <a href="mailto:geral@solive.pt">geral@solive.pt</a>. For more information see our <a onclick="document.getElementById('privacy-modal').classList.add('open')">Privacy Policy</a>.</p></details>
       </div>
       <div class="consent-row">
         <input type="checkbox" id="gdpr-consent">
@@ -559,11 +710,11 @@ hr.div{border:none;border-top:0.5px solid var(--ink-20);margin:1.25rem 0}
     </div>
   </div>
 
-  <div class="submit-row">
+  <div class="submit-row" data-step="3">
     <p data-i18n="submit.required">* Campos obrigatórios</p>
-    <button class="btn btn-mint" id="submit-btn" onclick="submitIssue()">
+    <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn btn-secondary" onclick="goStep(2)" data-i18n="step.back">Voltar</button><button class="btn btn-mint" id="submit-btn" onclick="submitIssue()">
       <i class="ti ti-send"></i> <span data-i18n="btn.submit">Submeter ocorrência</span>
-    </button>
+    </button></div>
   </div>
 </div>
 
@@ -605,38 +756,39 @@ hr.div{border:none;border-top:0.5px solid var(--ink-20);margin:1.25rem 0}
         <p data-i18n="mgr.sub">Todos os empreendimentos Solive</p>
       </div>
       <div style="position:relative">
-        <button class="btn btn-mint btn-sm" onclick="exportCSV()"><i class="ti ti-download"></i> <span data-i18n="btn.export">Exportar Excel</span></button>
+        <button class="btn btn-secondary btn-sm" onclick="exportCSV()"><i class="ti ti-download"></i> <span data-i18n="btn.export">Exportar Excel</span></button>
       </div>
     </div>
   </div>
 
   <div class="stats-strip">
     <div class="stats-grid" id="stats-grid">
-      <div class="stat"><div class="lbl" data-i18n="stat.total">Total</div><div class="val" id="s-total">—</div><div class="sub" data-i18n="stat.total.sub">ocorrências</div></div>
-      <div class="stat"><div class="lbl" data-i18n="stat.new">Novas</div><div class="val" id="s-nova" style="color:var(--danger)">—</div><div class="sub" data-i18n="stat.new.sub">por tratar</div></div>
-      <div class="stat"><div class="lbl" data-i18n="stat.analysis">Em análise</div><div class="val" id="s-analise" style="color:var(--warn)">—</div><div class="sub" data-i18n="stat.analysis.sub">em curso</div></div>
-      <div class="stat"><div class="lbl" data-i18n="stat.scheduled">Agendadas</div><div class="val" id="s-agendada" style="color:var(--info)">—</div><div class="sub" data-i18n="stat.scheduled.sub">marcadas</div></div>
-      <div class="stat"><div class="lbl" data-i18n="stat.resolved">Resolvidas</div><div class="val" id="s-resolvida" style="color:var(--success)">—</div><div class="sub" data-i18n="stat.resolved.sub">fechadas</div></div>
-      <div class="stat"><div class="lbl" data-i18n="stat.overdue">Em atraso</div><div class="val" id="s-atraso" style="color:var(--danger)">—</div><div class="sub" data-i18n="stat.overdue.sub">fora do prazo</div></div>
+      <div class="stat sel" data-f="all" onclick="statFilter(this)"><div class="lbl" data-i18n="stat.total">Total</div><div class="val" id="s-total">—</div><div class="sub" data-i18n="stat.total.sub">ocorrências</div></div>
+      <div class="stat" data-f="nova" onclick="statFilter(this)"><div class="lbl" data-i18n="stat.new">Novas</div><div class="val" id="s-nova" style="color:var(--danger)">—</div><div class="sub" data-i18n="stat.new.sub">por tratar</div></div>
+      <div class="stat" data-f="em_analise" onclick="statFilter(this)"><div class="lbl" data-i18n="stat.analysis">Em análise</div><div class="val" id="s-analise" style="color:var(--warn)">—</div><div class="sub" data-i18n="stat.analysis.sub">em curso</div></div>
+      <div class="stat" data-f="agendada" onclick="statFilter(this)"><div class="lbl" data-i18n="stat.scheduled">Agendadas</div><div class="val" id="s-agendada" style="color:var(--info)">—</div><div class="sub" data-i18n="stat.scheduled.sub">marcadas</div></div>
+      <div class="stat" data-f="resolvida" onclick="statFilter(this)"><div class="lbl" data-i18n="stat.resolved">Resolvidas</div><div class="val" id="s-resolvida" style="color:var(--success)">—</div><div class="sub" data-i18n="stat.resolved.sub">fechadas</div></div>
+      <div class="stat" data-f="overdue" onclick="statFilter(this)"><div class="lbl" data-i18n="stat.overdue">Em atraso</div><div class="val" id="s-atraso" style="color:var(--danger)">—</div><div class="sub" data-i18n="stat.overdue.sub">fora do prazo</div></div>
     </div>
   </div>
 
   <div class="mgr-body">
-    <div class="filter-bar">
-      <span class="filter-label" data-i18n="filter.project">Empreendimento</span>
-      <select id="project-filter" onchange="onProjectFilterChange(this.value)" style="width:auto;padding:6px 32px 6px 10px;font-size:12px">
-        <option value="all" data-i18n="filter.allprojects">Todos os empreendimentos</option>
-      </select>
-      <span class="filter-label" style="margin-left:10px" data-i18n="filter.sub">Subempreiteiro</span>
-      <select id="sub-filter" onchange="filters.sub=this.value;renderIssues()" style="width:auto;padding:6px 32px 6px 10px;font-size:12px">
-        <option value="all" data-i18n="filter.all">Todos</option>
-      </select>
-      <span class="filter-label" style="margin-left:10px" data-i18n="filter.unit">Fração / Zona</span>
-      <select id="unit-filter" onchange="filters.unit=this.value;renderIssues()" style="width:auto;padding:6px 32px 6px 10px;font-size:12px">
-        <option value="all" data-i18n="filter.allf">Todas</option>
-      </select>
+    <div class="toolbar">
+      <div class="search-box"><i class="ti ti-search"></i><input type="text" id="m-search" placeholder="Pesquisar por fração, nome, categoria..." data-i18n-ph="search.ph" oninput="renderIssues()"></div>
+      <select id="project-filter" onchange="onProjectFilterChange(this.value)"><option value="all" data-i18n="filter.allprojects">Todos os empreendimentos</option></select>
+      <select id="sub-filter" onchange="filters.sub=this.value;renderIssues()"><option value="all" data-i18n="filter.allsubs">Todos os subempreiteiros</option></select>
+      <select id="unit-filter" onchange="filters.unit=this.value;renderIssues()"><option value="all" data-i18n="filter.allunits">Todas as frações / zonas</option></select>
+      <div class="prio-chips" id="prio-chips">
+      
+      <button class="chip active" data-v="all" onclick="setChip('priority',this)" data-i18n="chip.all">Todas</button>
+      <button class="chip" data-v="alta" onclick="setChip('priority',this)"><span class="dot dot-h"></span><span data-i18n="prio.alta">Alta</span></button>
+      <button class="chip" data-v="media" onclick="setChip('priority',this)"><span class="dot dot-m"></span><span data-i18n="prio.media">Média</span></button>
+      <button class="chip" data-v="baixa" onclick="setChip('priority',this)"><span class="dot dot-l"></span><span data-i18n="prio.baixa">Baixa</span></button>
     </div>
-    <div class="filter-bar" id="status-chips">
+      <select id="sort-filter" onchange="filters.sort=this.value;renderIssues()"><option value="due" data-i18n="sort.due">Prazo mais próximo</option><option value="new" data-i18n="sort.new">Mais recentes</option><option value="old" data-i18n="sort.old">Mais antigas</option></select>
+      <span class="fcount" id="f-count"></span>
+    </div>
+    <div class="filter-bar" id="status-chips" style="display:none">
       <span class="filter-label" data-i18n="filter.status">Estado</span>
       <button class="chip active" data-v="all" onclick="setChip('status',this)" data-i18n="chip.all">Todas</button>
       <button class="chip" data-v="nova" onclick="setChip('status',this)" data-i18n="chip.nova">Novas</button>
@@ -645,19 +797,10 @@ hr.div{border:none;border-top:0.5px solid var(--ink-20);margin:1.25rem 0}
       <button class="chip" data-v="resolvida" onclick="setChip('status',this)" data-i18n="chip.resolvida">Resolvidas</button>
       <button class="chip" data-v="rejeitada" onclick="setChip('status',this)" data-i18n="chip.rejeitada">Rejeitadas</button>
     </div>
-    <div class="filter-bar" id="prio-chips">
-      <span class="filter-label" data-i18n="filter.priority">Prioridade</span>
-      <button class="chip active" data-v="all" onclick="setChip('priority',this)" data-i18n="chip.all">Todas</button>
-      <button class="chip" data-v="alta" onclick="setChip('priority',this)"><span class="dot dot-h"></span><span data-i18n="prio.alta">Alta</span></button>
-      <button class="chip" data-v="media" onclick="setChip('priority',this)"><span class="dot dot-m"></span><span data-i18n="prio.media">Média</span></button>
-      <button class="chip" data-v="baixa" onclick="setChip('priority',this)"><span class="dot dot-l"></span><span data-i18n="prio.baixa">Baixa</span></button>
-    </div>
-    <div class="search-box">
-      <i class="ti ti-search"></i>
-      <input type="text" id="m-search" placeholder="Pesquisar por fração, nome, categoria..." data-i18n-ph="search.ph" oninput="renderIssues()">
-    </div>
-
+    <div class="mgr-split">
     <div id="issue-list"></div>
+      <div id="detail-pane"></div>
+    </div>
   </div>
 </div>
 
@@ -671,7 +814,7 @@ hr.div{border:none;border-top:0.5px solid var(--ink-20);margin:1.25rem 0}
         <p data-i18n="mgr.sub">Todos os empreendimentos Solive</p>
       </div>
       <div style="position:relative">
-        <button class="btn btn-mint btn-sm" onclick="exportAnalytics()"><i class="ti ti-download"></i> <span data-i18n="btn.export">Exportar Excel</span></button>
+        <button class="btn btn-secondary btn-sm" onclick="exportAnalytics()"><i class="ti ti-download"></i> <span data-i18n="btn.export">Exportar Excel</span></button>
       </div>
     </div>
   </div>
@@ -871,7 +1014,9 @@ let projects = [];
 let subcontractors = [];
 let clientPhotos = []; // base64 for preview; actual uploads go to Supabase Storage
 let clientPhotoFiles = [];
-let filters = { status: 'all', priority: 'all', project: 'all', sub: 'all', unit: 'all' };
+let filters = { status: 'all', priority: 'all', project: 'all', sub: 'all', unit: 'all', overdue: false, sort: 'due' };
+let clientStep = 1;
+let selectedIssueId = null;
 let activeNoteId = null;
 let currentUser = null;
 let usingLocalFallback = false;
@@ -883,6 +1028,7 @@ let LANG = localStorage.getItem('sv_lang') || 'pt';
 
 const I18N = {
 pt: {
+  'step.1':'1 · Os seus dados','step.2':'2 · A ocorrência','step.3':'3 · Fotografias e envio','step.next':'Continuar','step.back':'Voltar','up.camera':'Tirar fotografia','up.gallery':'Escolher da galeria','up.hint':'JPG · PNG · HEIC — até 10 fotografias. Depois pode assinalar o local exato em cada uma.','err.project':'Selecione o empreendimento.','err.name':'Indique o seu nome.','err.email':'Indique o email de contacto.','err.emailfmt':'Verifique o email: parece incompleto.','err.unit':'Selecione a fração ou zona.','err.cat':'Selecione a categoria.','err.desc':'Descreva a ocorrência.','err.descshort':'Descreva um pouco mais: quando detetou, dimensão e se está a agravar.','err.consent':'É necessário aceitar o tratamento de dados para submeter.','cf.title':'Ocorrência registada','cf.sent':'Enviámos a confirmação para','cf.ref':'Referência','cf.track':'Acompanhar ocorrência','cf.next':'O que acontece a seguir','cf.s1':'A equipa analisa a ocorrência e atribui o grau de urgência.','cf.s2':'Recebe um email a cada atualização.','cf.s3':'No fim, confirma se ficou resolvida.','cf.again':'Reportar outra ocorrência','filter.allsubs':'Todos os subempreiteiros','filter.allunits':'Todas as frações / zonas','sort.due':'Prazo mais próximo','sort.new':'Mais recentes','sort.old':'Mais antigas','f.one':'filtro','f.many':'filtros','f.clear':'Limpar','dp.empty':'Selecione uma ocorrência para ver o detalhe.','btn.more':'Mais','more.status':'Alterar estado','btn.delete':'Eliminar','next.analyse':'Iniciar análise','next.schedule':'Marcar como agendada','trk.progress':'Progresso','trk.s1':'Recebida','trk.s2':'Em análise','trk.s3':'Agendada','trk.s4':'Resolvida','trk.s5':'Validada',
   'nav.subtype':'Assistência Pós-Venda',
   'nav.report':'Reportar ocorrência','nav.panel':'Painel de gestão','nav.analytics':'Análise','nav.projects':'Projectos','nav.subs':'Subempreiteiros','nav.logout':'Sair',
   'track.title':'Acompanhamento da ocorrência','track.sub':'Solive — Assistência Pós-Venda','track.new':'Reportar nova ocorrência',
@@ -965,6 +1111,7 @@ pt: {
   'pdf.validation':'Validação do cliente','pdf.date':'Data:','pdf.comment':'Comentário:','pdf.footer':'Solive — Assistência Pós-Venda','pdf.genon':'Gerado em'
 },
 en: {
+  'step.1':'1 · Your details','step.2':'2 · The issue','step.3':'3 · Photos and submit','step.next':'Continue','step.back':'Back','up.camera':'Take a photo','up.gallery':'Choose from gallery','up.hint':'JPG · PNG · HEIC — up to 10 photos. You can then mark the exact spot on each one.','err.project':'Select the development.','err.name':'Enter your name.','err.email':'Enter your contact email.','err.emailfmt':'Check the email address: it looks incomplete.','err.unit':'Select the unit or area.','err.cat':'Select the category.','err.desc':'Describe the issue.','err.descshort':'Please add more detail: when you noticed it, its size and whether it is getting worse.','err.consent':'You must accept the data processing to submit.','cf.title':'Issue submitted','cf.sent':'We have sent a confirmation to','cf.ref':'Reference','cf.track':'Track this issue','cf.next':'What happens next','cf.s1':'Our team reviews the issue and assigns its urgency.','cf.s2':'You receive an email with every update.','cf.s3':'Finally, you confirm whether it has been resolved.','cf.again':'Report another issue','filter.allsubs':'All subcontractors','filter.allunits':'All units / areas','sort.due':'Nearest deadline','sort.new':'Newest first','sort.old':'Oldest first','f.one':'filter','f.many':'filters','f.clear':'Clear','dp.empty':'Select an issue to see its details.','btn.more':'More','more.status':'Change status','btn.delete':'Delete','next.analyse':'Start review','next.schedule':'Mark as scheduled','trk.progress':'Progress','trk.s1':'Received','trk.s2':'Under review','trk.s3':'Scheduled','trk.s4':'Resolved','trk.s5':'Confirmed',
   'nav.subtype':'After-Sales Service',
   'nav.report':'Report an issue','nav.panel':'Management panel','nav.analytics':'Analytics','nav.projects':'Projects','nav.subs':'Subcontractors','nav.logout':'Log out',
   'track.title':'Issue tracking','track.sub':'Solive — After-Sales Service','track.new':'Report a new issue',
@@ -1140,7 +1287,26 @@ function setLang(l) {
 // ══════════════════════════════════════════════════════
 //  TOGGLE CARD
 // ══════════════════════════════════════════════════════
+function isWide() { return window.matchMedia('(min-width:1100px)').matches && !!document.getElementById('detail-pane'); }
+function dpEmpty() { return '<div class="dp-empty"><i class="ti ti-hand-click" style="font-size:28px;display:block;margin-bottom:8px;opacity:.4"></i>' + t('dp.empty') + '</div>'; }
+function selectIssue(id) {
+  const pane = document.getElementById('detail-pane');
+  const detail = document.getElementById('detail-' + id);
+  if (!pane || !detail) return;
+  selectedIssueId = String(id);
+  document.querySelectorAll('#issue-list .issue-card').forEach(c => c.classList.toggle('sel', c.id === 'ic-' + id));
+  const card = document.getElementById('ic-' + id);
+  const title = card?.querySelector('.issue-title')?.textContent || '';
+  const badges = card?.querySelector('.issue-top-row > div:last-child')?.innerHTML || '';
+  const ref = (card?.querySelector('.meta-ref')?.textContent || '').trim();
+  const meta = [card?.querySelector('.meta-proj')?.textContent.trim()].filter(Boolean).join('');
+  pane.innerHTML = '<div class="dp-head"><div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">' + badges + '<span style="font-size:13px;color:var(--ink-60)">' + ref + (meta ? ' · ' + meta : '') + '</span></div><h3>' + title + '</h3></div>';
+  pane.appendChild(detail);
+  detail.style.display = 'block';
+  pane.scrollTop = 0;
+}
 function toggleCard(id) {
+  if (isWide()) { selectIssue(id); return; }
   const detail = document.getElementById('detail-' + id);
   const card = document.getElementById('ic-' + id);
   if (detail) {
@@ -1477,6 +1643,7 @@ async function showGallery(id) {
   document.querySelectorAll('.page, #view-login').forEach(el => el.classList.remove('active'));
   document.getElementById('view-gallery').classList.add('active');
   document.querySelectorAll('.nav-tab').forEach(el => el.style.display = 'none');
+  const nb = document.getElementById('nav-burger'); if (nb) nb.style.display = 'none';
   const content = document.getElementById('gallery-content');
   content.innerHTML = '<p style="text-align:center;color:var(--ink-60)">' + t('gallery.loading') + '</p>';
   let issue = null;
@@ -1552,6 +1719,7 @@ async function showTracking(id) {
     : '<p style="font-size:13px;color:var(--ink-60);font-style:italic">' + t('track.noupdates') + '</p>';
 
   let resolvedHtml = '';
+  let topCta = '';
   if (issue.status === 'resolvida' || issue.validation_status === 'aceite' || issue.validation_status === 'aceite_tacito') {
     const vs = issue.validation_status;
     let validationBlock = '';
@@ -1563,24 +1731,24 @@ async function showTracking(id) {
           <div style="font-size:11px;color:var(--ink-60);margin-top:6px">${fmtDate(issue.validation_at)}</div>
         </div>`;
     } else {
-      // pendente → mostra botões de validação
-      validationBlock = `
-        <div style="margin-top:14px;padding:14px;background:var(--cream);border-radius:8px;border:1px solid var(--ink-20)">
-          <div style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:4px">${t('val.confirmq')}</div>
-          <p style="font-size:12px;color:var(--ink-60);margin-bottom:12px">${t('val.note')}</p>
-          <div id="val-buttons" style="display:flex;gap:8px;flex-wrap:wrap">
-            <button class="btn btn-mint btn-sm" onclick="validateAccept(${issue.id})"><i class="ti ti-check"></i> ${t('val.yes')}</button>
-            <button class="btn btn-secondary btn-sm" onclick="showRefuseBox()"><i class="ti ti-x"></i> ${t('val.no')}</button>
+      // pendente → pedido de validação no topo da página
+      topCta = `
+        <div class="val-cta">
+          <h3>${t('val.confirmq')}</h3>
+          <p>${t('val.note')}</p>
+          <div id="val-buttons" style="display:flex;flex-direction:column;gap:10px">
+            <button class="btn btn-mint" onclick="validateAccept(${issue.id})"><i class="ti ti-check"></i> ${t('val.yes')}</button>
+            <button class="btn btn-secondary" onclick="showRefuseBox()"><i class="ti ti-x"></i> ${t('val.no')}</button>
           </div>
-          <div id="val-accept-box" style="display:none;margin-top:12px">
+          <div id="val-accept-box" style="display:none;margin-top:14px">
             <label class="lbl">${t('val.comment')}</label>
             <textarea id="val-accept-comment" rows="2" placeholder="${t('val.commentph')}"></textarea>
-            <button class="btn btn-mint btn-sm" style="margin-top:8px" onclick="submitValidation(${issue.id}, true)"><i class="ti ti-check"></i> ${t('val.confirm')}</button>
+            <button class="btn btn-mint" style="margin-top:10px" onclick="submitValidation(${issue.id}, true)"><i class="ti ti-check"></i> ${t('val.confirm')}</button>
           </div>
-          <div id="val-refuse-box" style="display:none;margin-top:12px">
+          <div id="val-refuse-box" style="display:none;margin-top:14px">
             <label class="lbl">${t('val.whynot')}</label>
             <textarea id="val-refuse-comment" rows="3" placeholder="${t('val.whynotph')}"></textarea>
-            <button class="btn btn-danger btn-sm" style="margin-top:8px" onclick="submitValidation(${issue.id}, false)"><i class="ti ti-send"></i> ${t('val.submit')}</button>
+            <button class="btn btn-secondary" style="margin-top:10px" onclick="submitValidation(${issue.id}, false)"><i class="ti ti-send"></i> ${t('val.submit')}</button>
           </div>
         </div>`;
     }
@@ -1600,7 +1768,17 @@ async function showTracking(id) {
       </div>`;
   }
 
-  content.innerHTML = `
+  const vsOk = issue.validation_status === 'aceite' || issue.validation_status === 'aceite_tacito';
+  let stepperHtml = '';
+  if (issue.status !== 'rejeitada') {
+    const cur = vsOk ? 5 : ({ nova: 0, em_analise: 1, agendada: 2, resolvida: 4 }[issue.status] ?? 0);
+    const dts = [issue.created_at, null, null, (issue.status === 'resolvida' || vsOk) ? issue.resolved_at : null, vsOk ? issue.validation_at : null];
+    const lbls = [t('trk.s1'), t('trk.s2'), t('trk.s3'), t('trk.s4'), t('trk.s5')];
+    stepperHtml = '<div class="track-card"><h3>' + t('trk.progress') + '</h3><div class="trk-steps">' + lbls.map((l, i) =>
+      '<div class="trk-step ' + (i < cur ? 'done' : i === cur ? 'cur' : '') + '"><div class="trk-rail"><div class="trk-dot">' + (i < cur ? '<i class="ti ti-check"></i>' : '') + '</div>' + (i < 4 ? '<div class="trk-line"></div>' : '') + '</div><div class="trk-lbl"><span>' + l + '</span><span class="trk-date">' + (dts[i] ? new Date(dts[i]).toLocaleDateString(dateLocale()) : '') + '</span></div></div>'
+    ).join('') + '</div></div>';
+  }
+  content.innerHTML = `${topCta}${stepperHtml}
     <div class="track-card">
       <h3>${t('track.details')}</h3>
       <div class="track-detail-row"><span class="lbl-t">${t('track.project')}</span><span>${projectName(issue.project_id)}</span></div>
@@ -2289,6 +2467,7 @@ function projectName(id) {
 //  NAV
 // ══════════════════════════════════════════════════════
 function showView(v) {
+  document.querySelector('.nav')?.classList.remove('open');
   document.querySelectorAll('.page, #view-login').forEach(el => el.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
   const el = document.getElementById('view-' + v);
@@ -2508,6 +2687,69 @@ async function saveMarker() {
 // ══════════════════════════════════════════════════════
 //  CLIENT — SUBMIT
 // ══════════════════════════════════════════════════════
+function errBox(el) { const cr = el.closest('.consent-row'); return cr ? cr.parentElement : el.parentElement; }
+function clearErr(el) { el.classList.remove('f-err'); const m = errBox(el).querySelector('.err-msg[data-for="' + el.id + '"]'); if (m) m.remove(); }
+function setErr(id, key) {
+  const el = document.getElementById(id); if (!el) return;
+  el.classList.add('f-err');
+  const box = errBox(el);
+  let m = box.querySelector('.err-msg[data-for="' + id + '"]');
+  if (!m) { m = document.createElement('div'); m.className = 'err-msg'; m.dataset.for = id; box.appendChild(m); }
+  m.innerHTML = '<i class="ti ti-alert-circle"></i> ' + t(key);
+}
+function validateStep(n, focus) {
+  const v = id => (document.getElementById(id)?.value || '').trim();
+  const errs = [];
+  if (n === 1) {
+    ['c-project','c-name','c-email','c-unit'].forEach(id => { const el = document.getElementById(id); if (el) clearErr(el); });
+    if (!v('c-project')) errs.push(['c-project','err.project']);
+    if (!v('c-name')) errs.push(['c-name','err.name']);
+    const em = v('c-email');
+    if (!em) errs.push(['c-email','err.email']); else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) errs.push(['c-email','err.emailfmt']);
+    if (!v('c-unit')) errs.push(['c-unit','err.unit']);
+  }
+  if (n === 2) {
+    ['c-cat','c-desc'].forEach(id => { const el = document.getElementById(id); if (el) clearErr(el); });
+    if (!v('c-cat')) errs.push(['c-cat','err.cat']);
+    const d = v('c-desc');
+    if (!d) errs.push(['c-desc','err.desc']); else if (d.length < 10) errs.push(['c-desc','err.descshort']);
+  }
+  if (n === 3) {
+    const c = document.getElementById('gdpr-consent'); clearErr(c);
+    if (!c.checked) errs.push(['gdpr-consent','err.consent']);
+  }
+  errs.forEach(([id, k]) => setErr(id, k));
+  if (errs.length && focus !== false) {
+    const f = document.getElementById(errs[0][0]);
+    if (f && f.offsetParent) { f.focus({ preventScroll: true }); window.scrollTo({ top: f.getBoundingClientRect().top + window.scrollY - 140, behavior: 'smooth' }); }
+  }
+  return !errs.length;
+}
+function goStep(n) {
+  clientStep = n;
+  document.querySelectorAll('#view-client [data-step]').forEach(el => {
+    el.style.display = String(el.dataset.step) === String(n) ? (el.classList.contains('section') ? 'block' : 'flex') : 'none';
+  });
+  document.querySelectorAll('#c-stepper .step-i').forEach(s => {
+    const k = Number(s.dataset.s);
+    s.classList.toggle('done', k < n); s.classList.toggle('cur', k === n);
+  });
+  const sp = document.getElementById('c-stepper');
+  if (sp && sp.getBoundingClientRect().top < 0) window.scrollTo({ top: sp.getBoundingClientRect().top + window.scrollY - 80, behavior: 'smooth' });
+}
+function nextStep(n) { if (validateStep(n)) goStep(n + 1); }
+function goStepIfDone(n) { if (n < clientStep) goStep(n); }
+function newReport() {
+  document.getElementById('view-client').classList.remove('confirming');
+  document.getElementById('client-confirm').classList.remove('show');
+  goStep(1);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+['input','change'].forEach(ev => document.addEventListener(ev, e => {
+  const el = e.target;
+  if (el && el.classList && el.classList.contains('f-err') && (el.type === 'checkbox' ? el.checked : String(el.value || '').trim())) clearErr(el);
+}));
+
 async function submitIssue() {
   const name = document.getElementById('c-name').value.trim();
   const email = document.getElementById('c-email').value.trim();
@@ -2522,11 +2764,8 @@ async function submitIssue() {
   const priority = document.querySelector('input[name=prio]:checked')?.value || 'media';
 
   const consent = document.getElementById('gdpr-consent').checked;
-  if (!projectId || !name || !email || !unit || !cat || !desc) {
-    toast(t('t.fill'), 'error'); return;
-  }
-  if (!consent) {
-    toast(t('t.consent'), 'error'); return;
+  for (const s of [1, 2, 3]) {
+    if (!validateStep(s, false)) { goStep(s); validateStep(s); return; }
   }
 
   const btn = document.getElementById('submit-btn');
@@ -2548,7 +2787,7 @@ async function submitIssue() {
     const local = JSON.parse(localStorage.getItem('pa_issues') || '[]');
     local.unshift(issue);
     localStorage.setItem('pa_issues', JSON.stringify(local));
-    onSubmitSuccess();
+    onSubmitSuccess(issue);
   } else {
     // Upload photos first
     const photoUrls = [];
@@ -2599,15 +2838,29 @@ async function submitIssue() {
         date:       new Date().toLocaleDateString('pt-PT')
       });
     } catch(e) { console.warn('EmailJS error (new issue):', e); }
-    onSubmitSuccess();
+    issue.id = newId; onSubmitSuccess(issue);
   }
   btn.disabled = false; btn.innerHTML = '<i class="ti ti-send"></i> <span data-i18n="btn.submit">' + t('btn.submit') + '</span>';
 }
 
-function onSubmitSuccess() {
-  const banner = document.getElementById('client-success');
-  banner.style.display = 'flex';
-  setTimeout(() => banner.style.display = 'none', 8000);
+function onSubmitSuccess(issue) {
+  const email = document.getElementById('c-email').value.trim();
+  const ref = issue && issue.id ? issueRef(issue) : '';
+  const link = issue && issue.id ? (location.origin + location.pathname + '?track=' + issue.id) : '';
+  const cf = document.getElementById('client-confirm');
+  cf.innerHTML = `
+    <div class="cf-icon"><i class="ti ti-check"></i></div>
+    <h1 style="font-size:30px;margin-bottom:8px">${t('cf.title')}</h1>
+    <p style="color:var(--ink-60);font-size:15px">${t('cf.sent')} <strong style="color:var(--ink)">${email}</strong>.</p>
+    ${ref ? `<div class="cf-ref"><div class="l">${t('cf.ref')}</div><div class="v">${ref}</div></div>` : ''}
+    ${link ? `<a class="btn btn-mint" style="width:100%;justify-content:center;min-height:48px;text-decoration:none" href="${link}">${t('cf.track')} <i class="ti ti-arrow-right"></i></a>` : ''}
+    <div class="cf-steps"><strong style="font-size:14px">${t('cf.next')}</strong>
+      <div><span>1</span>${t('cf.s1')}</div><div><span>2</span>${t('cf.s2')}</div><div><span>3</span>${t('cf.s3')}</div>
+    </div>
+    <button class="btn btn-secondary" style="width:100%;justify-content:center;min-height:48px" onclick="newReport()">${t('cf.again')}</button>`;
+  cf.classList.add('show');
+  document.getElementById('view-client').classList.add('confirming');
+  document.getElementById('gdpr-consent').checked = false;
   ['c-name','c-email','c-phone','c-desc'].forEach(id => document.getElementById(id).value = '');
   ['c-project','c-unit','c-cat','c-loc','c-zone'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('c-unit').innerHTML = '<option value="">' + t('opt.selectfirst') + '</option>';
@@ -2697,7 +2950,7 @@ function populateProjectFilter() {
   const subSel = document.getElementById('sub-filter');
   if (subSel) {
     const cur = filters.sub;
-    subSel.innerHTML = '<option value="all">' + t('filter.all') + '</option>' +
+    subSel.innerHTML = '<option value="all">' + t('filter.allsubs') + '</option>' +
       subcontractors.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
     subSel.value = cur;
   }
@@ -2715,7 +2968,7 @@ function populateUnitFilter() {
   const units = [...new Set(pool.map(i => i.unit).filter(Boolean))]
     .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
   if (!units.includes(filters.unit)) filters.unit = 'all';
-  unitSel.innerHTML = '<option value="all">' + t('filter.allf') + '</option>' +
+  unitSel.innerHTML = '<option value="all">' + t('filter.allunits') + '</option>' +
     units.map(u => `<option value="${u}">${u}</option>`).join('');
   unitSel.value = filters.unit;
 }
@@ -2740,6 +2993,22 @@ function renderStats() {
   if (atrasoEl) atrasoEl.textContent = issues.filter(i => isOverdue(i)).length;
 }
 
+function statFilter(el) {
+  const v = el.dataset.f;
+  document.querySelectorAll('#stats-grid .stat').forEach(s => s.classList.toggle('sel', s === el));
+  if (v === 'overdue') { filters.status = 'all'; filters.overdue = true; }
+  else { filters.overdue = false; filters.status = v; }
+  document.querySelectorAll('#status-chips .chip').forEach(c => c.classList.toggle('active', c.dataset.v === filters.status));
+  renderIssues();
+}
+function clearFilters() {
+  filters.project = 'all'; filters.sub = 'all'; filters.unit = 'all'; filters.priority = 'all';
+  ['project-filter','sub-filter'].forEach(id => { const s = document.getElementById(id); if (s) s.value = 'all'; });
+  const q = document.getElementById('m-search'); if (q) q.value = '';
+  document.querySelectorAll('#prio-chips .chip').forEach(c => c.classList.toggle('active', c.dataset.v === 'all'));
+  populateUnitFilter();
+  renderIssues();
+}
 function setChip(type, el) {
   const group = type === 'status' ? 'status-chips' : 'prio-chips';
   document.querySelectorAll(`#${group} .chip`).forEach(c => c.classList.remove('active'));
@@ -2756,16 +3025,37 @@ function renderIssues() {
     if (filters.project !== 'all' && String(i.project_id) !== String(filters.project)) return false;
     if (filters.sub !== 'all' && !(i.assigned_ids||[]).map(String).includes(String(filters.sub))) return false;
     if (filters.unit !== 'all' && i.unit !== filters.unit) return false;
+    if (filters.overdue && !isOverdue(i)) return false;
     if (q && !`${issueRef(i)}${i.unit}${i.client_name}${i.category}${i.description}${i.location}${projectName(i.project_id)}`.toLowerCase().includes(q)) return false;
     return true;
   });
 
+  const ts = x => new Date(x.created_at || 0).getTime();
+  const grp = x => (x.status === 'resolvida' || x.status === 'rejeitada') ? 2 : (dueDate(x) ? 0 : 1);
+  if (filters.sort === 'new') list.sort((a, b) => ts(b) - ts(a));
+  else if (filters.sort === 'old') list.sort((a, b) => ts(a) - ts(b));
+  else list.sort((a, b) => {
+    const ga = grp(a), gb = grp(b);
+    if (ga !== gb) return ga - gb;
+    if (ga === 0) return dueDate(a) - dueDate(b);
+    if (ga === 1) return ts(a) - ts(b);
+    return ts(b) - ts(a);
+  });
+  const nf = (filters.project !== 'all') + (filters.sub !== 'all') + (filters.unit !== 'all') + (filters.priority !== 'all') + (q ? 1 : 0);
+  const fc = document.getElementById('f-count');
+  if (fc) fc.innerHTML = nf ? nf + ' ' + t(nf === 1 ? 'f.one' : 'f.many') + ' · <a onclick="clearFilters()">' + t('f.clear') + '</a>' : '';
+  const pane = document.getElementById('detail-pane');
+  if (pane) pane.innerHTML = dpEmpty();
   const container = document.getElementById('issue-list');
   if (!list.length) {
     container.innerHTML = `<div class="empty"><i class="ti ti-clipboard-x"></i><p>${t('empty.issues')}</p></div>`;
     return;
   }
   container.innerHTML = list.map(issue => renderIssueCard(issue)).join('');
+  if (isWide()) {
+    const keep = selectedIssueId && list.some(x => String(x.id) === selectedIssueId) ? selectedIssueId : null;
+    if (keep) selectIssue(keep);
+  }
 }
 
 function statusBadge(s) {
@@ -2890,14 +3180,23 @@ function renderIssueCard(issue) {
 
     <hr class="div">
     <div class="issue-actions">
-      <select style="padding:6px 32px 6px 10px;font-size:12px;width:auto;flex:none;min-width:130px" onchange="changeStatus(${JSON.stringify(issue.id)},this.value)" onclick="event.stopPropagation()">
-        ${(issue.status==='resolvida'?['nova','em_analise','agendada','resolvida','rejeitada']:['nova','em_analise','agendada','rejeitada']).map(s => `<option value="${s}"${issue.status===s?' selected':''}>${statusLabel(s)}</option>`).join('')}
-      </select>
-      <button class="btn btn-secondary btn-sm" onclick="openNote(${JSON.stringify(issue.id)})"><i class="ti ti-pencil"></i> ${t('btn.note')}</button>
+      ${issue.status === 'nova' ? `<button class="btn btn-mint btn-sm" onclick="changeStatus(${JSON.stringify(issue.id)},'em_analise')"><i class="ti ti-player-play"></i> ${t('next.analyse')}</button>` : ''}
+      ${issue.status === 'em_analise' ? `<button class="btn btn-mint btn-sm" onclick="changeStatus(${JSON.stringify(issue.id)},'agendada')"><i class="ti ti-calendar-event"></i> ${t('next.schedule')}</button>` : ''}
+      ${issue.status === 'agendada' ? `<button class="btn btn-mint btn-sm" onclick="openResolvePanel(${JSON.stringify(issue.id)})"><i class="ti ti-circle-check"></i> ${t('btn.closeissue')}</button>` : ''}
+      ${(issue.status === 'nova' || issue.status === 'em_analise') ? `<button class="btn btn-secondary btn-sm" onclick="openResolvePanel(${JSON.stringify(issue.id)})"><i class="ti ti-circle-check"></i> ${t('btn.closeissue')}</button>` : ''}
       <button class="btn btn-secondary btn-sm" onclick="openAssignModal(${JSON.stringify(issue.id)})"><i class="ti ti-user-cog"></i> ${t('btn.assign')}</button>
+      <button class="btn btn-secondary btn-sm" onclick="openNote(${JSON.stringify(issue.id)})"><i class="ti ti-pencil"></i> ${t('btn.note')}</button>
       <button class="btn btn-secondary btn-sm" onclick="generateIssuePDF(${JSON.stringify(issue.id)})"><i class="ti ti-file-text"></i> PDF</button>
-      ${issue.status !== 'resolvida' ? `<button class="btn btn-mint btn-sm" onclick="openResolvePanel(${JSON.stringify(issue.id)})"><i class="ti ti-circle-check"></i> ${t('btn.closeissue')}</button>` : ''}
-      <button class="btn btn-danger btn-sm" onclick="deleteIssue(${JSON.stringify(issue.id)})"><i class="ti ti-trash"></i></button>
+      <details class="more" onclick="event.stopPropagation()">
+        <summary class="btn btn-secondary btn-sm"><i class="ti ti-dots"></i> ${t('btn.more')}</summary>
+        <div class="more-pop">
+          <label>${t('more.status')}</label>
+          <select style="padding:8px 32px 8px 10px;font-size:13px" onchange="changeStatus(${JSON.stringify(issue.id)},this.value)">
+            ${(issue.status==='resolvida'?['nova','em_analise','agendada','resolvida','rejeitada']:['nova','em_analise','agendada','rejeitada']).map(s => `<option value="${s}"${issue.status===s?' selected':''}>${statusLabel(s)}</option>`).join('')}
+          </select>
+          <button class="btn btn-danger btn-sm" onclick="deleteIssue(${JSON.stringify(issue.id)})"><i class="ti ti-trash"></i> ${t('btn.delete')}</button>
+        </div>
+      </details>
     </div>
 
     <div class="timeline-box">
