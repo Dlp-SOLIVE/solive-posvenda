@@ -495,6 +495,49 @@ label.lbl{font-size:14px;text-transform:none;letter-spacing:0;color:var(--ink);f
   .chip{min-height:40px}
   .toolbar select{flex:1 1 150px;max-width:none}
 }
+/* lista compacta + detalhe com separadores */
+.toolbar .search-box input:not([type=checkbox]):not([type=radio]){padding-left:40px}
+.issue-card-top{padding:14px 18px;gap:14px;align-items:flex-start}
+.issue-main{min-width:0;flex:1}
+.row-top{display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap}
+.row-ref{font-size:13px;color:var(--ink-60);font-weight:500}
+.row-ph{font-size:12px;color:var(--ink-60);display:inline-flex;gap:3px;align-items:center}
+.issue-card .issue-title{font-size:15px;font-weight:700;margin-bottom:2px;min-width:0}
+.row-meta{font-size:13px;color:var(--ink-60);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row-side{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;text-align:right;padding-top:2px}
+.row-due{font-size:13px;color:var(--ink-60);white-space:nowrap}
+.row-due.late{color:var(--danger);font-weight:600}
+.row-prio{font-size:12px;color:var(--ink-60);white-space:nowrap}
+.det-head{display:flex;flex-direction:column;gap:10px;padding-bottom:14px}
+.issue-card .det-head .dh-row,.issue-card .det-head h3{display:none}
+.dh-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.dh-meta{font-size:13px;color:var(--ink-60)}
+.det-head h3{font-size:22px;margin:0;line-height:1.2}
+.det-head .issue-actions{margin-top:2px;flex-wrap:nowrap}
+.det-tabs{display:flex;gap:24px;border-bottom:1px solid var(--ink-20);margin-bottom:16px}
+.det-tab{background:none;border:none;padding:10px 2px;margin-bottom:-1px;font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;font-weight:600;color:var(--ink-60);border-bottom:2px solid transparent;cursor:pointer}
+.det-tab.active{color:var(--ink);border-bottom-color:var(--mint)}
+.det-pane{padding-bottom:20px}
+.dl{display:grid;grid-template-columns:120px minmax(0,1fr);row-gap:10px;column-gap:12px;font-size:14px;margin-bottom:18px}
+.dl>span:nth-child(odd){color:var(--ink-60)}
+.dl .mut{color:var(--ink-60)}
+.dl .late{color:var(--danger);font-weight:600}
+.dl .assigned-chip{margin:0 4px 4px 0}
+.det-link{display:inline-flex;align-items:center;gap:6px;margin-top:16px;font-size:14px;font-weight:600;color:var(--mint-dark);cursor:pointer}
+.det-pane .timeline-box{margin-top:0;padding-top:0;border-top:none}
+.det-pane .resolve-box{margin-top:0}
+@media(min-width:1100px){
+  #issue-list:not(:empty){background:var(--white);border:1px solid var(--ink-20);border-radius:var(--rlg);overflow:hidden}
+  #issue-list .issue-card{border:none;border-bottom:1px solid var(--ink-20);border-radius:0;margin:0;background:var(--white)}
+  #issue-list .issue-card:last-child{border-bottom:none}
+  #issue-list .issue-card:hover{box-shadow:none;background:var(--cream)}
+  #issue-list .issue-card.sel{background:var(--cream)}
+  #detail-pane .issue-detail{padding:0}
+  #detail-pane .det-head{padding:20px 24px 14px}
+  #detail-pane .det-tabs{margin-left:24px;margin-right:24px}
+  #detail-pane .det-pane{padding-left:24px;padding-right:24px}
+}
+@media(max-width:600px){.det-head .issue-actions{flex-wrap:wrap}.row-side{display:none}}
 /* ══════════ FASE 4 · acompanhamento ══════════ */
 .trk-steps{display:flex;flex-direction:column}
 .trk-step{display:flex;gap:12px;min-height:46px}
@@ -1028,6 +1071,7 @@ let LANG = localStorage.getItem('sv_lang') || 'pt';
 
 const I18N = {
 pt: {
+  'row.nodue':'Prazo por definir','row.due':'Prazo','row.late':'em atraso','row.resolved':'Resolvida','dt.client':'Cliente','dt.contact':'Contacto','dt.local':'Local','dt.urgency':'Urgência','dt.nooff':'oficial por atribuir','dt.due':'Prazo','dt.received':'recebida a','dt.photos':'Fotografias','dt.addnote':'Adicionar nota interna','dt.editnote':'Editar nota interna','tab.detail':'Detalhe','tab.history':'Histórico','tab.close':'Encerrar',
   'step.1':'1 · Os seus dados','step.2':'2 · A ocorrência','step.3':'3 · Fotografias e envio','step.next':'Continuar','step.back':'Voltar','up.camera':'Tirar fotografia','up.gallery':'Escolher da galeria','up.hint':'JPG · PNG · HEIC — até 10 fotografias. Depois pode assinalar o local exato em cada uma.','err.project':'Selecione o empreendimento.','err.name':'Indique o seu nome.','err.email':'Indique o email de contacto.','err.emailfmt':'Verifique o email: parece incompleto.','err.unit':'Selecione a fração ou zona.','err.cat':'Selecione a categoria.','err.desc':'Descreva a ocorrência.','err.descshort':'Descreva um pouco mais: quando detetou, dimensão e se está a agravar.','err.consent':'É necessário aceitar o tratamento de dados para submeter.','cf.title':'Ocorrência registada','cf.sent':'Enviámos a confirmação para','cf.ref':'Referência','cf.track':'Acompanhar ocorrência','cf.next':'O que acontece a seguir','cf.s1':'A equipa analisa a ocorrência e atribui o grau de urgência.','cf.s2':'Recebe um email a cada atualização.','cf.s3':'No fim, confirma se ficou resolvida.','cf.again':'Reportar outra ocorrência','filter.allsubs':'Todos os subempreiteiros','filter.allunits':'Todas as frações / zonas','sort.due':'Prazo mais próximo','sort.new':'Mais recentes','sort.old':'Mais antigas','f.one':'filtro','f.many':'filtros','f.clear':'Limpar','dp.empty':'Selecione uma ocorrência para ver o detalhe.','btn.more':'Mais','more.status':'Alterar estado','btn.delete':'Eliminar','next.analyse':'Iniciar análise','next.schedule':'Marcar como agendada','trk.progress':'Progresso','trk.s1':'Recebida','trk.s2':'Em análise','trk.s3':'Agendada','trk.s4':'Resolvida','trk.s5':'Validada',
   'nav.subtype':'Assistência Pós-Venda',
   'nav.report':'Reportar ocorrência','nav.panel':'Painel de gestão','nav.analytics':'Análise','nav.projects':'Projectos','nav.subs':'Subempreiteiros','nav.logout':'Sair',
@@ -1111,6 +1155,7 @@ pt: {
   'pdf.validation':'Validação do cliente','pdf.date':'Data:','pdf.comment':'Comentário:','pdf.footer':'Solive — Assistência Pós-Venda','pdf.genon':'Gerado em'
 },
 en: {
+  'row.nodue':'Deadline not set','row.due':'Due','row.late':'overdue','row.resolved':'Resolved','dt.client':'Client','dt.contact':'Contact','dt.local':'Location','dt.urgency':'Urgency','dt.nooff':'official not yet set','dt.due':'Deadline','dt.received':'received on','dt.photos':'Photos','dt.addnote':'Add internal note','dt.editnote':'Edit internal note','tab.detail':'Details','tab.history':'History','tab.close':'Close issue',
   'step.1':'1 · Your details','step.2':'2 · The issue','step.3':'3 · Photos and submit','step.next':'Continue','step.back':'Back','up.camera':'Take a photo','up.gallery':'Choose from gallery','up.hint':'JPG · PNG · HEIC — up to 10 photos. You can then mark the exact spot on each one.','err.project':'Select the development.','err.name':'Enter your name.','err.email':'Enter your contact email.','err.emailfmt':'Check the email address: it looks incomplete.','err.unit':'Select the unit or area.','err.cat':'Select the category.','err.desc':'Describe the issue.','err.descshort':'Please add more detail: when you noticed it, its size and whether it is getting worse.','err.consent':'You must accept the data processing to submit.','cf.title':'Issue submitted','cf.sent':'We have sent a confirmation to','cf.ref':'Reference','cf.track':'Track this issue','cf.next':'What happens next','cf.s1':'Our team reviews the issue and assigns its urgency.','cf.s2':'You receive an email with every update.','cf.s3':'Finally, you confirm whether it has been resolved.','cf.again':'Report another issue','filter.allsubs':'All subcontractors','filter.allunits':'All units / areas','sort.due':'Nearest deadline','sort.new':'Newest first','sort.old':'Oldest first','f.one':'filter','f.many':'filters','f.clear':'Clear','dp.empty':'Select an issue to see its details.','btn.more':'More','more.status':'Change status','btn.delete':'Delete','next.analyse':'Start review','next.schedule':'Mark as scheduled','trk.progress':'Progress','trk.s1':'Received','trk.s2':'Under review','trk.s3':'Scheduled','trk.s4':'Resolved','trk.s5':'Confirmed',
   'nav.subtype':'After-Sales Service',
   'nav.report':'Report an issue','nav.panel':'Management panel','nav.analytics':'Analytics','nav.projects':'Projects','nav.subs':'Subcontractors','nav.logout':'Log out',
@@ -1289,20 +1334,24 @@ function setLang(l) {
 // ══════════════════════════════════════════════════════
 function isWide() { return window.matchMedia('(min-width:1100px)').matches && !!document.getElementById('detail-pane'); }
 function dpEmpty() { return '<div class="dp-empty"><i class="ti ti-hand-click" style="font-size:28px;display:block;margin-bottom:8px;opacity:.4"></i>' + t('dp.empty') + '</div>'; }
+const lastTab = {};
+function detTab(id, p) {
+  const d = document.getElementById('detail-' + id); if (!d) return;
+  if (!d.querySelector('.det-tab[data-t="' + p + '"]')) p = 'd';
+  lastTab[String(id)] = p;
+  d.querySelectorAll('.det-tab').forEach(b => b.classList.toggle('active', b.dataset.t === p));
+  d.querySelectorAll('.det-pane').forEach(x => x.style.display = x.dataset.p === p ? 'block' : 'none');
+}
 function selectIssue(id) {
   const pane = document.getElementById('detail-pane');
   const detail = document.getElementById('detail-' + id);
   if (!pane || !detail) return;
   selectedIssueId = String(id);
   document.querySelectorAll('#issue-list .issue-card').forEach(c => c.classList.toggle('sel', c.id === 'ic-' + id));
-  const card = document.getElementById('ic-' + id);
-  const title = card?.querySelector('.issue-title')?.textContent || '';
-  const badges = card?.querySelector('.issue-top-row > div:last-child')?.innerHTML || '';
-  const ref = (card?.querySelector('.meta-ref')?.textContent || '').trim();
-  const meta = [card?.querySelector('.meta-proj')?.textContent.trim()].filter(Boolean).join('');
-  pane.innerHTML = '<div class="dp-head"><div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">' + badges + '<span style="font-size:13px;color:var(--ink-60)">' + ref + (meta ? ' · ' + meta : '') + '</span></div><h3>' + title + '</h3></div>';
+  pane.innerHTML = '';
   pane.appendChild(detail);
   detail.style.display = 'block';
+  detTab(id, lastTab[selectedIssueId] || 'd');
   pane.scrollTop = 0;
 }
 function toggleCard(id) {
@@ -3142,95 +3191,115 @@ function renderIssueCard(issue) {
       ${validationBadge}
     </div>` : (validationBadge || '');
 
+  const iid = JSON.stringify(issue.id);
+  const isOpen = issue.status !== 'resolvida' && issue.status !== 'rejeitada';
+  const due = dueDate(issue);
+  const late = isOverdue(issue);
+  const shortD = d => new Date(d).toLocaleDateString(dateLocale(), { day: 'numeric', month: 'short' });
+  const title = catLabel(issue.category) + (issue.location ? ' — ' + locLabel(issue.location) : '');
+  const dueTxt = !isOpen
+    ? (issue.status === 'resolvida' && issue.resolved_at ? t('row.resolved') + ' ' + shortD(issue.resolved_at) : shortD(issue.created_at))
+    : late ? (daysOverdue(issue) > 0 ? daysOverdue(issue) + ' d ' : '') + t('row.late')
+    : due ? t('row.due') + ' ' + shortD(due) : t('row.nodue');
+  const prioTxt = issue.priority_official ? prioLabel(issue.priority_official) : t('card.perception') + ' ' + prioLabel(issue.priority);
+  const nPhotos = (issue.photo_urls || []).length;
+  const nEvents = (issue.events || []).length;
+  const assigned = (issue.assigned_ids && issue.assigned_ids.length) ? issue.assigned_ids.map(sid => `<span class="assigned-chip"><i class="ti ti-user-cog" style="font-size:12px"></i> ${subName(sid)}</span>`).join('') : '';
+  const urg = issue.priority_official
+    ? `${prioLabel(issue.priority_official)} <span class="mut">· ${t('card.perception')} ${prioLabel(issue.priority)}</span>`
+    : `${t('card.perception')} ${prioLabel(issue.priority)} <span class="mut">· ${t('dt.nooff')}</span>`;
+
   return `
-  <div class="issue-card${isOverdue(issue)?' card-overdue':''}" id="ic-${issue.id}">
+  <div class="issue-card${late ? ' card-overdue' : ''}" id="ic-${issue.id}">
   <div class="issue-card-top" onclick="toggleCard('${issue.id}')">
-    <div class="issue-statusdot sd-${issue.status}"></div>
     <div class="issue-main">
-      <div class="issue-top-row">
-        <div class="issue-title">${catLabel(issue.category)}${issue.location ? ' — ' + locLabel(issue.location) : ''}</div>
-        <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
-          ${isOverdue(issue) ? `<span class="badge-overdue"><i class="ti ti-alert-triangle" style="font-size:11px"></i> ${t('card.overdue')} ${daysOverdue(issue)>0?('('+daysOverdue(issue)+'d)'):''}</span>` : ''}
-          ${statusBadge(issue.status)} ${issue.priority_official ? prioBadge(issue.priority_official) : `<span style="font-size:11px;color:var(--ink-60);font-style:italic">${t('card.perception')} ${prioLabel(issue.priority)}</span>`}
-        </div>
-      </div>
-      <div class="issue-meta">
-        <span class="meta-ref"><i class="ti ti-hash" style="font-size:13px"></i> ${issueRef(issue)}</span>
-        <span class="meta-proj"><i class="ti ti-map-pin" style="font-size:13px"></i> ${projectName(issue.project_id)}</span>
-        <span><i class="ti ti-building" style="font-size:13px"></i> ${issue.unit}</span>
-        <span><i class="ti ti-user" style="font-size:13px"></i> ${issue.client_name}</span>
-        <span><i class="ti ti-calendar" style="font-size:13px"></i> ${fmtDate(issue.created_at)}</span>
-        ${issue.status!=='resolvida'&&issue.status!=='rejeitada'&&dueDate(issue) ? `<span title="${t('card.duetitle')}"><i class="ti ti-clock" style="font-size:13px"></i> ${t('card.due')} ${dueDate(issue).toLocaleDateString(dateLocale())}</span>` : ''}
-        ${issue.photo_urls?.length ? `<span><i class="ti ti-photo" style="font-size:13px"></i> ${issue.photo_urls.length}</span>` : ''}
-      </div>
+      <div class="row-top">${statusBadge(issue.status)}<span class="row-ref">${issueRef(issue)}</span>${nPhotos ? `<span class="row-ph"><i class="ti ti-photo"></i> ${nPhotos}</span>` : ''}</div>
+      <div class="issue-title">${title}</div>
+      <div class="row-meta">${[projectName(issue.project_id), issue.unit, issue.client_name].filter(Boolean).join(' · ')}</div>
     </div>
+    <div class="row-side"><span class="row-due${late ? ' late' : ''}">${dueTxt}</span><span class="row-prio">${prioTxt}</span></div>
     <i class="ti ti-chevron-down issue-chevron"></i>
   </div>
   <div class="issue-detail" id="detail-${issue.id}" style="display:none">
-    <div style="display:flex;gap:6px 16px;flex-wrap:wrap;font-size:12px;color:var(--ink-60);margin-bottom:12px">
-      ${issue.client_email ? `<span><i class="ti ti-mail" style="font-size:13px;vertical-align:-2px"></i> ${issue.client_email}</span>` : ''}
-      ${issue.client_phone ? `<span><i class="ti ti-phone" style="font-size:13px;vertical-align:-2px"></i> ${issue.client_phone}</span>` : ''}
-    </div>
-    <div class="issue-desc-label">${t('card.desc')}</div>
-    <div class="issue-desc">${issue.description||''}</div>
-    ${photos ? `<div class="issue-photos-row">${photos}</div>` : ''}
-    ${issue.notes ? `<div class="note-box"><strong><i class="ti ti-note"></i> ${t('card.note')}</strong>${issue.notes}</div>` : ''}
-    ${resolvedInfo}
-    ${(issue.assigned_ids&&issue.assigned_ids.length) ? `<div class="assigned-chips"><span style="font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--ink-60);font-weight:700;align-self:center">${t('card.assignedto')}</span>${issue.assigned_ids.map(sid=>`<span class="assigned-chip"><i class="ti ti-user-cog" style="font-size:12px"></i> ${subName(sid)}</span>`).join('')}</div>` : ''}
-
-    <hr class="div">
-    <div class="issue-actions">
-      ${issue.status === 'nova' ? `<button class="btn btn-mint btn-sm" onclick="changeStatus(${JSON.stringify(issue.id)},'em_analise')"><i class="ti ti-player-play"></i> ${t('next.analyse')}</button>` : ''}
-      ${issue.status === 'em_analise' ? `<button class="btn btn-mint btn-sm" onclick="changeStatus(${JSON.stringify(issue.id)},'agendada')"><i class="ti ti-calendar-event"></i> ${t('next.schedule')}</button>` : ''}
-      ${issue.status === 'agendada' ? `<button class="btn btn-mint btn-sm" onclick="openResolvePanel(${JSON.stringify(issue.id)})"><i class="ti ti-circle-check"></i> ${t('btn.closeissue')}</button>` : ''}
-      ${(issue.status === 'nova' || issue.status === 'em_analise') ? `<button class="btn btn-secondary btn-sm" onclick="openResolvePanel(${JSON.stringify(issue.id)})"><i class="ti ti-circle-check"></i> ${t('btn.closeissue')}</button>` : ''}
-      <button class="btn btn-secondary btn-sm" onclick="openAssignModal(${JSON.stringify(issue.id)})"><i class="ti ti-user-cog"></i> ${t('btn.assign')}</button>
-      <button class="btn btn-secondary btn-sm" onclick="openNote(${JSON.stringify(issue.id)})"><i class="ti ti-pencil"></i> ${t('btn.note')}</button>
-      <button class="btn btn-secondary btn-sm" onclick="generateIssuePDF(${JSON.stringify(issue.id)})"><i class="ti ti-file-text"></i> PDF</button>
-      <details class="more" onclick="event.stopPropagation()">
-        <summary class="btn btn-secondary btn-sm"><i class="ti ti-dots"></i> ${t('btn.more')}</summary>
-        <div class="more-pop">
-          <label>${t('more.status')}</label>
-          <select style="padding:8px 32px 8px 10px;font-size:13px" onchange="changeStatus(${JSON.stringify(issue.id)},this.value)">
-            ${(issue.status==='resolvida'?['nova','em_analise','agendada','resolvida','rejeitada']:['nova','em_analise','agendada','rejeitada']).map(s => `<option value="${s}"${issue.status===s?' selected':''}>${statusLabel(s)}</option>`).join('')}
-          </select>
-          <button class="btn btn-danger btn-sm" onclick="deleteIssue(${JSON.stringify(issue.id)})"><i class="ti ti-trash"></i> ${t('btn.delete')}</button>
-        </div>
-      </details>
-    </div>
-
-    <div class="timeline-box">
-      <h4><i class="ti ti-timeline" style="font-size:13px;vertical-align:-2px"></i> ${t('track.history')}</h4>
-      <div id="tl-list-${issue.id}">
-        ${renderTimeline(issue)}
-      </div>
-      <div class="tl-add-row">
-        <textarea id="tl-text-${issue.id}" placeholder="${t('tl.ph')}" onclick="event.stopPropagation()"></textarea>
-        <label class="tl-notify"><input type="checkbox" id="tl-notify-${issue.id}" checked onclick="event.stopPropagation()"> ${t('tl.notify')}</label>
-        <button class="btn btn-mint btn-sm" style="align-self:flex-start" onclick="event.stopPropagation();addEvent(${JSON.stringify(issue.id)})"><i class="ti ti-plus"></i> ${t('btn.addevent')}</button>
+    <div class="det-head">
+      <div class="dh-row">${statusBadge(issue.status)}<span class="dh-meta">${issueRef(issue)} · ${t('dt.received')} ${fmtDate(issue.created_at)}</span></div>
+      <h3>${title}</h3>
+      <div class="issue-actions">
+        ${issue.status === 'nova' ? `<button class="btn btn-mint btn-sm" onclick="changeStatus(${iid},'em_analise')"><i class="ti ti-player-play"></i> ${t('next.analyse')}</button>` : ''}
+        ${issue.status === 'em_analise' ? `<button class="btn btn-mint btn-sm" onclick="changeStatus(${iid},'agendada')"><i class="ti ti-calendar-event"></i> ${t('next.schedule')}</button>` : ''}
+        ${issue.status === 'agendada' ? `<button class="btn btn-mint btn-sm" onclick="openResolvePanel(${iid})"><i class="ti ti-circle-check"></i> ${t('btn.closeissue')}</button>` : ''}
+        <button class="btn btn-secondary btn-sm" onclick="openAssignModal(${iid})"><i class="ti ti-user-cog"></i> ${t('btn.assign')}</button>
+        <button class="btn btn-secondary btn-sm" onclick="generateIssuePDF(${iid})"><i class="ti ti-file-text"></i> PDF</button>
+        <details class="more" onclick="event.stopPropagation()">
+          <summary class="btn btn-secondary btn-sm"><i class="ti ti-dots"></i> ${t('btn.more')}</summary>
+          <div class="more-pop">
+            <label>${t('more.status')}</label>
+            <select style="padding:8px 32px 8px 10px;font-size:13px" onchange="changeStatus(${iid},this.value)">
+              ${(issue.status==='resolvida'?['nova','em_analise','agendada','resolvida','rejeitada']:['nova','em_analise','agendada','rejeitada']).map(s => `<option value="${s}"${issue.status===s?' selected':''}>${statusLabel(s)}</option>`).join('')}
+            </select>
+            <button class="btn btn-secondary btn-sm" onclick="openNote(${iid})"><i class="ti ti-pencil"></i> ${t('btn.note')}</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteIssue(${iid})"><i class="ti ti-trash"></i> ${t('btn.delete')}</button>
+          </div>
+        </details>
       </div>
     </div>
+    <div class="det-tabs">
+      <button class="det-tab active" data-t="d" onclick="detTab(${iid},'d')">${t('tab.detail')}</button>
+      <button class="det-tab" data-t="h" onclick="detTab(${iid},'h')">${t('tab.history')}${nEvents ? ' (' + nEvents + ')' : ''}</button>
+      ${isOpen ? `<button class="det-tab" data-t="e" onclick="detTab(${iid},'e')">${t('tab.close')}</button>` : ''}
+    </div>
 
-    <div id="resolve-${issue.id}" style="display:none">
-      <div class="resolve-box">
-        <h3><i class="ti ti-circle-check"></i> ${t('btn.closeissue')}</h3>
-        <div class="fg" style="margin-bottom:10px">
-          <div class="fg-full">
-            <label class="lbl">${t('resolve.notes')}</label>
-            <textarea id="rn-${issue.id}" rows="3" placeholder="${t('resolve.notesph')}"></textarea>
-          </div>
-          <div>
-            <label class="lbl">${t('resolve.hours')}</label>
-            <input type="number" id="rh-${issue.id}" placeholder="${t('resolve.hoursph')}" min="0">
-          </div>
-          <div>
-            <label class="lbl">${t('resolve.photos')}</label>
-            <input type="file" id="rf-${issue.id}" accept="image/*" multiple style="padding:8px">
-          </div>
+    <div class="det-pane" data-p="d">
+      <div class="dl">
+        <span>${t('dt.client')}</span><span>${issue.client_name || '—'}</span>
+        <span>${t('dt.contact')}</span><span>${[issue.client_email, issue.client_phone].filter(Boolean).join(' · ') || '—'}</span>
+        <span>${t('dt.local')}</span><span>${[projectName(issue.project_id), issue.unit, issue.location ? locLabel(issue.location) : ''].filter(Boolean).join(' · ')}</span>
+        <span>${t('dt.urgency')}</span><span>${urg}</span>
+        ${isOpen && due ? `<span>${t('dt.due')}</span><span class="${late ? 'late' : ''}">${due.toLocaleDateString(dateLocale())}${late && daysOverdue(issue) > 0 ? ' · ' + daysOverdue(issue) + ' d ' + t('row.late') : ''}</span>` : ''}
+        ${assigned ? `<span>${t('card.assignedto')}</span><span>${assigned}</span>` : ''}
+      </div>
+      <div class="issue-desc-label">${t('card.desc')}</div>
+      <div class="issue-desc">${issue.description || ''}</div>
+      ${photos ? `<div class="issue-desc-label" style="margin-top:16px">${t('dt.photos')} (${nPhotos})</div><div class="issue-photos-row" style="margin-top:0">${photos}</div>` : ''}
+      ${issue.notes ? `<div class="note-box"><strong><i class="ti ti-note"></i> ${t('card.note')}</strong>${issue.notes}</div>` : ''}
+      ${resolvedInfo}
+      <a class="det-link" onclick="openNote(${iid})"><i class="ti ti-note"></i> ${issue.notes ? t('dt.editnote') : t('dt.addnote')}</a>
+    </div>
+
+    <div class="det-pane" data-p="h" style="display:none">
+      <div class="timeline-box">
+        <div id="tl-list-${issue.id}">
+          ${renderTimeline(issue)}
         </div>
-        <div style="display:flex;gap:8px">
-          <button class="btn btn-secondary btn-sm" onclick="closeResolvePanel(${JSON.stringify(issue.id)})">${t('btn.cancel')}</button>
-          <button class="btn btn-mint btn-sm" onclick="resolveIssue(${JSON.stringify(issue.id)})"><i class="ti ti-check"></i> ${t('btn.confirmresolve')}</button>
+        <div class="tl-add-row">
+          <textarea id="tl-text-${issue.id}" placeholder="${t('tl.ph')}" onclick="event.stopPropagation()"></textarea>
+          <label class="tl-notify"><input type="checkbox" id="tl-notify-${issue.id}" checked onclick="event.stopPropagation()"> ${t('tl.notify')}</label>
+          <button class="btn btn-mint btn-sm" style="align-self:flex-start" onclick="event.stopPropagation();addEvent(${iid})"><i class="ti ti-plus"></i> ${t('btn.addevent')}</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="det-pane" data-p="e" style="display:none">
+      <div id="resolve-${issue.id}">
+        <div class="resolve-box">
+          <div class="fg" style="margin-bottom:12px">
+            <div class="fg-full">
+              <label class="lbl">${t('resolve.notes')}</label>
+              <textarea id="rn-${issue.id}" rows="3" placeholder="${t('resolve.notesph')}"></textarea>
+            </div>
+            <div>
+              <label class="lbl">${t('resolve.hours')}</label>
+              <input type="number" id="rh-${issue.id}" placeholder="${t('resolve.hoursph')}" min="0">
+            </div>
+            <div>
+              <label class="lbl">${t('resolve.photos')}</label>
+              <input type="file" id="rf-${issue.id}" accept="image/*" multiple style="padding:8px">
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn btn-secondary btn-sm" onclick="closeResolvePanel(${iid})">${t('btn.cancel')}</button>
+            <button class="btn btn-mint btn-sm" onclick="resolveIssue(${iid})"><i class="ti ti-check"></i> ${t('btn.confirmresolve')}</button>
+          </div>
         </div>
       </div>
     </div>
@@ -3376,14 +3445,13 @@ async function saveNote() {
 }
 
 function openResolvePanel(id) {
-  document.querySelectorAll('[id^="resolve-"]').forEach(el => el.style.display = 'none');
-  const panel = document.getElementById(`resolve-${id}`);
-  if (panel) { panel.style.display = 'block'; panel.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+  const d = document.getElementById('detail-' + id);
+  if (!isWide() && d && d.style.display !== 'block') toggleCard(id);
+  detTab(id, 'e');
 }
 
 function closeResolvePanel(id) {
-  const panel = document.getElementById(`resolve-${id}`);
-  if (panel) panel.style.display = 'none';
+  detTab(id, 'd');
 }
 
 async function resolveIssue(id) {
