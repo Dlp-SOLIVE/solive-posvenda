@@ -550,6 +550,19 @@ label.lbl{font-size:13px;font-weight:500;letter-spacing:0;text-transform:none;co
 .btn-primary{background:var(--mint);border-color:var(--mint);color:#fff}
 .btn-primary:hover{background:var(--mint-dark);border-color:var(--mint-dark)}
 .badge,.badge-overdue,.chip,.assigned-chip,.timer-badge{border-radius:var(--pill)}
+
+/* ═══ Alinhamento dos ecrãs de gestão ═══
+   O cabeçalho branco era mais largo do que os cartões por baixo (48 px de cada lado).
+   Agora título, resumo e cartões partilham as mesmas margens. */
+.mgr-header{background:transparent;border-bottom:none;padding:1.75rem 3rem .5rem}
+.stats-strip{background:transparent;border-bottom:none;padding:0 3rem}
+.stats-grid{background:var(--white);border:1px solid var(--ink-20);border-radius:var(--rlg);overflow:hidden}
+.stat:first-child{border-top-left-radius:var(--rlg);border-bottom-left-radius:var(--rlg)}
+.mgr-body{padding-top:1.25rem}
+@media(max-width:700px){.mgr-header,.stats-strip{padding-left:1.25rem;padding-right:1.25rem}}
+/* Separadores do menu: sem caixa preta ao clicar (o foco só aparece com teclado) */
+.nav-tab:focus{outline:none}
+.nav-tab:focus-visible{outline:2px solid var(--mint);outline-offset:-4px;border-radius:6px}
 </style>
 </head>
 <body>
@@ -653,15 +666,15 @@ label.lbl{font-size:13px;font-weight:500;letter-spacing:0;text-transform:none;co
       </div>
       <div>
         <label class="lbl" data-i18n="lbl.name">Nome completo *</label>
-        <input id="c-name" type="text" placeholder="Ex: João Silva" data-i18n-ph="ph.name">
+        <input id="c-name" type="text" placeholder="Ex: João Silva" data-i18n-ph="ph.name" name="name" autocomplete="name">
       </div>
       <div>
         <label class="lbl" data-i18n="lbl.email">Email de contacto *</label>
-        <input id="c-email" type="email" placeholder="joao@email.com">
+        <input id="c-email" type="email" placeholder="joao@email.com" name="email" autocomplete="email">
       </div>
       <div>
         <label class="lbl" data-i18n="lbl.phone">Telefone</label>
-        <input id="c-phone" type="tel" placeholder="+351 9xx xxx xxx">
+        <input id="c-phone" type="tel" name="tel" autocomplete="tel" inputmode="tel" placeholder="+351 9xx xxx xxx">
       </div>
       <div>
         <label class="lbl" data-i18n="lbl.unit">Fração / Unidade *</label>
@@ -2075,8 +2088,8 @@ function renderMonitor() {
       charts['trend'] = new Chart(ctx, {
         type: 'bar',
         data: { labels, datasets: [
-          { label: t('chart.opened'), data: opened, backgroundColor: '#E67E22' },
-          { label: t('chart.resolved'), data: resolved, backgroundColor: '#1A6B45' }
+          { label: t('chart.opened'), data: opened, backgroundColor: '#C9C2BF' },
+          { label: t('chart.resolved'), data: resolved, backgroundColor: '#1F8A5B' }
         ]},
         options: { responsive: true, plugins: { legend: { position: 'bottom', labels:{font:{family:'Inter'},boxWidth:12} } },
           scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } }
