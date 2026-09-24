@@ -28,20 +28,20 @@
 /* ── WAVE SVG pattern (brochure motif) ── */
 .wave-bg{background-image:url("data:image/svg+xml,%3Csvg width='120' height='60' viewBox='0 0 120 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 30 Q15 10 30 30 Q45 50 60 30 Q75 10 90 30 Q105 50 120 30' fill='none' stroke='%23E62336' stroke-width='1.2' stroke-opacity='0.18'/%3E%3Cpath d='M0 42 Q15 22 30 42 Q45 62 60 42 Q75 22 90 42 Q105 62 120 42' fill='none' stroke='%23E62336' stroke-width='1.2' stroke-opacity='0.11'/%3E%3Cpath d='M0 18 Q15 -2 30 18 Q45 38 60 18 Q75 -2 90 18 Q105 38 120 18' fill='none' stroke='%23E62336' stroke-width='1.2' stroke-opacity='0.11'/%3E%3C/svg%3E");background-size:120px 60px}
 
-body{font-family:'Roboto',sans-serif;background:var(--cream);color:var(--ink);min-height:100vh;font-size:15px;line-height:1.65}
-h1,h2,h3{font-family:'Roboto',sans-serif}
+body{font-family:'Inter',sans-serif;background:var(--cream);color:var(--ink);min-height:100vh;font-size:15px;line-height:1.65}
+h1,h2,h3{font-family:'Inter',sans-serif}
 
 /* ── NAV ── */
 .nav{background:var(--white);display:flex;align-items:center;height:64px;padding:0 2rem;position:sticky;top:0;z-index:200;border-bottom:2px solid var(--mint);box-shadow:0 1px 6px rgba(20,58,103,0.06)}
 .nav-logo{display:flex;flex-direction:column;margin-right:auto;gap:5px;align-items:flex-start}
-.nav-logo .logotype{font-family:'Roboto',sans-serif;font-size:17px;font-weight:700;color:var(--navy);letter-spacing:0.02em;line-height:1}
-.nav-logo .subtype{font-family:'Roboto',sans-serif;font-size:9px;font-weight:400;letter-spacing:0.25em;text-transform:uppercase;color:var(--mint);margin-top:3px}
-.nav-tab{background:none;border:none;color:var(--ink-60);font-family:'Roboto',sans-serif;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;padding:0 1.25rem;height:64px;cursor:pointer;transition:color 0.2s;white-space:nowrap;border-bottom:2px solid transparent;margin-bottom:-2px}
+.nav-logo .logotype{font-family:'Inter',sans-serif;font-size:17px;font-weight:700;color:var(--navy);letter-spacing:0.02em;line-height:1}
+.nav-logo .subtype{font-family:'Inter',sans-serif;font-size:9px;font-weight:400;letter-spacing:0.25em;text-transform:uppercase;color:var(--mint);margin-top:3px}
+.nav-tab{background:none;border:none;color:var(--ink-60);font-family:'Inter',sans-serif;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;padding:0 1.25rem;height:64px;cursor:pointer;transition:color 0.2s;white-space:nowrap;border-bottom:2px solid transparent;margin-bottom:-2px}
 .nav-tab:hover{color:var(--navy)}
 .nav-tab.active{color:var(--mint);border-bottom-color:var(--mint)}
 .nav-user{font-size:12px;color:var(--ink-60);margin-left:1.5rem;display:flex;align-items:center;gap:10px}
 .nav-user span{font-size:11px}
-.nav-user button{background:none;border:1px solid var(--ink-20);color:var(--ink-60);padding:4px 12px;border-radius:20px;cursor:pointer;font-size:10px;letter-spacing:0.06em;text-transform:uppercase;font-family:'Roboto',sans-serif;transition:all 0.2s}
+.nav-user button{background:none;border:1px solid var(--ink-20);color:var(--ink-60);padding:4px 12px;border-radius:20px;cursor:pointer;font-size:10px;letter-spacing:0.06em;text-transform:uppercase;font-family:'Inter',sans-serif;transition:all 0.2s}
 .nav-user button:hover{border-color:var(--mint);color:var(--mint)}
 
 /* ── PAGES ── */
@@ -51,7 +51,7 @@ h1,h2,h3{font-family:'Roboto',sans-serif}
 /* ── HERO ── */
 .hero{background:var(--white);padding:3rem 3rem 2.5rem;margin-bottom:0;position:relative;overflow:hidden;border-bottom:1px solid var(--ink-08);border-left:4px solid var(--mint)}
 .hero::before{content:'';position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg width='120' height='60' viewBox='0 0 120 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 30 Q15 10 30 30 Q45 50 60 30 Q75 10 90 30 Q105 50 120 30' fill='none' stroke='%23E62336' stroke-width='1.5' stroke-opacity='0.05'/%3E%3Cpath d='M0 42 Q15 22 30 42 Q45 62 60 42 Q75 22 90 42 Q105 62 120 42' fill='none' stroke='%23E62336' stroke-width='1' stroke-opacity='0.04'/%3E%3C/svg%3E");background-size:120px 60px}
-.hero-eyebrow{font-family:'Roboto',sans-serif;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--mint);margin-bottom:0.75rem;position:relative;font-weight:700}
+.hero-eyebrow{font-family:'Inter',sans-serif;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--mint);margin-bottom:0.75rem;position:relative;font-weight:700}
 .hero h1{font-size:40px;font-weight:700;color:var(--navy);line-height:1.1;margin-bottom:0.75rem;position:relative;max-width:560px}
 .hero p{color:var(--ink-60);font-size:14px;max-width:480px;line-height:1.7;position:relative}
 .hero-accent{position:absolute;right:2.5rem;top:50%;transform:translateY(-50%);opacity:0.06;pointer-events:none}
@@ -63,14 +63,14 @@ h1,h2,h3{font-family:'Roboto',sans-serif}
 /* ── SECTION WRAPPER ── */
 .section{padding:2rem 3rem;background:var(--white);border-bottom:0.5px solid var(--ink-20)}
 .section:last-of-type{border-bottom:none}
-.section-title{font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--mint);font-family:'Roboto',sans-serif;font-weight:500;margin-bottom:1.25rem}
+.section-title{font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--mint);font-family:'Inter',sans-serif;font-weight:500;margin-bottom:1.25rem}
 .section h2{font-size:22px;font-weight:700;margin-bottom:1.5rem;color:var(--ink)}
 
 /* ── FORM ── */
 .fg{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem}
 .fg-full{grid-column:1/-1}
 label.lbl{display:block;font-size:10px;text-transform:uppercase;letter-spacing:0.14em;color:var(--ink-60);margin-bottom:6px;font-weight:500}
-input:not([type=checkbox]):not([type=radio]),select,textarea{width:100%;padding:11px 14px;border:1px solid var(--ink-20);border-radius:var(--r);font-family:'Roboto',sans-serif;font-size:14px;background:var(--white);color:var(--ink);transition:border-color 0.2s;outline:none;-webkit-appearance:none}
+input:not([type=checkbox]):not([type=radio]),select,textarea{width:100%;padding:11px 14px;border:1px solid var(--ink-20);border-radius:var(--r);font-family:'Inter',sans-serif;font-size:14px;background:var(--white);color:var(--ink);transition:border-color 0.2s;outline:none;-webkit-appearance:none}
 input:focus,select:focus,textarea:focus{border-color:var(--mint);box-shadow:0 0 0 3px rgba(64,201,142,0.1)}
 textarea{resize:vertical;min-height:100px}
 select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%231A1A18' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center;padding-right:36px}
@@ -103,7 +103,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 .submit-row p{color:var(--ink-60);font-size:12px}
 
 /* ── BUTTONS ── */
-.btn{display:inline-flex;align-items:center;gap:7px;padding:11px 22px;border-radius:var(--r);font-family:'Roboto',sans-serif;font-size:13px;cursor:pointer;transition:all 0.18s;border:1px solid transparent;font-weight:500;white-space:nowrap;letter-spacing:0.02em}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:11px 22px;border-radius:var(--r);font-family:'Inter',sans-serif;font-size:13px;cursor:pointer;transition:all 0.18s;border:1px solid transparent;font-weight:500;white-space:nowrap;letter-spacing:0.02em}
 .btn-primary{background:var(--ink);color:#fff;border-color:var(--ink)}
 .btn-primary:hover{background:#333}
 .btn-mint{background:var(--mint);color:#fff;border-color:var(--mint)}
@@ -136,8 +136,8 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 .stat.stat-aside{border-left:1px dashed var(--ink-20)}
 .stat{padding:1.25rem 0;border-right:0.5px solid var(--ink-20);text-align:center}
 .stat:last-child{border-right:none}
-.stat .lbl{font-size:10px;text-transform:uppercase;letter-spacing:0.12em;color:var(--ink-60);margin-bottom:4px;font-family:'Roboto',sans-serif}
-.stat .val{font-size:28px;font-family:'Roboto',sans-serif;font-weight:700;line-height:1}
+.stat .lbl{font-size:10px;text-transform:uppercase;letter-spacing:0.12em;color:var(--ink-60);margin-bottom:4px;font-family:'Inter',sans-serif}
+.stat .val{font-size:28px;font-family:'Inter',sans-serif;font-weight:700;line-height:1}
 .stat .sub{font-size:10px;color:var(--ink-60);margin-top:2px}
 
 /* ── MANAGER BODY ── */
@@ -146,7 +146,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 /* ── FILTERS / CHIPS ── */
 .filter-bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1rem;align-items:center}
 .filter-label{font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--ink-60);margin-right:6px;font-weight:500}
-.chip{padding:5px 14px;border-radius:4px;border:1px solid var(--ink-20);background:var(--white);font-size:11px;cursor:pointer;transition:all 0.18s;font-family:'Roboto',sans-serif;display:inline-flex;align-items:center;gap:5px;letter-spacing:0.03em}
+.chip{padding:5px 14px;border-radius:4px;border:1px solid var(--ink-20);background:var(--white);font-size:11px;cursor:pointer;transition:all 0.18s;font-family:'Inter',sans-serif;display:inline-flex;align-items:center;gap:5px;letter-spacing:0.03em}
 .chip.active{background:var(--mint);color:var(--ink);border-color:var(--mint);font-weight:500}
 .chip:hover:not(.active){background:var(--ink-08);border-color:var(--ink-20)}
 
@@ -168,7 +168,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 .sd-rejeitada{background:var(--gray)}
 .issue-main{flex:1;min-width:0}
 .issue-top-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:7px;flex-wrap:wrap}
-.issue-title{font-weight:700;font-size:15px;flex:1;min-width:180px;font-family:'Roboto',sans-serif;color:var(--navy);line-height:1.35}
+.issue-title{font-weight:700;font-size:15px;flex:1;min-width:180px;font-family:'Inter',sans-serif;color:var(--navy);line-height:1.35}
 .issue-meta{font-size:12px;color:var(--ink-60);display:flex;gap:6px 16px;flex-wrap:wrap;margin-bottom:0;row-gap:5px}
 .issue-meta span{display:flex;align-items:center;gap:5px}
 .issue-meta .meta-proj{font-weight:700;color:var(--mint)}
@@ -202,8 +202,8 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 #login-page{display:flex;align-items:center;justify-content:center;min-height:calc(100vh - 64px);background:var(--cream)}
 .login-box{background:var(--white);border:1px solid var(--ink-20);border-radius:var(--rlg);border-top:3px solid var(--mint);padding:2.5rem;max-width:400px;width:90%;text-align:center}
 .login-logo{margin:0 auto 1.5rem;display:flex;align-items:center;justify-content:center}
-.login-logo span{font-family:'Roboto',sans-serif;font-size:20px;color:var(--white);font-weight:700;line-height:1}
-.login-logo small{font-size:8px;letter-spacing:0.2em;text-transform:uppercase;color:var(--mint);font-family:'Roboto',sans-serif}
+.login-logo span{font-family:'Inter',sans-serif;font-size:20px;color:var(--white);font-weight:700;line-height:1}
+.login-logo small{font-size:8px;letter-spacing:0.2em;text-transform:uppercase;color:var(--mint);font-family:'Inter',sans-serif}
 .login-box h2{font-size:26px;font-weight:700;margin-bottom:0.5rem}
 .login-box .sub{font-size:13px;color:var(--ink-60);margin-bottom:2rem;line-height:1.5}
 
@@ -246,7 +246,7 @@ hr.div{border:none;border-top:0.5px solid var(--ink-20);margin:1.25rem 0}
 .consent-row a{color:var(--mint);text-decoration:underline}
 .privacy-modal{max-width:680px}
 .privacy-section{margin-bottom:1.5rem}
-.privacy-section h3{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.06em;font-family:'Roboto',sans-serif}
+.privacy-section h3{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.06em;font-family:'Inter',sans-serif}
 .privacy-section p,.privacy-section li{font-size:13px;color:var(--ink-60);line-height:1.65;margin-bottom:4px}
 .privacy-section ul{padding-left:1.25rem}
 
@@ -319,7 +319,7 @@ hr.div{border:none;border-top:0.5px solid var(--ink-20);margin:1.25rem 0}
 
 /* ── PHOTO MARKER ── */
 .photo-thumb{position:relative}
-.photo-thumb .mark-btn{position:absolute;bottom:4px;left:4px;background:rgba(20,58,103,0.82);color:#fff;border:none;border-radius:4px;font-size:9px;padding:2px 6px;cursor:pointer;display:flex;align-items:center;gap:3px;font-family:'Roboto'}
+.photo-thumb .mark-btn{position:absolute;bottom:4px;left:4px;background:rgba(20,58,103,0.82);color:#fff;border:none;border-radius:4px;font-size:9px;padding:2px 6px;cursor:pointer;display:flex;align-items:center;gap:3px;font-family:'Inter',sans-serif}
 .photo-thumb .mark-btn:hover{background:var(--mint)}
 .photo-thumb .marked-badge{position:absolute;bottom:4px;left:4px;background:var(--mint);color:#fff;border-radius:4px;font-size:9px;padding:2px 6px;display:flex;align-items:center;gap:3px}
 .marker-stage{position:relative;display:inline-block;max-width:100%;cursor:crosshair;line-height:0}
@@ -347,7 +347,7 @@ hr.div{border:none;border-top:0.5px solid var(--ink-20);margin:1.25rem 0}
 
 /* ── LANG TOGGLE ── */
 .lang-toggle{display:flex;align-items:center;gap:2px;margin-left:auto}
-.lang-toggle button{background:none;border:none;cursor:pointer;font-family:'Roboto',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.06em;color:var(--ink-60);padding:4px 8px;border-radius:12px;transition:all 0.2s}
+.lang-toggle button{background:none;border:none;cursor:pointer;font-family:'Inter',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.06em;color:var(--ink-60);padding:4px 8px;border-radius:12px;transition:all 0.2s}
 .lang-toggle button.active{color:#fff;background:var(--navy)}
 .lang-toggle span{color:var(--ink-20);font-size:11px}
 .nav-user{margin-left:1rem}
@@ -556,6 +556,51 @@ label.lbl{font-size:14px;text-transform:none;letter-spacing:0;color:var(--ink);f
 .val-cta .btn{width:100%;justify-content:center;min-height:48px}
 .val-cta .btn-secondary{background:#fff;color:var(--ink);border-color:#fff}
 .val-cta label.lbl{color:#fff;margin-top:4px}
+
+/* ═══════════════════════════════════════════════════════════════
+   Entrega 1 · Tipografia e escala (auditoria de interface, set 2026)
+   Inter no texto, Plus Jakarta Sans em títulos e números.
+   Escala 12 · 13 · 14 · 16 · 18 · 24 · 32. Mínimo 12 px.
+   ═══════════════════════════════════════════════════════════════ */
+body{font-family:'Inter',-apple-system,'Segoe UI',sans-serif;font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font-family:inherit}
+h1,h2,h3,h4,.issue-title,.stat .val,.mon-kpi .k-val,.proj-card-head h3,.sub-card h3{font-family:'Plus Jakarta Sans','Inter',sans-serif;letter-spacing:-0.01em}
+
+/* Letra mínima de 12 px (antes 8–11 px) e sem maiúsculas espaçadas */
+.nav-logo .subtype,.nav-user span,.nav-user button,.lang-toggle button,.lang-toggle span,
+.hero-eyebrow,.section-title,.filter-label,.issue-desc-label,.note-box strong,.timeline-box h4,
+.tl-date,.sub-spec,.as-sub-opt .as-spec,.as-photo .as-check,.assigned-chip,.timer-badge,
+.photo-fallback,.mon-kpi .k-lbl,.mon-kpi .k-delta,.kpi-table th,.login-logo small{font-size:12px;letter-spacing:0.02em;text-transform:none}
+.hero-eyebrow,.section-title{font-size:12px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase}
+label.lbl{font-size:13px;font-weight:500;letter-spacing:0;text-transform:none;color:var(--ink-70)}
+.nav-tab{font-size:14px;font-weight:500;letter-spacing:0;text-transform:none}
+.nav-tab.active{font-weight:600}
+.chip{font-size:13px;font-weight:500;letter-spacing:0;text-transform:none}
+.badge,.badge-overdue{font-size:12px;font-weight:600;letter-spacing:0;text-transform:none}
+.photo-thumb .mark-btn,.photo-thumb .marked-badge{font-size:12px}
+.stat .lbl{font-size:13px;font-weight:500}
+.stat .sub{font-size:12px}
+.stat .val{font-size:28px;font-weight:700}
+
+/* Títulos */
+.hero h1{font-weight:700}
+.section h2{font-size:18px;font-weight:700}
+.issue-title{font-size:16px;font-weight:700}
+
+/* Pesos: texto 400, etiquetas 500, botões 600, títulos e números 700 */
+.btn{font-size:14px;font-weight:600;letter-spacing:0}
+.btn-sm{font-size:13px}
+
+/* Contraste do estado «Rejeitada» (antes ~4,1:1) */
+.badge-rejeitada{background:var(--ink-08);color:var(--ink-70)}
+
+/* Telemóvel: campos a 16 px (evita a ampliação automática do iPhone) e 44 px de toque */
+@media(max-width:700px){
+  input:not([type=checkbox]):not([type=radio]),select,textarea{font-size:16px}
+  .btn,.btn-sm,.chip,.nav-tab,.lang-toggle button{min-height:44px}
+  .btn-sm{padding:10px 16px}
+  .photo-thumb .mark-btn,.photo-thumb .rm-btn{min-width:36px;min-height:36px}
+}
 </style>
 </head>
 <body>
@@ -1351,7 +1396,15 @@ function selectIssue(id) {
   if (!pane || !detail) return;
   selectedIssueId = String(id);
   document.querySelectorAll('#issue-list .issue-card').forEach(c => c.classList.toggle('sel', c.id === 'ic-' + id));
-  pane.innerHTML = '';
+  // Devolver o detalhe anterior ao seu cartão (antes era apagado ao limpar o painel,
+  // e a ocorrência deixava de poder ser aberta outra vez)
+  pane.querySelectorAll('[id^="detail-"]').forEach(prev => {
+    if (prev === detail) return;
+    prev.style.display = 'none';
+    const home = document.getElementById('ic-' + prev.id.slice(7));
+    if (home) home.appendChild(prev); else prev.remove();
+  });
+  Array.from(pane.childNodes).forEach(n => { if (n !== detail) n.remove(); });
   pane.appendChild(detail);
   detail.style.display = 'block';
   detTab(id, lastTab[selectedIssueId] || 'd');
@@ -2076,7 +2129,7 @@ function renderMonitor() {
           { label: t('chart.opened'), data: opened, backgroundColor: '#E67E22' },
           { label: t('chart.resolved'), data: resolved, backgroundColor: '#1A6B45' }
         ]},
-        options: { responsive: true, plugins: { legend: { position: 'bottom', labels:{font:{family:'Roboto'},boxWidth:12} } },
+        options: { responsive: true, plugins: { legend: { position: 'bottom', labels:{font:{family:'Inter'},boxWidth:12} } },
           scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } }
       });
     }
@@ -2184,7 +2237,7 @@ function drawChart(id, type, labels, data, palette) {
     data: { labels, datasets: [{ data, backgroundColor: palette, borderWidth: 0 }] },
     options: {
       responsive: true,
-      plugins: { legend: { display: type !== 'bar', position: 'bottom', labels:{font:{family:'Roboto'},boxWidth:12} } },
+      plugins: { legend: { display: type !== 'bar', position: 'bottom', labels:{font:{family:'Inter'},boxWidth:12} } },
       scales: type === 'bar' ? { y: { beginAtZero: true, ticks: { precision: 0 } } } : {}
     }
   });
