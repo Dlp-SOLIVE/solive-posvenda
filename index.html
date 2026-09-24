@@ -132,7 +132,8 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 
 /* ── STATS ── */
 .stats-strip{background:var(--white);border-bottom:0.5px solid var(--ink-20);padding:0 3rem}
-.stats-grid{display:grid;grid-template-columns:repeat(6,1fr)}
+.stats-grid{display:grid;grid-template-columns:repeat(7,1fr)}
+.stat.stat-aside{border-left:1px dashed var(--ink-20)}
 .stat{padding:1.25rem 0;border-right:0.5px solid var(--ink-20);text-align:center}
 .stat:last-child{border-right:none}
 .stat .lbl{font-size:10px;text-transform:uppercase;letter-spacing:0.12em;color:var(--ink-60);margin-bottom:4px;font-family:'Roboto',sans-serif}
@@ -811,7 +812,8 @@ label.lbl{font-size:14px;text-transform:none;letter-spacing:0;color:var(--ink);f
       <div class="stat" data-f="em_analise" onclick="statFilter(this)"><div class="lbl" data-i18n="stat.analysis">Em análise</div><div class="val" id="s-analise" style="color:var(--warn)">—</div><div class="sub" data-i18n="stat.analysis.sub">em curso</div></div>
       <div class="stat" data-f="agendada" onclick="statFilter(this)"><div class="lbl" data-i18n="stat.scheduled">Agendadas</div><div class="val" id="s-agendada" style="color:var(--info)">—</div><div class="sub" data-i18n="stat.scheduled.sub">marcadas</div></div>
       <div class="stat" data-f="resolvida" onclick="statFilter(this)"><div class="lbl" data-i18n="stat.resolved">Resolvidas</div><div class="val" id="s-resolvida" style="color:var(--success)">—</div><div class="sub" data-i18n="stat.resolved.sub">fechadas</div></div>
-      <div class="stat" data-f="overdue" onclick="statFilter(this)"><div class="lbl" data-i18n="stat.overdue">Em atraso</div><div class="val" id="s-atraso" style="color:var(--danger)">—</div><div class="sub" data-i18n="stat.overdue.sub">fora do prazo</div></div>
+<div class="stat" data-f="rejeitada" onclick="statFilter(this)"><div class="lbl" data-i18n="stat.rejected">Rejeitadas</div><div class="val" id="s-rejeitada" style="color:var(--ink-60)">—</div><div class="sub" data-i18n="stat.rejected.sub">não procedentes</div></div>
+      <div class="stat stat-aside" data-f="overdue" onclick="statFilter(this)" title="Já incluídas nas colunas anteriores" data-i18n-title="stat.overdue.hint"><div class="lbl" data-i18n="stat.overdue">Em atraso</div><div class="val" id="s-atraso" style="color:var(--danger)">—</div><div class="sub" data-i18n="stat.overdue.sub">fora do prazo</div></div>
     </div>
   </div>
 
@@ -1102,7 +1104,7 @@ pt: {
   'login.title':'Painel de Gestão','login.sub':'Acesso restrito à equipa pós-venda<br>Solive','login.email':'Email','login.pass':'Password','btn.login':'Entrar','login.loading':'A entrar...','login.help':'Conta de gestor? Contacte o administrador.',
   'mgr.eyebrow':'Gestão interna','mgr.title':'Ocorrências pós-venda','mgr.sub':'Todos os empreendimentos Solive','btn.export':'Exportar Excel',
   'stat.total':'Total','stat.total.sub':'ocorrências','stat.new':'Novas','stat.new.sub':'por tratar','stat.analysis':'Em análise','stat.analysis.sub':'em curso',
-  'stat.scheduled':'Agendadas','stat.scheduled.sub':'marcadas','stat.resolved':'Resolvidas','stat.resolved.sub':'fechadas','stat.overdue':'Em atraso','stat.overdue.sub':'fora do prazo',
+  'stat.scheduled':'Agendadas','stat.scheduled.sub':'marcadas','stat.resolved':'Resolvidas','stat.resolved.sub':'fechadas','stat.rejected':'Rejeitadas','stat.rejected.sub':'não procedentes','stat.overdue.hint':'Já incluídas nas colunas anteriores','stat.overdue':'Em atraso','stat.overdue.sub':'fora do prazo',
   'filter.project':'Empreendimento','filter.allprojects':'Todos os empreendimentos','filter.sub':'Subempreiteiro','filter.all':'Todos','filter.allf':'Todas','filter.unit':'Fração / Zona','filter.status':'Estado','chip.all':'Todas',
   'status.nova':'Nova','status.em_analise':'Em análise','status.agendada':'Agendada','status.resolvida':'Resolvida','status.rejeitada':'Rejeitada',
   'chip.nova':'Novas','chip.em_analise':'Em análise','chip.agendada':'Agendadas','chip.resolvida':'Resolvidas','chip.rejeitada':'Rejeitadas',
@@ -1186,7 +1188,7 @@ en: {
   'login.title':'Management Panel','login.sub':'Restricted access — Solive<br>after-sales team','login.email':'Email','login.pass':'Password','btn.login':'Log in','login.loading':'Logging in...','login.help':'Manager account? Contact the administrator.',
   'mgr.eyebrow':'Internal management','mgr.title':'After-sales issues','mgr.sub':'All Solive developments','btn.export':'Export Excel',
   'stat.total':'Total','stat.total.sub':'issues','stat.new':'New','stat.new.sub':'to handle','stat.analysis':'Under review','stat.analysis.sub':'in progress',
-  'stat.scheduled':'Scheduled','stat.scheduled.sub':'booked','stat.resolved':'Resolved','stat.resolved.sub':'closed','stat.overdue':'Overdue','stat.overdue.sub':'past due',
+  'stat.scheduled':'Scheduled','stat.scheduled.sub':'booked','stat.resolved':'Resolved','stat.resolved.sub':'closed','stat.rejected':'Rejected','stat.rejected.sub':'not accepted','stat.overdue.hint':'Already counted in the columns before','stat.overdue':'Overdue','stat.overdue.sub':'past due',
   'filter.project':'Development','filter.allprojects':'All developments','filter.sub':'Subcontractor','filter.all':'All','filter.allf':'All','filter.unit':'Unit / Zone','filter.status':'Status','chip.all':'All',
   'status.nova':'New','status.em_analise':'Under review','status.agendada':'Scheduled','status.resolvida':'Resolved','status.rejeitada':'Rejected',
   'chip.nova':'New','chip.em_analise':'Under review','chip.agendada':'Scheduled','chip.resolvida':'Resolved','chip.rejeitada':'Rejected',
@@ -1293,6 +1295,7 @@ function applyLang() {
   document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
   document.querySelectorAll('[data-i18n-html]').forEach(el => { el.innerHTML = t(el.dataset.i18nHtml); });
   document.querySelectorAll('[data-i18n-ph]').forEach(el => { el.placeholder = t(el.dataset.i18nPh); });
+  document.querySelectorAll('[data-i18n-title]').forEach(el => { el.title = t(el.dataset.i18nTitle); });
   // blocos longos duplicados (RGPD / Política de Privacidade)
   document.querySelectorAll('.i18n-pt').forEach(el => { el.style.display = LANG === 'pt' ? '' : 'none'; });
   document.querySelectorAll('.i18n-en').forEach(el => { el.style.display = LANG === 'en' ? '' : 'none'; });
@@ -3038,6 +3041,8 @@ function renderStats() {
   document.getElementById('s-analise').textContent = issues.filter(i => i.status === 'em_analise').length;
   document.getElementById('s-agendada').textContent = issues.filter(i => i.status === 'agendada').length;
   document.getElementById('s-resolvida').textContent = issues.filter(i => i.status === 'resolvida').length;
+  const rejEl = document.getElementById('s-rejeitada');
+  if (rejEl) rejEl.textContent = issues.filter(i => i.status === 'rejeitada').length;
   const atrasoEl = document.getElementById('s-atraso');
   if (atrasoEl) atrasoEl.textContent = issues.filter(i => isOverdue(i)).length;
 }
