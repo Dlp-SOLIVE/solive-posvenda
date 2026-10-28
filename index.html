@@ -399,6 +399,22 @@ input:focus,select:focus,textarea:focus{border-color:var(--mint);box-shadow:0 0 
 .own-link{display:inline-block;margin-top:8px}
 #c-email[readonly]{background:var(--cream)}
 #c-project:disabled{opacity:.6}
+.pe-units{max-height:340px;overflow-y:auto;border:1px solid var(--ink-20);border-radius:var(--r);padding:8px;margin-bottom:8px}
+.pe-row{display:grid;grid-template-columns:72px 72px 96px 1fr 30px;gap:6px;align-items:center;margin-bottom:6px}
+.pe-row:last-child{margin-bottom:0}
+.pe-row input:not([type=checkbox]):not([type=radio]){padding:7px 9px;font-size:13px}
+.pe-head{font-size:12px;color:var(--ink-60);font-weight:500;position:sticky;top:-8px;background:var(--white);padding:4px 0;margin-bottom:4px}
+.pe-del{border:none;background:transparent;color:var(--ink-60);cursor:pointer;font-size:16px;padding:4px;border-radius:var(--r)}
+.pe-del:hover{color:var(--danger);background:var(--danger-lt)}
+.pe-empty{font-size:13px;color:var(--ink-60);padding:6px 2px}
+.pe-paste{margin:10px 0 1rem;font-size:13px}
+.pe-paste summary{cursor:pointer;color:var(--ink);text-decoration:underline}
+.pe-paste textarea{font-family:monospace;font-size:12px;min-height:80px;margin:6px 0}
+@media(max-width:560px){
+  .pe-row{grid-template-columns:1fr 1fr 1fr 30px}
+  .pe-row .pe-emails{grid-column:1/4}
+  .pe-head span:nth-child(4){display:none}
+}
 .photo-actions{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .photo-act{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:92px;border-radius:var(--r);border:1px solid var(--gray);background:var(--white);font-family:'Plus Jakarta Sans',sans-serif;font-weight:600;font-size:14px;color:var(--ink);cursor:pointer;transition:background .12s}
 .photo-act:hover{background:var(--cream)}
@@ -963,8 +979,15 @@ label.lbl{font-size:13px;font-weight:500;letter-spacing:0;text-transform:none;co
     <input type="text" id="pe-name" placeholder="Ex: L'Urbain" style="margin-bottom:1rem">
 
     <label class="lbl" data-i18n="pj.unitslbl">Frações</label>
-    <p style="font-size:12px;color:var(--ink-60);margin-bottom:6px" data-i18n-html="pj.unitshelp">Uma por linha, no formato: <strong>Código; Tipologia; Piso; Email(s) do proprietário</strong> &nbsp;(ex: <code>A7; T3; 2º Piso; joao@email.com, maria@email.com</code>). Só os emails registados conseguem reportar ocorrências nessa fração.</p>
-    <textarea id="pe-units" rows="8" placeholder="A1; T3; R/C; joao@email.com&#10;A2; T2; R/C; ana@email.com, rui@email.com&#10;A3; T1; 1º Piso" style="margin-bottom:1rem;font-family:monospace;font-size:13px"></textarea>
+    <p style="font-size:12px;color:var(--ink-60);margin-bottom:6px" data-i18n-html="pj.unitshelp">Só os emails registados conseguem reportar ocorrências na fração. Vários emails separados por vírgula.</p>
+    <div class="pe-units" id="pe-units"></div>
+    <button type="button" class="btn btn-secondary btn-sm" onclick="addUnitRow({}, true)"><i class="ti ti-plus"></i> <span data-i18n="pj.addunit">Adicionar fração</span></button>
+    <details class="pe-paste">
+      <summary data-i18n="pj.paste">Colar lista do Excel</summary>
+      <p style="font-size:12px;color:var(--ink-60);margin-top:6px" data-i18n-html="pj.pastehelp">Copie do Excel as colunas <strong>Código, Tipologia, Piso, Email(s)</strong>, uma fração por linha, e cole aqui. Frações que já existam na lista são atualizadas; as restantes são acrescentadas.</p>
+      <textarea id="pe-paste" rows="4"></textarea>
+      <button type="button" class="btn btn-secondary btn-sm" onclick="importUnitRows()"><i class="ti ti-table-import"></i> <span data-i18n="pj.pasteadd">Acrescentar à lista</span></button>
+    </details>
 
     <label class="lbl" data-i18n="pj.commonslbl">Zonas comuns</label>
     <p style="font-size:12px;color:var(--ink-60);margin-bottom:6px" data-i18n-html="pj.commonshelp">Uma por linha (ex: <code>Hall de entrada</code>)</p>
@@ -1169,7 +1192,7 @@ pt: {
   'pj.eyebrow':'Configuração','pj.title':'Empreendimentos','pj.sub':'Criar e gerir projectos','pj.new':'Novo empreendimento','pj.empty':'Ainda não existem empreendimentos. Crie o primeiro.',
   'btn.edit':'Editar','btn.save':'Guardar','pj.units':'frações','pj.commons':'zonas comuns','pj.issues':'ocorrências',
   'pj.modal.new':'Novo empreendimento','pj.modal.edit':'Editar empreendimento','pj.name':'Nome do empreendimento *','pj.unitslbl':'Frações',
-  'pj.unitshelp':'Uma por linha, no formato: <strong>Código; Tipologia; Piso; Email(s) do proprietário</strong> &nbsp;(ex: <code>A7; T3; 2º Piso; joao@email.com, maria@email.com</code>). Só os emails registados conseguem reportar ocorrências nessa fração.',
+  'pj.unitshelp':'Só os emails registados conseguem reportar ocorrências na fração. Vários emails separados por vírgula.','pj.col.code':'Código','pj.col.type':'Tipologia','pj.col.floor':'Piso','pj.col.emails':'Email(s) do proprietário','pj.addunit':'Adicionar fração','pj.delunit':'Remover fração','pj.nounits':'Ainda sem frações.','pj.paste':'Colar lista do Excel','pj.pastehelp':'Copie do Excel as colunas <strong>Código, Tipologia, Piso, Email(s)</strong>, uma fração por linha, e cole aqui. Frações que já existam na lista são atualizadas; as restantes são acrescentadas.','pj.pasteadd':'Acrescentar à lista','t.pasteok':'frações acrescentadas/atualizadas.','t.unitnocode':'Há uma linha com dados mas sem código de fração.','t.unitdup':'Código de fração repetido:',
   'own.intro':'Por segurança, confirmamos que é proprietário: indique o email usado na compra e introduza o código que lhe enviarmos.','own.mgr':'Sessão de gestão iniciada: pode registar ocorrências em qualquer fração, sem código de confirmação.','own.send':'Enviar código','own.resend':'Reenviar código','own.codelbl':'Código de confirmação *','own.codehint':'Enviámos um código de 6 dígitos para o seu email. É válido durante 15 minutos.','own.confirm':'Confirmar','own.ok':'Email confirmado','own.change':'Alterar','own.sent':'Código enviado. Verifique o seu email.','own.notfound':'Não encontrámos frações associadas a este email. Use o email indicado na compra ou contacte geral@solive.pt.','own.wait':'Já enviámos um código há menos de um minuto. Verifique o seu email.','own.toomany':'Demasiadas tentativas. Tente novamente mais tarde.','own.invalid':'Código incorreto.','own.expired':'Código expirado. Peça um novo código.','own.err':'Não foi possível concluir o pedido. Tente novamente ou contacte geral@solive.pt.','own.notowner':'Esta fração não está associada ao seu email.','own.session':'A confirmação do seu email expirou. Confirme novamente.','err.verify':'Confirme o seu email com o código enviado.','opt.verifyfirst':'Confirme primeiro o seu email','t.ownerbademail':'Email inválido na lista de frações:','t.ownersaveerr':'Empreendimento guardado, mas não foi possível guardar os proprietários.','pj.commonslbl':'Zonas comuns','pj.commonshelp':'Uma por linha (ex: <code>Hall de entrada</code>)',
   'optg.units':'Frações','optg.commons':'Áreas Comuns',
   'sb.title':'Subempreiteiros','sb.sub':'Criar e gerir a lista de subempreiteiros','sb.new':'Novo subempreiteiro','sb.empty':'Ainda não existem subempreiteiros. Crie o primeiro.','sb.assigned':'atribuídas',
@@ -1254,7 +1277,7 @@ en: {
   'pj.eyebrow':'Settings','pj.title':'Developments','pj.sub':'Create and manage projects','pj.new':'New development','pj.empty':'No developments yet. Create the first one.',
   'btn.edit':'Edit','btn.save':'Save','pj.units':'units','pj.commons':'common areas','pj.issues':'issues',
   'pj.modal.new':'New development','pj.modal.edit':'Edit development','pj.name':'Development name *','pj.unitslbl':'Units',
-  'pj.unitshelp':'One per line, in the format: <strong>Code; Type; Floor; Owner email(s)</strong> &nbsp;(e.g. <code>A7; T3; 2º Piso; joao@email.com, maria@email.com</code>). Only registered emails can report issues for that unit.',
+  'pj.unitshelp':'Only registered emails can report issues for the unit. Separate multiple emails with commas.','pj.col.code':'Code','pj.col.type':'Type','pj.col.floor':'Floor','pj.col.emails':'Owner email(s)','pj.addunit':'Add unit','pj.delunit':'Remove unit','pj.nounits':'No units yet.','pj.paste':'Paste list from Excel','pj.pastehelp':'Copy the columns <strong>Code, Type, Floor, Email(s)</strong> from Excel, one unit per line, and paste them here. Units already in the list are updated; the rest are added.','pj.pasteadd':'Add to list','t.pasteok':'units added/updated.','t.unitnocode':'There is a row with data but no unit code.','t.unitdup':'Duplicate unit code:',
   'own.intro':'For security, we confirm that you are an owner: enter the email used for the purchase and the code we send you.','own.mgr':'Management session active: you can register issues for any unit, without a confirmation code.','own.send':'Send code','own.resend':'Resend code','own.codelbl':'Confirmation code *','own.codehint':'We have sent a 6-digit code to your email. It is valid for 15 minutes.','own.confirm':'Confirm','own.ok':'Email confirmed','own.change':'Change','own.sent':'Code sent. Please check your email.','own.notfound':'We could not find any units linked to this email. Use the email given at purchase or contact geral@solive.pt.','own.wait':'We sent you a code less than a minute ago. Please check your email.','own.toomany':'Too many attempts. Please try again later.','own.invalid':'Incorrect code.','own.expired':'Code expired. Please request a new one.','own.err':'We could not complete the request. Please try again or contact geral@solive.pt.','own.notowner':'This unit is not linked to your email.','own.session':'Your email confirmation has expired. Please confirm it again.','err.verify':'Confirm your email with the code we sent.','opt.verifyfirst':'Confirm your email first','t.ownerbademail':'Invalid email in the units list:','t.ownersaveerr':'Development saved, but the owners could not be saved.','pj.commonslbl':'Common areas','pj.commonshelp':'One per line (e.g. <code>Hall de entrada</code>)',
   'optg.units':'Units','optg.commons':'Common Areas',
   'sb.title':'Subcontractors','sb.sub':'Create and manage the subcontractor list','sb.new':'New subcontractor','sb.empty':'No subcontractors yet. Create the first one.','sb.assigned':'assigned',
@@ -2294,22 +2317,87 @@ async function openProjectEditor(id) {
       (data || []).forEach(o => { (owners[o.unit_code] = owners[o.unit_code] || []).push(o.email); });
     }
     document.getElementById('pe-name').value = p.name || '';
-    document.getElementById('pe-units').value = (p.units||[]).map(u => `${u.code}; ${u.type||''}; ${u.floor||''}` + (owners[u.code] ? '; ' + owners[u.code].join(', ') : '')).join('\n');
+    renderUnitRows((p.units||[]).map(u => ({ ...u, emails: owners[u.code] || [] })));
     document.getElementById('pe-commons').value = (p.commons||[]).join('\n');
   } else {
     document.getElementById('pe-name').value = '';
-    document.getElementById('pe-units').value = '';
+    renderUnitRows([{}]);
     document.getElementById('pe-commons').value = '';
   }
+  document.getElementById('pe-paste').value = '';
+  document.querySelector('#project-modal .pe-paste').open = false;
   document.getElementById('project-modal').classList.add('open');
 }
 
-function parseUnits(text) {
-  return text.split('\n').map(l => l.trim()).filter(Boolean).map(line => {
-    const parts = line.split(';').map(s => s.trim());
-    const emails = (parts[3]||'').split(/[,\s]+/).map(s => s.trim().toLowerCase()).filter(Boolean);
-    return { code: parts[0]||'', type: parts[1]||'', floor: parts[2]||'', emails };
-  }).filter(u => u.code);
+// ── Editor de frações: uma linha por fração com campos separados ──
+function renderUnitRows(list) {
+  const box = document.getElementById('pe-units');
+  box.innerHTML = `<div class="pe-row pe-head"><span>${t('pj.col.code')}</span><span>${t('pj.col.type')}</span><span>${t('pj.col.floor')}</span><span>${t('pj.col.emails')}</span><span></span></div>`;
+  list.forEach(u => addUnitRow(u));
+}
+
+function addUnitRow(u, focus) {
+  const box = document.getElementById('pe-units');
+  const row = document.createElement('div');
+  row.className = 'pe-row';
+  const mk = (cls, val, ph) => {
+    const i = document.createElement('input');
+    i.type = 'text'; i.className = cls; i.value = val || ''; if (ph) i.placeholder = ph;
+    row.appendChild(i); return i;
+  };
+  const first = mk('pe-code', u.code, 'A1');
+  mk('pe-type', u.type, 'T2');
+  mk('pe-floor', u.floor, '1º Piso');
+  mk('pe-emails', (u.emails || []).join(', '), 'joao@email.com, maria@email.com');
+  const del = document.createElement('button');
+  del.type = 'button'; del.className = 'pe-del'; del.title = t('pj.delunit');
+  del.innerHTML = '<i class="ti ti-x"></i>';
+  del.onclick = () => row.remove();
+  row.appendChild(del);
+  box.appendChild(row);
+  if (focus) { first.focus(); box.scrollTop = box.scrollHeight; }
+}
+
+function splitEmails(s) {
+  return String(s || '').split(/[,;\s]+/).map(e => e.trim().toLowerCase()).filter(Boolean);
+}
+
+// Lê as linhas do editor: { code, type, floor, emails[] }; linhas totalmente vazias são ignoradas
+function readUnitRows() {
+  return [...document.querySelectorAll('#pe-units .pe-row:not(.pe-head)')].map(r => ({
+    code:  r.querySelector('.pe-code').value.trim(),
+    type:  r.querySelector('.pe-type').value.trim(),
+    floor: r.querySelector('.pe-floor').value.trim(),
+    emails: splitEmails(r.querySelector('.pe-emails').value)
+  })).filter(u => u.code || u.type || u.floor || u.emails.length);
+}
+
+// Colar do Excel (colunas separadas por tab) ou texto com ';' — atualiza códigos existentes, acrescenta os novos
+function importUnitRows() {
+  const ta = document.getElementById('pe-paste');
+  const lines = ta.value.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+  let n = 0;
+  lines.forEach(line => {
+    const parts = (line.includes('\t') ? line.split('\t') : line.split(';')).map(s => s.trim());
+    const u = { code: parts[0] || '', type: parts[1] || '', floor: parts[2] || '', emails: splitEmails(parts.slice(3).join(',')) };
+    if (!u.code) return;
+    const row = [...document.querySelectorAll('#pe-units .pe-row:not(.pe-head)')]
+      .find(r => r.querySelector('.pe-code').value.trim().toLowerCase() === u.code.toLowerCase());
+    if (row) {
+      if (u.type) row.querySelector('.pe-type').value = u.type;
+      if (u.floor) row.querySelector('.pe-floor').value = u.floor;
+      const em = row.querySelector('.pe-emails');
+      em.value = [...new Set([...splitEmails(em.value), ...u.emails])].join(', ');
+    } else {
+      const empty = [...document.querySelectorAll('#pe-units .pe-row:not(.pe-head)')]
+        .find(r => [...r.querySelectorAll('input')].every(i => !i.value.trim()));
+      if (empty) empty.remove();
+      addUnitRow(u);
+    }
+    n++;
+  });
+  ta.value = '';
+  toast(n + ' ' + t('t.pasteok'), 'success');
 }
 
 // Sincroniza unit_owners do empreendimento com a lista do editor (acrescenta e remove só as diferenças)
@@ -2328,7 +2416,11 @@ async function saveUnitOwners(pid, owners) {
 async function saveProject() {
   const id = document.getElementById('pe-id').value;
   const name = document.getElementById('pe-name').value.trim();
-  const parsed = parseUnits(document.getElementById('pe-units').value);
+  const parsed = readUnitRows();
+  if (parsed.some(u => !u.code)) { toast(t('t.unitnocode'), 'error'); return; }
+  const seen = new Set();
+  const dup = parsed.find(u => { const k = u.code.toLowerCase(); if (seen.has(k)) return true; seen.add(k); return false; });
+  if (dup) { toast(t('t.unitdup') + ' ' + dup.code, 'error'); return; }
   const units = parsed.map(u => ({ code: u.code, type: u.type, floor: u.floor }));
   const owners = parsed.flatMap(u => u.emails.map(email => ({ unit_code: u.code, email })));
   const commons = document.getElementById('pe-commons').value.split('\n').map(s=>s.trim()).filter(Boolean);
