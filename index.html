@@ -388,6 +388,17 @@ input:focus,select:focus,textarea:focus{border-color:var(--mint);box-shadow:0 0 
 .step-nav .hint{margin-right:auto;color:var(--ink-60);font-size:13px}
 .f-err{border-color:var(--danger)!important}
 .err-msg{font-size:13px;color:var(--danger);margin-top:6px;display:flex;gap:5px;align-items:center}
+.own-intro{font-size:14px;color:var(--ink-60);margin:-0.75rem 0 1.25rem}
+.own-row{display:flex;gap:8px;align-items:stretch;flex-wrap:wrap}
+.own-row input{flex:1 1 180px;min-width:0}
+.own-row .btn{white-space:nowrap}
+.own-row .err-msg{flex-basis:100%}
+.own-hint{font-size:13px;color:var(--ink-60);margin-bottom:8px}
+.own-ok{margin-top:8px;font-size:13px;color:var(--success);display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.own-ok a,.own-link{color:var(--ink);text-decoration:underline;cursor:pointer;font-size:13px}
+.own-link{display:inline-block;margin-top:8px}
+#c-email[readonly]{background:var(--cream)}
+#c-project:disabled{opacity:.6}
 .photo-actions{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .photo-act{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:92px;border-radius:var(--r);border:1px solid var(--gray);background:var(--white);font-family:'Plus Jakarta Sans',sans-serif;font-weight:600;font-size:14px;color:var(--ink);cursor:pointer;transition:background .12s}
 .photo-act:hover{background:var(--cream)}
@@ -660,7 +671,30 @@ label.lbl{font-size:13px;font-weight:500;letter-spacing:0;text-transform:none;co
   <div class="section" data-step="1">
     <div class="section-title" data-i18n="sec.id">Identificação</div>
     <h2 data-i18n="sec.yourdata">Os seus dados</h2>
+    <p class="own-intro" id="own-intro" data-i18n="own.intro">Por segurança, confirmamos que é proprietário: indique o email usado na compra e introduza o código que lhe enviarmos.</p>
+    <p class="own-intro" id="own-mgr" style="display:none" data-i18n="own.mgr">Sessão de gestão iniciada: pode registar ocorrências em qualquer fração, sem código de confirmação.</p>
     <div class="fg">
+      <div>
+        <label class="lbl" data-i18n="lbl.name">Nome completo *</label>
+        <input id="c-name" type="text" placeholder="Ex: João Silva" data-i18n-ph="ph.name" name="name" autocomplete="name">
+      </div>
+      <div>
+        <label class="lbl" data-i18n="lbl.email">Email de contacto *</label>
+        <div class="own-row">
+          <input id="c-email" type="email" placeholder="joao@email.com" name="email" autocomplete="email" oninput="onOwnerEmailInput()">
+          <button type="button" class="btn btn-secondary" id="own-send" onclick="requestOwnerCode()" data-i18n="own.send">Enviar código</button>
+        </div>
+        <div class="own-ok" id="own-verified" style="display:none"><i class="ti ti-circle-check"></i> <span data-i18n="own.ok">Email confirmado</span> · <a onclick="resetOwnerAuth()" data-i18n="own.change">Alterar</a></div>
+      </div>
+      <div class="fg-full" id="own-code-box" style="display:none">
+        <label class="lbl" data-i18n="own.codelbl">Código de confirmação *</label>
+        <p class="own-hint" data-i18n="own.codehint">Enviámos um código de 6 dígitos para o seu email. É válido durante 15 minutos.</p>
+        <div class="own-row" style="max-width:360px">
+          <input id="c-code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="000000" style="letter-spacing:0.3em" onkeydown="if(event.key==='Enter'){event.preventDefault();verifyOwnerCode();}">
+          <button type="button" class="btn btn-mint" id="own-verify" onclick="verifyOwnerCode()" data-i18n="own.confirm">Confirmar</button>
+        </div>
+        <a class="own-link" onclick="requestOwnerCode()" data-i18n="own.resend">Reenviar código</a>
+      </div>
       <div class="fg-full">
         <label class="lbl" data-i18n="lbl.project">Empreendimento *</label>
         <select id="c-project" onchange="onProjectChange()">
@@ -668,22 +702,14 @@ label.lbl{font-size:13px;font-weight:500;letter-spacing:0;text-transform:none;co
         </select>
       </div>
       <div>
-        <label class="lbl" data-i18n="lbl.name">Nome completo *</label>
-        <input id="c-name" type="text" placeholder="Ex: João Silva" data-i18n-ph="ph.name" name="name" autocomplete="name">
-      </div>
-      <div>
-        <label class="lbl" data-i18n="lbl.email">Email de contacto *</label>
-        <input id="c-email" type="email" placeholder="joao@email.com" name="email" autocomplete="email">
-      </div>
-      <div>
-        <label class="lbl" data-i18n="lbl.phone">Telefone</label>
-        <input id="c-phone" type="tel" name="tel" autocomplete="tel" inputmode="tel" placeholder="+351 9xx xxx xxx">
-      </div>
-      <div>
         <label class="lbl" data-i18n="lbl.unit">Fração / Unidade *</label>
         <select id="c-unit">
           <option value="" data-i18n="opt.selectfirst">Selecione primeiro o empreendimento</option>
         </select>
+      </div>
+      <div>
+        <label class="lbl" data-i18n="lbl.phone">Telefone</label>
+        <input id="c-phone" type="tel" name="tel" autocomplete="tel" inputmode="tel" placeholder="+351 9xx xxx xxx">
       </div>
     </div>
   </div>
@@ -937,8 +963,8 @@ label.lbl{font-size:13px;font-weight:500;letter-spacing:0;text-transform:none;co
     <input type="text" id="pe-name" placeholder="Ex: L'Urbain" style="margin-bottom:1rem">
 
     <label class="lbl" data-i18n="pj.unitslbl">Frações</label>
-    <p style="font-size:12px;color:var(--ink-60);margin-bottom:6px" data-i18n-html="pj.unitshelp">Uma por linha, no formato: <strong>Código; Tipologia; Piso</strong> &nbsp;(ex: <code>A7; T3; 2º Piso</code>)</p>
-    <textarea id="pe-units" rows="8" placeholder="A1; T3; R/C&#10;A2; T2; R/C&#10;A3; T1; 1º Piso" style="margin-bottom:1rem;font-family:monospace;font-size:13px"></textarea>
+    <p style="font-size:12px;color:var(--ink-60);margin-bottom:6px" data-i18n-html="pj.unitshelp">Uma por linha, no formato: <strong>Código; Tipologia; Piso; Email(s) do proprietário</strong> &nbsp;(ex: <code>A7; T3; 2º Piso; joao@email.com, maria@email.com</code>). Só os emails registados conseguem reportar ocorrências nessa fração.</p>
+    <textarea id="pe-units" rows="8" placeholder="A1; T3; R/C; joao@email.com&#10;A2; T2; R/C; ana@email.com, rui@email.com&#10;A3; T1; 1º Piso" style="margin-bottom:1rem;font-family:monospace;font-size:13px"></textarea>
 
     <label class="lbl" data-i18n="pj.commonslbl">Zonas comuns</label>
     <p style="font-size:12px;color:var(--ink-60);margin-bottom:6px" data-i18n-html="pj.commonshelp">Uma por linha (ex: <code>Hall de entrada</code>)</p>
@@ -1075,6 +1101,7 @@ let selectedIssueId = null;
 let activeNoteId = null;
 let currentUser = null;
 let usingLocalFallback = false;
+let ownerAuth = null; // proprietário confirmado: { email, token, units: [{project_id, unit_code}] }
 
 // ══════════════════════════════════════════════════════
 //  I18N — PT / EN
@@ -1142,7 +1169,8 @@ pt: {
   'pj.eyebrow':'Configuração','pj.title':'Empreendimentos','pj.sub':'Criar e gerir projectos','pj.new':'Novo empreendimento','pj.empty':'Ainda não existem empreendimentos. Crie o primeiro.',
   'btn.edit':'Editar','btn.save':'Guardar','pj.units':'frações','pj.commons':'zonas comuns','pj.issues':'ocorrências',
   'pj.modal.new':'Novo empreendimento','pj.modal.edit':'Editar empreendimento','pj.name':'Nome do empreendimento *','pj.unitslbl':'Frações',
-  'pj.unitshelp':'Uma por linha, no formato: <strong>Código; Tipologia; Piso</strong> &nbsp;(ex: <code>A7; T3; 2º Piso</code>)','pj.commonslbl':'Zonas comuns','pj.commonshelp':'Uma por linha (ex: <code>Hall de entrada</code>)',
+  'pj.unitshelp':'Uma por linha, no formato: <strong>Código; Tipologia; Piso; Email(s) do proprietário</strong> &nbsp;(ex: <code>A7; T3; 2º Piso; joao@email.com, maria@email.com</code>). Só os emails registados conseguem reportar ocorrências nessa fração.',
+  'own.intro':'Por segurança, confirmamos que é proprietário: indique o email usado na compra e introduza o código que lhe enviarmos.','own.mgr':'Sessão de gestão iniciada: pode registar ocorrências em qualquer fração, sem código de confirmação.','own.send':'Enviar código','own.resend':'Reenviar código','own.codelbl':'Código de confirmação *','own.codehint':'Enviámos um código de 6 dígitos para o seu email. É válido durante 15 minutos.','own.confirm':'Confirmar','own.ok':'Email confirmado','own.change':'Alterar','own.sent':'Código enviado. Verifique o seu email.','own.notfound':'Não encontrámos frações associadas a este email. Use o email indicado na compra ou contacte geral@solive.pt.','own.wait':'Já enviámos um código há menos de um minuto. Verifique o seu email.','own.toomany':'Demasiadas tentativas. Tente novamente mais tarde.','own.invalid':'Código incorreto.','own.expired':'Código expirado. Peça um novo código.','own.err':'Não foi possível concluir o pedido. Tente novamente ou contacte geral@solive.pt.','own.notowner':'Esta fração não está associada ao seu email.','own.session':'A confirmação do seu email expirou. Confirme novamente.','err.verify':'Confirme o seu email com o código enviado.','opt.verifyfirst':'Confirme primeiro o seu email','t.ownerbademail':'Email inválido na lista de frações:','t.ownersaveerr':'Empreendimento guardado, mas não foi possível guardar os proprietários.','pj.commonslbl':'Zonas comuns','pj.commonshelp':'Uma por linha (ex: <code>Hall de entrada</code>)',
   'optg.units':'Frações','optg.commons':'Áreas Comuns',
   'sb.title':'Subempreiteiros','sb.sub':'Criar e gerir a lista de subempreiteiros','sb.new':'Novo subempreiteiro','sb.empty':'Ainda não existem subempreiteiros. Crie o primeiro.','sb.assigned':'atribuídas',
   'sb.modal.new':'Novo subempreiteiro','sb.modal.edit':'Editar subempreiteiro','sb.name':'Nome / Empresa *','sb.spec':'Especialidade','lbl.emailonly':'Email','lbl.phoneonly':'Telefone',
@@ -1226,7 +1254,8 @@ en: {
   'pj.eyebrow':'Settings','pj.title':'Developments','pj.sub':'Create and manage projects','pj.new':'New development','pj.empty':'No developments yet. Create the first one.',
   'btn.edit':'Edit','btn.save':'Save','pj.units':'units','pj.commons':'common areas','pj.issues':'issues',
   'pj.modal.new':'New development','pj.modal.edit':'Edit development','pj.name':'Development name *','pj.unitslbl':'Units',
-  'pj.unitshelp':'One per line, in the format: <strong>Code; Type; Floor</strong> &nbsp;(e.g. <code>A7; T3; 2º Piso</code>)','pj.commonslbl':'Common areas','pj.commonshelp':'One per line (e.g. <code>Hall de entrada</code>)',
+  'pj.unitshelp':'One per line, in the format: <strong>Code; Type; Floor; Owner email(s)</strong> &nbsp;(e.g. <code>A7; T3; 2º Piso; joao@email.com, maria@email.com</code>). Only registered emails can report issues for that unit.',
+  'own.intro':'For security, we confirm that you are an owner: enter the email used for the purchase and the code we send you.','own.mgr':'Management session active: you can register issues for any unit, without a confirmation code.','own.send':'Send code','own.resend':'Resend code','own.codelbl':'Confirmation code *','own.codehint':'We have sent a 6-digit code to your email. It is valid for 15 minutes.','own.confirm':'Confirm','own.ok':'Email confirmed','own.change':'Change','own.sent':'Code sent. Please check your email.','own.notfound':'We could not find any units linked to this email. Use the email given at purchase or contact geral@solive.pt.','own.wait':'We sent you a code less than a minute ago. Please check your email.','own.toomany':'Too many attempts. Please try again later.','own.invalid':'Incorrect code.','own.expired':'Code expired. Please request a new one.','own.err':'We could not complete the request. Please try again or contact geral@solive.pt.','own.notowner':'This unit is not linked to your email.','own.session':'Your email confirmation has expired. Please confirm it again.','err.verify':'Confirm your email with the code we sent.','opt.verifyfirst':'Confirm your email first','t.ownerbademail':'Invalid email in the units list:','t.ownersaveerr':'Development saved, but the owners could not be saved.','pj.commonslbl':'Common areas','pj.commonshelp':'One per line (e.g. <code>Hall de entrada</code>)',
   'optg.units':'Units','optg.commons':'Common Areas',
   'sb.title':'Subcontractors','sb.sub':'Create and manage the subcontractor list','sb.new':'New subcontractor','sb.empty':'No subcontractors yet. Create the first one.','sb.assigned':'assigned',
   'sb.modal.new':'New subcontractor','sb.modal.edit':'Edit subcontractor','sb.name':'Name / Company *','sb.spec':'Specialty','lbl.emailonly':'Email','lbl.phoneonly':'Phone',
@@ -1323,14 +1352,7 @@ function setLang(l) {
   localStorage.setItem('sv_lang', l);
   applyLang();
   // repõe selects dependentes de dados preservando seleções
-  const projSel = document.getElementById('c-project');
-  const curProj = projSel ? projSel.value : '';
-  const unitSel = document.getElementById('c-unit');
-  const curUnit = unitSel ? unitSel.value : '';
-  populateProjectSelector();
-  if (projSel) projSel.value = curProj;
-  onProjectChange();
-  if (unitSel) unitSel.value = curUnit;
+  refreshClientSelectors();
   // re-renderiza a vista ativa (conteúdo gerado por JS)
   const active = document.querySelector('.page.active');
   const id = active ? active.id : '';
@@ -1692,6 +1714,7 @@ async function boot() {
   // Load projects and populate the client form selector
   await loadProjects();
   populateProjectSelector();
+  await restoreOwnerAuth();
 
   // Check for ?track= param → public tracking view
   const params = new URLSearchParams(window.location.search);
@@ -2259,13 +2282,19 @@ function renderProjectsList() {
   });
 }
 
-function openProjectEditor(id) {
+async function openProjectEditor(id) {
   document.getElementById('pe-id').value = id || '';
   document.getElementById('project-modal-title').textContent = id ? t('pj.modal.edit') : t('pj.modal.new');
   if (id) {
     const p = projects.find(x => String(x.id) === String(id));
+    // emails dos proprietários vivem em unit_owners (não em projects, que é público)
+    const owners = {};
+    if (!usingLocalFallback) {
+      const { data } = await sb.from('unit_owners').select('unit_code,email').eq('project_id', id).order('email');
+      (data || []).forEach(o => { (owners[o.unit_code] = owners[o.unit_code] || []).push(o.email); });
+    }
     document.getElementById('pe-name').value = p.name || '';
-    document.getElementById('pe-units').value = (p.units||[]).map(u => `${u.code}; ${u.type||''}; ${u.floor||''}`).join('\n');
+    document.getElementById('pe-units').value = (p.units||[]).map(u => `${u.code}; ${u.type||''}; ${u.floor||''}` + (owners[u.code] ? '; ' + owners[u.code].join(', ') : '')).join('\n');
     document.getElementById('pe-commons').value = (p.commons||[]).join('\n');
   } else {
     document.getElementById('pe-name').value = '';
@@ -2278,18 +2307,37 @@ function openProjectEditor(id) {
 function parseUnits(text) {
   return text.split('\n').map(l => l.trim()).filter(Boolean).map(line => {
     const parts = line.split(';').map(s => s.trim());
-    return { code: parts[0]||'', type: parts[1]||'', floor: parts[2]||'' };
+    const emails = (parts[3]||'').split(/[,\s]+/).map(s => s.trim().toLowerCase()).filter(Boolean);
+    return { code: parts[0]||'', type: parts[1]||'', floor: parts[2]||'', emails };
   }).filter(u => u.code);
+}
+
+// Sincroniza unit_owners do empreendimento com a lista do editor (acrescenta e remove só as diferenças)
+async function saveUnitOwners(pid, owners) {
+  const { data: existing, error } = await sb.from('unit_owners').select('id,unit_code,email').eq('project_id', pid);
+  if (error) throw error;
+  const key = o => o.unit_code + '|' + o.email;
+  const want = new Set(owners.map(key));
+  const have = new Set((existing || []).map(key));
+  const toAdd = [...new Map(owners.filter(o => !have.has(key(o))).map(o => [key(o), { project_id: Number(pid), unit_code: o.unit_code, email: o.email }])).values()];
+  const toDel = (existing || []).filter(o => !want.has(key(o))).map(o => o.id);
+  if (toAdd.length) { const { error: e1 } = await sb.from('unit_owners').insert(toAdd); if (e1) throw e1; }
+  if (toDel.length) { const { error: e2 } = await sb.from('unit_owners').delete().in('id', toDel); if (e2) throw e2; }
 }
 
 async function saveProject() {
   const id = document.getElementById('pe-id').value;
   const name = document.getElementById('pe-name').value.trim();
-  const units = parseUnits(document.getElementById('pe-units').value);
+  const parsed = parseUnits(document.getElementById('pe-units').value);
+  const units = parsed.map(u => ({ code: u.code, type: u.type, floor: u.floor }));
+  const owners = parsed.flatMap(u => u.emails.map(email => ({ unit_code: u.code, email })));
   const commons = document.getElementById('pe-commons').value.split('\n').map(s=>s.trim()).filter(Boolean);
   if (!name) { toast(t('t.projname'), 'error'); return; }
+  const badEmail = owners.find(o => !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(o.email));
+  if (badEmail) { toast(t('t.ownerbademail') + ' ' + badEmail.email, 'error'); return; }
 
   const record = { name, units, commons, active: true };
+  let ownersFailed = false;
 
   if (usingLocalFallback) {
     let local = JSON.parse(localStorage.getItem('pa_projects') || '[]');
@@ -2297,15 +2345,21 @@ async function saveProject() {
     else { record.id = Date.now(); local.push(record); }
     localStorage.setItem('pa_projects', JSON.stringify(local));
   } else {
+    let pid = id;
     if (id) await sb.from('projects').update(record).eq('id', id);
-    else await sb.from('projects').insert([record]);
+    else { const { data } = await sb.from('projects').insert([record]).select('id').single(); pid = data && data.id; }
+    if (pid) {
+      try { await saveUnitOwners(pid, owners); }
+      catch(e) { console.warn('unit_owners error:', e); ownersFailed = true; }
+    }
   }
 
   closeModal('project-modal');
   await loadProjects();
   populateProjectSelector();
   renderProjectsList();
-  toast(t('t.projsaved'), 'success');
+  if (ownersFailed) toast(t('t.ownersaveerr'), 'error');
+  else toast(t('t.projsaved'), 'success');
 }
 
 async function deleteProject(id) {
@@ -2479,6 +2533,103 @@ async function confirmAssign() {
   toast(notified ? t('t.assignok').replace('{n}', notified) : t('t.assignnoemail'), 'success');
 }
 
+// ══════════════════════════════════════════════════════
+//  VERIFICAÇÃO DE PROPRIETÁRIO (email + código)
+// ══════════════════════════════════════════════════════
+// Clientes só reportam nas frações associadas ao seu email (tabela unit_owners).
+// O código é gerado e enviado pela BD (request_owner_code); a confirmação devolve
+// um token guardado em localStorage('sv_owner'), validado de novo no create_issue_owner.
+// Gestores autenticados (e o modo demo) não passam por esta verificação.
+function ownerCheckActive() { return !usingLocalFallback && !currentUser; }
+function ownerUnitsFor(pid) {
+  return ((ownerAuth && ownerAuth.units) || []).filter(u => String(u.project_id) === String(pid)).map(u => u.unit_code);
+}
+
+async function restoreOwnerAuth() {
+  let saved = null;
+  try { saved = JSON.parse(localStorage.getItem('sv_owner') || 'null'); } catch(e) {}
+  if (saved && saved.token && !usingLocalFallback) {
+    const { data, error } = await sb.rpc('owner_session', { p_token: saved.token });
+    if (!error && data && data.status === 'ok') ownerAuth = { email: data.email, token: saved.token, units: data.units || [] };
+    else if (!error) { try { localStorage.removeItem('sv_owner'); } catch(e) {} }
+  }
+  refreshOwnerUI();
+}
+
+function refreshOwnerUI() {
+  const active = ownerCheckActive();
+  const verified = !!ownerAuth;
+  const emailEl = document.getElementById('c-email');
+  if (!emailEl) return;
+  if (active && verified) emailEl.value = ownerAuth.email;
+  emailEl.readOnly = active && verified;
+  const show = (id, on) => { const el = document.getElementById(id); if (el) el.style.display = on ? '' : 'none'; };
+  show('own-intro', active && !verified);
+  show('own-mgr', !!currentUser && !usingLocalFallback);
+  show('own-send', active && !verified);
+  show('own-verified', active && verified);
+  if (!active || verified) show('own-code-box', false);
+  refreshClientSelectors();
+}
+
+function onOwnerEmailInput() {
+  if (ownerAuth) return;
+  document.getElementById('own-code-box').style.display = 'none';
+}
+
+const OWNER_MSG = { not_found:'own.notfound', wait:'own.wait', too_many:'own.toomany', invalid:'own.invalid', expired:'own.expired' };
+
+async function requestOwnerCode() {
+  const el = document.getElementById('c-email');
+  clearErr(el);
+  const em = el.value.trim().toLowerCase();
+  if (!em) { setErr('c-email', 'err.email'); return; }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) { setErr('c-email', 'err.emailfmt'); return; }
+  const btn = document.getElementById('own-send');
+  btn.disabled = true;
+  const { data, error } = await sb.rpc('request_owner_code', { p_email: em, p_name: document.getElementById('c-name').value.trim() });
+  btn.disabled = false;
+  if (error) { console.warn('request_owner_code error:', error); setErr('c-email', 'own.err'); return; }
+  if (data === 'sent' || data === 'wait') {
+    const box = document.getElementById('own-code-box');
+    box.style.display = '';
+    clearErr(document.getElementById('c-code'));
+    toast(t(data === 'sent' ? 'own.sent' : 'own.wait'), data === 'sent' ? 'success' : undefined);
+    document.getElementById('c-code').focus();
+    return;
+  }
+  setErr('c-email', OWNER_MSG[data] || 'own.err');
+}
+
+async function verifyOwnerCode() {
+  const codeEl = document.getElementById('c-code');
+  clearErr(codeEl);
+  const code = codeEl.value.replace(/\D/g, '');
+  if (code.length !== 6) { setErr('c-code', 'own.invalid'); return; }
+  const em = document.getElementById('c-email').value.trim().toLowerCase();
+  const btn = document.getElementById('own-verify');
+  btn.disabled = true;
+  const { data, error } = await sb.rpc('verify_owner_code', { p_email: em, p_code: code });
+  btn.disabled = false;
+  if (error || !data) { console.warn('verify_owner_code error:', error); setErr('c-code', 'own.err'); return; }
+  if (data.status !== 'ok') { setErr('c-code', OWNER_MSG[data.status] || 'own.err'); return; }
+  ownerAuth = { email: data.email, token: data.token, units: data.units || [] };
+  try { localStorage.setItem('sv_owner', JSON.stringify({ email: data.email, token: data.token })); } catch(e) {}
+  codeEl.value = '';
+  clearErr(document.getElementById('c-email'));
+  refreshOwnerUI();
+  toast(t('own.ok'), 'success');
+}
+
+function resetOwnerAuth() {
+  ownerAuth = null;
+  try { localStorage.removeItem('sv_owner'); } catch(e) {}
+  const el = document.getElementById('c-email');
+  el.value = '';
+  refreshOwnerUI();
+  el.focus();
+}
+
 async function loadProjects() {
   if (usingLocalFallback) {
     projects = JSON.parse(localStorage.getItem('pa_projects') || '[]');
@@ -2499,9 +2650,32 @@ function unitLabel(u) {
 function populateProjectSelector() {
   const sel = document.getElementById('c-project');
   if (!sel) return;
-  const active = projects.filter(p => p.active !== false);
+  let active = projects.filter(p => p.active !== false);
+  if (ownerCheckActive()) {
+    // cliente: só os empreendimentos onde o email confirmado tem frações
+    if (!ownerAuth) {
+      sel.innerHTML = '<option value="">' + t('opt.verifyfirst') + '</option>';
+      sel.disabled = true;
+      return;
+    }
+    active = active.filter(p => ownerUnitsFor(p.id).length);
+  }
+  sel.disabled = false;
   sel.innerHTML = '<option value="">' + t('opt.selectproject') + '</option>' +
     active.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+  if (ownerCheckActive() && active.length === 1) sel.value = String(active[0].id);
+}
+
+// Repopula empreendimento/fração preservando as seleções que continuem válidas
+function refreshClientSelectors() {
+  const projSel = document.getElementById('c-project');
+  const unitSel = document.getElementById('c-unit');
+  if (!projSel || !unitSel) return;
+  const curProj = projSel.value, curUnit = unitSel.value;
+  populateProjectSelector();
+  if (curProj && [...projSel.options].some(o => o.value === curProj)) projSel.value = curProj;
+  onProjectChange();
+  if (curUnit && [...unitSel.options].some(o => o.value === curUnit)) unitSel.value = curUnit;
 }
 
 function onProjectChange() {
@@ -2509,11 +2683,15 @@ function onProjectChange() {
   const unitSel = document.getElementById('c-unit');
   const project = projects.find(p => String(p.id) === String(pid));
   if (!project) {
-    unitSel.innerHTML = '<option value="">' + t('opt.selectfirst') + '</option>';
+    unitSel.innerHTML = '<option value="">' + t(ownerCheckActive() && !ownerAuth ? 'opt.verifyfirst' : 'opt.selectfirst') + '</option>';
     return;
   }
   let html = '<option value="">' + t('opt.select') + '</option>';
-  const units = project.units || [];
+  let units = project.units || [];
+  if (ownerCheckActive()) {
+    const own = ownerUnitsFor(project.id);
+    units = units.filter(u => own.includes(u.code));
+  }
   if (units.length) {
     html += '<optgroup label="' + t('optg.units') + '">';
     html += units.map(u => `<option>${unitLabel(u)}</option>`).join('');
@@ -2587,6 +2765,7 @@ async function doLogin() {
   if (error) { toast(t('t.loginfail'), 'error'); return; }
   currentUser = data.user;
   updateNavUser();
+  refreshOwnerUI();
   showView('manager');
 }
 
@@ -2595,6 +2774,7 @@ async function logout() {
   currentUser = null;
   document.getElementById('nav-user').style.display = 'none';
   ['tab-analise','tab-projectos','tab-subs'].forEach(id => { const t=document.getElementById(id); if(t) t.style.display='none'; });
+  refreshOwnerUI();
   showView('client');
 }
 
@@ -2776,6 +2956,7 @@ function validateStep(n, focus) {
     if (!v('c-name')) errs.push(['c-name','err.name']);
     const em = v('c-email');
     if (!em) errs.push(['c-email','err.email']); else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) errs.push(['c-email','err.emailfmt']);
+    else if (ownerCheckActive() && !ownerAuth) errs.push(['c-email','err.verify']);
     if (!v('c-unit')) errs.push(['c-unit','err.unit']);
   }
   if (n === 2) {
@@ -2877,10 +3058,11 @@ async function submitIssue() {
       }
     }
     issue.photo_urls = photoUrls;
-    const { data: newId, error } = await sb.rpc('create_issue', {
+    // Cliente: create_issue_owner valida o token e a fração; gestor autenticado: create_issue
+    const asOwner = ownerCheckActive();
+    const rpcParams = {
       p_project_id:   issue.project_id,
       p_client_name:  issue.client_name,
-      p_client_email: issue.client_email,
       p_client_phone: issue.client_phone || '',
       p_unit:         issue.unit,
       p_category:     issue.category,
@@ -2888,8 +3070,19 @@ async function submitIssue() {
       p_description:  issue.description,
       p_priority:     issue.priority,
       p_photo_urls:   photoUrls
-    });
-    if (error) { console.warn('create_issue error:', error); toast(t('t.submiterr'), 'error'); btn.disabled = false; btn.innerHTML = '<i class="ti ti-send"></i> <span data-i18n="btn.submit">' + t('btn.submit') + '</span>'; return; }
+    };
+    if (asOwner) rpcParams.p_token = ownerAuth.token;
+    else rpcParams.p_client_email = issue.client_email;
+    const { data: newId, error } = await sb.rpc(asOwner ? 'create_issue_owner' : 'create_issue', rpcParams);
+    if (error) {
+      console.warn('create_issue error:', error);
+      const msg = String(error.message || '');
+      btn.disabled = false; btn.innerHTML = '<i class="ti ti-send"></i> <span data-i18n="btn.submit">' + t('btn.submit') + '</span>';
+      if (msg.includes('invalid_token')) { resetOwnerAuth(); goStep(1); toast(t('own.session'), 'error'); }
+      else if (msg.includes('not_owner')) { goStep(1); toast(t('own.notowner'), 'error'); }
+      else toast(t('t.submiterr'), 'error');
+      return;
+    }
     const data = { id: newId };
     // Email à Ana: nova ocorrência
     try {
@@ -2934,6 +3127,7 @@ function onSubmitSuccess(issue) {
   ['c-name','c-email','c-phone','c-desc'].forEach(id => document.getElementById(id).value = '');
   ['c-project','c-unit','c-cat','c-loc','c-zone'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('c-unit').innerHTML = '<option value="">' + t('opt.selectfirst') + '</option>';
+  refreshOwnerUI();
   document.querySelector('input[name=prio][value=media]').checked = true;
   clientPhotos = []; clientPhotoFiles = []; clientPhotoMarked = []; markerBaseImg = {};
   renderClientPhotoPreview();
