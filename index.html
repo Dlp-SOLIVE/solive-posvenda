@@ -407,6 +407,8 @@ input:focus,select:focus,textarea:focus{border-color:var(--mint);box-shadow:0 0 
 .pe-del{border:none;background:transparent;color:var(--ink-60);cursor:pointer;font-size:16px;padding:4px;border-radius:var(--r)}
 .pe-del:hover{color:var(--danger);background:var(--danger-lt)}
 .pe-empty{font-size:13px;color:var(--ink-60);padding:6px 2px}
+.pe-units.pe-list{max-height:240px}
+.pe-list-btns{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1.25rem}
 .pe-paste{margin:10px 0 1rem;font-size:13px}
 .pe-paste summary{cursor:pointer;color:var(--ink);text-decoration:underline}
 .pe-paste textarea{font-family:monospace;font-size:12px;min-height:80px;margin:6px 0}
@@ -990,8 +992,19 @@ label.lbl{font-size:13px;font-weight:500;letter-spacing:0;text-transform:none;co
     </details>
 
     <label class="lbl" data-i18n="pj.commonslbl">Zonas comuns</label>
-    <p style="font-size:12px;color:var(--ink-60);margin-bottom:6px" data-i18n-html="pj.commonshelp">Uma por linha (ex: <code>Hall de entrada</code>)</p>
-    <textarea id="pe-commons" rows="5" placeholder="Hall de entrada&#10;Garagem&#10;Cobertura / Terraço" style="margin-bottom:1rem;font-size:13px"></textarea>
+    <p style="font-size:12px;color:var(--ink-60);margin-bottom:6px" data-i18n-html="pj.commonshelp">Aparecem ao cliente como "AC — Zona" na lista de frações.</p>
+    <div class="pe-units pe-list" id="pe-commons"></div>
+    <div class="pe-list-btns">
+      <button type="button" class="btn btn-secondary btn-sm" onclick="addCommonRow('', true)"><i class="ti ti-plus"></i> <span data-i18n="pj.addcommon">Adicionar zona comum</span></button>
+    </div>
+
+    <label class="lbl" data-i18n="pj.locslbl">Divisões (localização na fração)</label>
+    <p style="font-size:12px;color:var(--ink-60);margin-bottom:6px" data-i18n-html="pj.locshelp">Lista que o cliente vê em "Localização na fração". O nome em PT é o que fica registado; o nome em EN aparece quando o cliente usa a plataforma em inglês.</p>
+    <div class="pe-units pe-list" id="pe-locs"></div>
+    <div class="pe-list-btns">
+      <button type="button" class="btn btn-secondary btn-sm" onclick="addLocRow({}, true)"><i class="ti ti-plus"></i> <span data-i18n="pj.addloc">Adicionar divisão</span></button>
+      <button type="button" class="btn btn-secondary btn-sm" onclick="resetLocRows()"><i class="ti ti-restore"></i> <span data-i18n="pj.resetlocs">Repor lista padrão</span></button>
+    </div>
 
     <div class="modal-btns">
       <button class="btn btn-secondary" onclick="closeModal('project-modal')" data-i18n="btn.cancel">Cancelar</button>
@@ -1193,7 +1206,7 @@ pt: {
   'btn.edit':'Editar','btn.save':'Guardar','pj.units':'frações','pj.commons':'zonas comuns','pj.issues':'ocorrências',
   'pj.modal.new':'Novo empreendimento','pj.modal.edit':'Editar empreendimento','pj.name':'Nome do empreendimento *','pj.unitslbl':'Frações',
   'pj.unitshelp':'Só os emails registados conseguem reportar ocorrências na fração. Vários emails separados por vírgula.','pj.col.code':'Código','pj.col.type':'Tipologia','pj.col.floor':'Piso','pj.col.emails':'Email(s) do proprietário','pj.addunit':'Adicionar fração','pj.delunit':'Remover fração','pj.nounits':'Ainda sem frações.','pj.paste':'Colar lista do Excel','pj.pastehelp':'Copie do Excel as colunas <strong>Código, Tipologia, Piso, Email(s)</strong>, uma fração por linha, e cole aqui. Frações que já existam na lista são atualizadas; as restantes são acrescentadas.','pj.pasteadd':'Acrescentar à lista','t.pasteok':'frações acrescentadas/atualizadas.','t.unitnocode':'Há uma linha com dados mas sem código de fração.','t.unitdup':'Código de fração repetido:',
-  'own.intro':'Por segurança, confirmamos que é proprietário: indique o email usado na compra e introduza o código que lhe enviarmos.','own.mgr':'Sessão de gestão iniciada: pode registar ocorrências em qualquer fração, sem código de confirmação.','own.send':'Enviar código','own.resend':'Reenviar código','own.codelbl':'Código de confirmação *','own.codehint':'Enviámos um código de 6 dígitos para o seu email. É válido durante 15 minutos.','own.confirm':'Confirmar','own.ok':'Email confirmado','own.change':'Alterar','own.sent':'Código enviado. Verifique o seu email.','own.notfound':'Não encontrámos frações associadas a este email. Use o email indicado na compra ou contacte geral@solive.pt.','own.wait':'Já enviámos um código há menos de um minuto. Verifique o seu email.','own.toomany':'Demasiadas tentativas. Tente novamente mais tarde.','own.invalid':'Código incorreto.','own.expired':'Código expirado. Peça um novo código.','own.err':'Não foi possível concluir o pedido. Tente novamente ou contacte geral@solive.pt.','own.notowner':'Esta fração não está associada ao seu email.','own.session':'A confirmação do seu email expirou. Confirme novamente.','err.verify':'Confirme o seu email com o código enviado.','opt.verifyfirst':'Confirme primeiro o seu email','t.ownerbademail':'Email inválido na lista de frações:','t.ownersaveerr':'Empreendimento guardado, mas não foi possível guardar os proprietários.','pj.commonslbl':'Zonas comuns','pj.commonshelp':'Uma por linha (ex: <code>Hall de entrada</code>)',
+  'own.intro':'Por segurança, confirmamos que é proprietário: indique o email usado na compra e introduza o código que lhe enviarmos.','own.mgr':'Sessão de gestão iniciada: pode registar ocorrências em qualquer fração, sem código de confirmação.','own.send':'Enviar código','own.resend':'Reenviar código','own.codelbl':'Código de confirmação *','own.codehint':'Enviámos um código de 6 dígitos para o seu email. É válido durante 15 minutos.','own.confirm':'Confirmar','own.ok':'Email confirmado','own.change':'Alterar','own.sent':'Código enviado. Verifique o seu email.','own.notfound':'Não encontrámos frações associadas a este email. Use o email indicado na compra ou contacte geral@solive.pt.','own.wait':'Já enviámos um código há menos de um minuto. Verifique o seu email.','own.toomany':'Demasiadas tentativas. Tente novamente mais tarde.','own.invalid':'Código incorreto.','own.expired':'Código expirado. Peça um novo código.','own.err':'Não foi possível concluir o pedido. Tente novamente ou contacte geral@solive.pt.','own.notowner':'Esta fração não está associada ao seu email.','own.session':'A confirmação do seu email expirou. Confirme novamente.','err.verify':'Confirme o seu email com o código enviado.','opt.verifyfirst':'Confirme primeiro o seu email','t.ownerbademail':'Email inválido na lista de frações:','t.ownersaveerr':'Empreendimento guardado, mas não foi possível guardar os proprietários.','pj.commonslbl':'Zonas comuns','pj.commonshelp':'Aparecem ao cliente como "AC — Zona" na lista de frações.','pj.col.zone':'Zona comum','pj.addcommon':'Adicionar zona comum','pj.locslbl':'Divisões (localização na fração)','pj.locshelp':'Lista que o cliente vê em "Localização na fração". O nome em PT é o que fica registado; o nome em EN aparece quando o cliente usa a plataforma em inglês.','pj.col.locpt':'Divisão (PT)','pj.col.locen':'Divisão (EN)','pj.addloc':'Adicionar divisão','pj.resetlocs':'Repor lista padrão','pj.resetconfirm':'Substituir a lista de divisões pela lista padrão?','pj.delrow':'Remover','pj.optional':'opcional','t.locdup':'Divisão repetida:','t.locnopt':'Há uma divisão com nome EN mas sem nome PT.','t.projsaveerr':'Não foi possível guardar o empreendimento.',
   'optg.units':'Frações','optg.commons':'Áreas Comuns',
   'sb.title':'Subempreiteiros','sb.sub':'Criar e gerir a lista de subempreiteiros','sb.new':'Novo subempreiteiro','sb.empty':'Ainda não existem subempreiteiros. Crie o primeiro.','sb.assigned':'atribuídas',
   'sb.modal.new':'Novo subempreiteiro','sb.modal.edit':'Editar subempreiteiro','sb.name':'Nome / Empresa *','sb.spec':'Especialidade','lbl.emailonly':'Email','lbl.phoneonly':'Telefone',
@@ -1278,7 +1291,7 @@ en: {
   'btn.edit':'Edit','btn.save':'Save','pj.units':'units','pj.commons':'common areas','pj.issues':'issues',
   'pj.modal.new':'New development','pj.modal.edit':'Edit development','pj.name':'Development name *','pj.unitslbl':'Units',
   'pj.unitshelp':'Only registered emails can report issues for the unit. Separate multiple emails with commas.','pj.col.code':'Code','pj.col.type':'Type','pj.col.floor':'Floor','pj.col.emails':'Owner email(s)','pj.addunit':'Add unit','pj.delunit':'Remove unit','pj.nounits':'No units yet.','pj.paste':'Paste list from Excel','pj.pastehelp':'Copy the columns <strong>Code, Type, Floor, Email(s)</strong> from Excel, one unit per line, and paste them here. Units already in the list are updated; the rest are added.','pj.pasteadd':'Add to list','t.pasteok':'units added/updated.','t.unitnocode':'There is a row with data but no unit code.','t.unitdup':'Duplicate unit code:',
-  'own.intro':'For security, we confirm that you are an owner: enter the email used for the purchase and the code we send you.','own.mgr':'Management session active: you can register issues for any unit, without a confirmation code.','own.send':'Send code','own.resend':'Resend code','own.codelbl':'Confirmation code *','own.codehint':'We have sent a 6-digit code to your email. It is valid for 15 minutes.','own.confirm':'Confirm','own.ok':'Email confirmed','own.change':'Change','own.sent':'Code sent. Please check your email.','own.notfound':'We could not find any units linked to this email. Use the email given at purchase or contact geral@solive.pt.','own.wait':'We sent you a code less than a minute ago. Please check your email.','own.toomany':'Too many attempts. Please try again later.','own.invalid':'Incorrect code.','own.expired':'Code expired. Please request a new one.','own.err':'We could not complete the request. Please try again or contact geral@solive.pt.','own.notowner':'This unit is not linked to your email.','own.session':'Your email confirmation has expired. Please confirm it again.','err.verify':'Confirm your email with the code we sent.','opt.verifyfirst':'Confirm your email first','t.ownerbademail':'Invalid email in the units list:','t.ownersaveerr':'Development saved, but the owners could not be saved.','pj.commonslbl':'Common areas','pj.commonshelp':'One per line (e.g. <code>Hall de entrada</code>)',
+  'own.intro':'For security, we confirm that you are an owner: enter the email used for the purchase and the code we send you.','own.mgr':'Management session active: you can register issues for any unit, without a confirmation code.','own.send':'Send code','own.resend':'Resend code','own.codelbl':'Confirmation code *','own.codehint':'We have sent a 6-digit code to your email. It is valid for 15 minutes.','own.confirm':'Confirm','own.ok':'Email confirmed','own.change':'Change','own.sent':'Code sent. Please check your email.','own.notfound':'We could not find any units linked to this email. Use the email given at purchase or contact geral@solive.pt.','own.wait':'We sent you a code less than a minute ago. Please check your email.','own.toomany':'Too many attempts. Please try again later.','own.invalid':'Incorrect code.','own.expired':'Code expired. Please request a new one.','own.err':'We could not complete the request. Please try again or contact geral@solive.pt.','own.notowner':'This unit is not linked to your email.','own.session':'Your email confirmation has expired. Please confirm it again.','err.verify':'Confirm your email with the code we sent.','opt.verifyfirst':'Confirm your email first','t.ownerbademail':'Invalid email in the units list:','t.ownersaveerr':'Development saved, but the owners could not be saved.','pj.commonslbl':'Common areas','pj.commonshelp':'Shown to clients as "AC — Area" in the units list.','pj.col.zone':'Common area','pj.addcommon':'Add common area','pj.locslbl':'Rooms (location in the unit)','pj.locshelp':'List clients see under "Location in the unit". The PT name is what gets recorded; the EN name is shown when the client uses the platform in English.','pj.col.locpt':'Room (PT)','pj.col.locen':'Room (EN)','pj.addloc':'Add room','pj.resetlocs':'Restore default list','pj.resetconfirm':'Replace the rooms list with the default list?','pj.delrow':'Remove','pj.optional':'optional','t.locdup':'Duplicate room:','t.locnopt':'There is a room with an EN name but no PT name.','t.projsaveerr':'Could not save the development.',
   'optg.units':'Units','optg.commons':'Common Areas',
   'sb.title':'Subcontractors','sb.sub':'Create and manage the subcontractor list','sb.new':'New subcontractor','sb.empty':'No subcontractors yet. Create the first one.','sb.assigned':'assigned',
   'sb.modal.new':'New subcontractor','sb.modal.edit':'Edit subcontractor','sb.name':'Name / Company *','sb.spec':'Specialty','lbl.emailonly':'Email','lbl.phoneonly':'Phone',
@@ -1319,19 +1332,36 @@ const LOCATIONS = ['Sala de estar / Jantar','Cozinha','Quarto 1 (Suite)','Quarto
 const LOC_EN = {'Sala de estar / Jantar':'Living / Dining room','Cozinha':'Kitchen','Quarto 1 (Suite)':'Bedroom 1 (En-suite)','Quarto 2':'Bedroom 2','Quarto 3':'Bedroom 3','Casa de banho 1':'Bathroom 1','Casa de banho 2':'Bathroom 2','Varanda / Terraço privativo':'Balcony / Private terrace','Hall de entrada':'Entrance hall','Corredor':'Hallway','Zona técnica / Lavandaria':'Utility room / Laundry','Toda a fração':'Entire unit','Área comum':'Common area','Outro / Não aplicável':'Other / Not applicable'};
 
 function catLabel(c) { if (!c) return '\u2014'; return LANG === 'en' ? (CAT_EN[c] || c) : c; }
+// Divisões do empreendimento ([{pt,en}] em projects.locations); sem lista própria usa a padrão
+function defaultLocations() { return LOCATIONS.map(l => ({ pt: l, en: LOC_EN[l] || '' })); }
+function projectLocations(pid) {
+  const p = projects.find(x => String(x.id) === String(pid));
+  return p && Array.isArray(p.locations) && p.locations.length ? p.locations : defaultLocations();
+}
+// Nome EN de uma divisão (PT canónico): lista padrão ou divisões de qualquer empreendimento
+function locEn(pt) {
+  if (LOC_EN[pt]) return LOC_EN[pt];
+  for (const p of projects) {
+    const f = (p.locations || []).find(l => l.pt === pt && l.en);
+    if (f) return f.en;
+  }
+  return '';
+}
 function locLabel(l) {
   if (!l) return '';
   if (LANG !== 'en') return l;
-  if (LOC_EN[l]) return LOC_EN[l];
+  if (locEn(l)) return locEn(l);
   // localização combinada "Divisão — zona livre": traduz só a divisão se conhecida
   const sep = ' — ';
   const idx = l.indexOf(sep);
   if (idx > -1) {
     const head = l.slice(0, idx);
-    if (LOC_EN[head]) return LOC_EN[head] + sep + l.slice(idx + sep.length);
+    if (locEn(head)) return locEn(head) + sep + l.slice(idx + sep.length);
   }
   return l;
 }
+
+function escAttr(s) { return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
 
 // Preenche os selects de categoria e localização preservando a seleção atual
 function populateCatLoc() {
@@ -1345,9 +1375,11 @@ function populateCatLoc() {
   const locSel = document.getElementById('c-loc');
   if (locSel) {
     const cur = locSel.value;
+    const pid = document.getElementById('c-project')?.value;
+    const locs = projectLocations(pid);
     locSel.innerHTML = '<option value="">' + t('opt.select') + '</option>' +
-      LOCATIONS.map(l => `<option value="${l}">${locLabel(l)}</option>`).join('');
-    locSel.value = cur;
+      locs.map(l => `<option value="${escAttr(l.pt)}">${escAttr(LANG === 'en' && l.en ? l.en : l.pt)}</option>`).join('');
+    locSel.value = locs.some(l => l.pt === cur) ? cur : '';
   }
 }
 
@@ -2318,11 +2350,13 @@ async function openProjectEditor(id) {
     }
     document.getElementById('pe-name').value = p.name || '';
     renderUnitRows((p.units||[]).map(u => ({ ...u, emails: owners[u.code] || [] })));
-    document.getElementById('pe-commons').value = (p.commons||[]).join('\n');
+    renderCommonRows(p.commons || []);
+    renderLocRows(projectLocations(p.id));
   } else {
     document.getElementById('pe-name').value = '';
     renderUnitRows([{}]);
-    document.getElementById('pe-commons').value = '';
+    renderCommonRows([]);
+    renderLocRows(defaultLocations());
   }
   document.getElementById('pe-paste').value = '';
   document.querySelector('#project-modal .pe-paste').open = false;
@@ -2356,6 +2390,53 @@ function addUnitRow(u, focus) {
   row.appendChild(del);
   box.appendChild(row);
   if (focus) { first.focus(); box.scrollTop = box.scrollHeight; }
+}
+
+// Linha genérica de lista simples (zonas comuns, divisões): campos de texto + remover
+function addListRow(boxId, fields, cols, focus) {
+  const box = document.getElementById(boxId);
+  const row = document.createElement('div');
+  row.className = 'pe-row';
+  row.style.gridTemplateColumns = cols;
+  let first = null;
+  fields.forEach(f => {
+    const i = document.createElement('input');
+    i.type = 'text'; i.className = f.cls; i.value = f.val || ''; i.placeholder = f.ph || '';
+    row.appendChild(i); if (!first) first = i;
+  });
+  const del = document.createElement('button');
+  del.type = 'button'; del.className = 'pe-del'; del.title = t('pj.delrow');
+  del.innerHTML = '<i class="ti ti-x"></i>';
+  del.onclick = () => row.remove();
+  row.appendChild(del);
+  box.appendChild(row);
+  if (focus) { first.focus(); box.scrollTop = box.scrollHeight; }
+}
+function listHead(cols, labels) {
+  return `<div class="pe-row pe-head" style="grid-template-columns:${cols}">${labels.map(l => `<span>${t(l)}</span>`).join('')}<span></span></div>`;
+}
+const COMMON_COLS = '1fr 30px', LOC_COLS = '1fr 1fr 30px';
+function renderCommonRows(list) {
+  document.getElementById('pe-commons').innerHTML = listHead(COMMON_COLS, ['pj.col.zone']);
+  list.forEach(z => addCommonRow(z));
+}
+function addCommonRow(z, focus) {
+  addListRow('pe-commons', [{ cls: 'pe-zone', val: z, ph: 'Garagem' }], COMMON_COLS, focus);
+}
+function renderLocRows(list) {
+  document.getElementById('pe-locs').innerHTML = listHead(LOC_COLS, ['pj.col.locpt', 'pj.col.locen']);
+  list.forEach(l => addLocRow(l));
+}
+function addLocRow(l, focus) {
+  addListRow('pe-locs', [{ cls: 'pe-loc-pt', val: l.pt, ph: 'Quarto 4' }, { cls: 'pe-loc-en', val: l.en, ph: t('pj.optional') }], LOC_COLS, focus);
+}
+function resetLocRows() {
+  if (!confirm(t('pj.resetconfirm'))) return;
+  renderLocRows(defaultLocations());
+}
+function readListRows(boxId) {
+  return [...document.querySelectorAll('#' + boxId + ' .pe-row:not(.pe-head)')]
+    .map(r => [...r.querySelectorAll('input')].map(i => i.value.trim()));
 }
 
 function splitEmails(s) {
@@ -2423,12 +2504,18 @@ async function saveProject() {
   if (dup) { toast(t('t.unitdup') + ' ' + dup.code, 'error'); return; }
   const units = parsed.map(u => ({ code: u.code, type: u.type, floor: u.floor }));
   const owners = parsed.flatMap(u => u.emails.map(email => ({ unit_code: u.code, email })));
-  const commons = document.getElementById('pe-commons').value.split('\n').map(s=>s.trim()).filter(Boolean);
+  const commons = [...new Set(readListRows('pe-commons').map(r => r[0]).filter(Boolean))];
+  const locRows = readListRows('pe-locs').filter(r => r[0] || r[1]);
+  if (locRows.some(r => !r[0])) { toast(t('t.locnopt'), 'error'); return; }
+  const locSeen = new Set();
+  const locDup = locRows.find(r => { const k = r[0].toLowerCase(); if (locSeen.has(k)) return true; locSeen.add(k); return false; });
+  if (locDup) { toast(t('t.locdup') + ' ' + locDup[0], 'error'); return; }
+  const locations = locRows.map(r => ({ pt: r[0], en: r[1] }));
   if (!name) { toast(t('t.projname'), 'error'); return; }
   const badEmail = owners.find(o => !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(o.email));
   if (badEmail) { toast(t('t.ownerbademail') + ' ' + badEmail.email, 'error'); return; }
 
-  const record = { name, units, commons, active: true };
+  const record = { name, units, commons, locations, active: true };
   let ownersFailed = false;
 
   if (usingLocalFallback) {
@@ -2438,8 +2525,10 @@ async function saveProject() {
     localStorage.setItem('pa_projects', JSON.stringify(local));
   } else {
     let pid = id;
-    if (id) await sb.from('projects').update(record).eq('id', id);
-    else { const { data } = await sb.from('projects').insert([record]).select('id').single(); pid = data && data.id; }
+    let saveErr = null;
+    if (id) ({ error: saveErr } = await sb.from('projects').update(record).eq('id', id));
+    else { const { data, error } = await sb.from('projects').insert([record]).select('id').single(); saveErr = error; pid = data && data.id; }
+    if (saveErr) { console.warn('projects save error:', saveErr); toast(t('t.projsaveerr'), 'error'); return; }
     if (pid) {
       try { await saveUnitOwners(pid, owners); }
       catch(e) { console.warn('unit_owners error:', e); ownersFailed = true; }
@@ -2773,6 +2862,7 @@ function refreshClientSelectors() {
 function onProjectChange() {
   const pid = document.getElementById('c-project').value;
   const unitSel = document.getElementById('c-unit');
+  populateCatLoc(); // divisões próprias do empreendimento
   const project = projects.find(p => String(p.id) === String(pid));
   if (!project) {
     unitSel.innerHTML = '<option value="">' + t(ownerCheckActive() && !ownerAuth ? 'opt.verifyfirst' : 'opt.selectfirst') + '</option>';
